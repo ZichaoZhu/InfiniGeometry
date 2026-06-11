@@ -200,6 +200,42 @@ class Dataset:
         assert len(rgb.shape) == 3, f"rgb.shape: {rgb.shape}"
         assert len(dpt.shape) == 2, f"dpt.shape: {dpt.shape}"
 
+    def get_normal_path(self, index):
+        """
+        Derive the surface-normal file path from the depth file path.
+        Hypersim layout: normal_cam.hdf5 sits beside depth_meters_plane.npz /
+        depth_meters.hdf5 in the same scene_cam_XX_geometry_hdf5 directory.
+        """
+        depth_path = self.depth_files[index]
+        for suffix in ("depth_meters_plane.npz", "depth_meters.hdf5"):
+            if depth_path.endswith(suffix):
+                return depth_path[: -len(suffix)] + "normal_cam.hdf5"
+        return None
+
+    def read_normal(self, index):
+        """
+        Read camera-frame surface normals aligned pixel-exactly with depth.
+        return normal [H, W, 3] float32 (invalid pixels zeroed), normal_valid [H, W] uint8
+
+        Hypersim normal_cam caveats (verified): hdf5 key 'dataset', float16 HWC;
+        NaN where rays hit no geometry (sky/windows); a small fraction of
+        non-unit vectors at anti-aliased silhouette edges. Valid pixels are
+        re-normalized to exact unit length; invalid pixels must be masked in
+        the loss (never hard-normalize near-zero vectors).
+        """
+        normal_path = self.get_normal_path(index)
+        if normal_path is None or not os.path.exists(normal_path):
+            return None, None
+        with h5py.File(normal_path, "r") as f:
+            normal = np.asarray(f["dataset"], dtype=np.float32)  # [H, W, 3]
+        norm = np.linalg.norm(normal, axis=-1)
+        with np.errstate(invalid="ignore"):
+            valid = np.isfinite(normal).all(axis=-1) & (norm > 0.9) & (norm < 1.1)
+        normal = np.where(valid[..., None], normal, 0.0)
+        norm_safe = np.where(valid, norm, 1.0)[..., None]
+        normal = (normal / norm_safe).astype(np.float32)
+        return normal, valid.astype(np.uint8)
+
     def read_prompt_depth(self, index, depth, depth_mask, disparity, disparity_mask):
         if hasattr(self, "prompt_files") and self.same_depth_as_prompt is False:
             prompt_depth = np.asarray(cv2.imread(self.prompt_files[index], cv2.IMREAD_ANYDEPTH) / 1000.0).astype(
@@ -246,6 +282,13 @@ class Dataset:
                 sample["mask"] = msk
                 sample["disparity"] = disp
                 sample["disparity_mask"] = disp_msk
+
+            if self.cfg.get("load_normal", False):
+                normal, normal_valid = self.read_normal(index)
+                if normal is not None:
+                    self.check_shape(normal, dpt)
+                    sample["normal"] = normal
+                    sample["normal_valid"] = normal_valid
 
             if highfreq_mask is not None:
                 sample["highfreq_mask"] = highfreq_mask

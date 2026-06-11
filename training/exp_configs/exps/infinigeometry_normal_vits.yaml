@@ -1,0 +1,42 @@
+__include__:
+  - training/exp_configs/default.yaml
+  - training/exp_configs/components/model/infinidepth/infinigeometry_normal_vits.yaml
+
+task: infinigeometry_normal
+
+model:
+  lr_table:
+    _target_: training.utils.lr_table.LRTable
+    default_lr: 0.00005
+    else_table:
+      pretrained: 0.00001
+
+  scheduler_cfg:
+    scheduler:
+      _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+      T_max: ${multiply:${pl_trainer.limit_train_batches},${pl_trainer.max_epochs}}
+      eta_min: 0.0000005
+    interval: step
+
+# Single RTX 4090D; feasibility-scale run: 10 epochs x 5000 steps = 50k steps
+pl_trainer:
+  devices: 1
+  strategy: auto
+  max_epochs: 10
+  precision: 16-mixed
+  limit_train_batches: 5000
+  limit_val_batches: 50
+
+callbacks:
+  model_checkpoint:
+    _target_: pytorch_lightning.callbacks.ModelCheckpoint
+    dirpath: ${output_dir}/checkpoints/
+    filename: "e{epoch:03d}-s{step:06d}"
+    save_top_k: -1
+    auto_insert_metric_name: False
+    save_weights_only: False
+    every_n_epochs: 1
+    save_last: True
+  lr_monitor:
+    _target_: pytorch_lightning.callbacks.LearningRateMonitor
+    logging_interval: step

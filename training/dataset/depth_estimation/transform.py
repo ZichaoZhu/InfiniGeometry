@@ -170,6 +170,21 @@ class PrepareForNet:
             prompt_disparity = sample["prompt_disparity"].astype(np.float32)
             sample["prompt_disparity"] = np.ascontiguousarray(prompt_disparity)[None]
 
+        if "normal" in sample:
+            normal = np.transpose(sample["normal"], (2, 0, 1))  # [H,W,3] -> [3,H,W]
+            sample["normal"] = np.ascontiguousarray(normal).astype(np.float32)
+
+        if "normal_valid" in sample:
+            normal_valid = sample["normal_valid"].astype(np.uint8)
+            sample["normal_valid"] = np.ascontiguousarray(normal_valid)[None]
+
+        for key in ("sampled_normal_for_depth", "sampled_normal_for_disparity"):
+            if key in sample:
+                sample[key] = np.ascontiguousarray(sample[key].astype(np.float32))
+
+        for key in ("sampled_normal_mask", "sampled_normal_mask_for_depth", "sampled_normal_mask_for_disparity"):
+            if key in sample:
+                sample[key] = np.ascontiguousarray(sample[key].astype(np.bool_))
 
         if "lr_image" in sample:
             lr_image = np.transpose(sample["lr_image"], (2, 0, 1))
@@ -1266,7 +1281,7 @@ class Crop_Resize:
         if "right_image" in sample:
             sample["right_image"] = self.center_crop_to_aspect(sample["right_image"], width, height)
 
-        for key in ["prompt_depth", "prompt_mask", "prompt_disparity", "disparity", "depth", "mesh_depth", "semantic", "mask", "disparity_mask", "semseg_mask", "highfreq_mask"]:
+        for key in ["prompt_depth", "prompt_mask", "prompt_disparity", "disparity", "depth", "mesh_depth", "semantic", "mask", "disparity_mask", "semseg_mask", "highfreq_mask", "normal", "normal_valid"]:
             if key in sample:
                 sample[key] = self.center_crop_to_aspect(sample[key], width, height)
 
@@ -1341,6 +1356,19 @@ class Crop_Resize:
             if "highfreq_mask" in sample:
                 sample["highfreq_mask"] = cv2.resize(
                     sample["highfreq_mask"], (resize_target_width, resize_target_height), interpolation=cv2.INTER_NEAREST
+                )
+
+            # Normals are camera-frame unit vectors: NEAREST only (no
+            # interpolation that would average/denormalize them), and the
+            # vectors themselves are not rotated by spatial crop/resize.
+            if "normal" in sample:
+                sample["normal"] = cv2.resize(
+                    sample["normal"], (resize_target_width, resize_target_height), interpolation=cv2.INTER_NEAREST
+                )
+
+            if "normal_valid" in sample:
+                sample["normal_valid"] = cv2.resize(
+                    sample["normal_valid"], (resize_target_width, resize_target_height), interpolation=cv2.INTER_NEAREST
                 )
 
             if "focal" in sample:
@@ -2371,13 +2399,18 @@ class RapidSampleQueryPairs:
         mask = sample["mask"]   
         disparity_mask = sample["disparity_mask"] 
         normal = sample.get("normal", None)
-        normal_mask = (depth <= 50).astype(bool, copy=False)
+        normal_mask = (depth <= 50)
+        # Intersect with the per-pixel validity mask from the dataset
+        # (filters NaN / non-unit Hypersim normals).
+        if "normal_valid" in sample:
+            normal_mask = normal_mask & (sample["normal_valid"] > 0)
+        normal_mask = normal_mask.astype(bool, copy=False)
 
         if self.geometry_type == "depth":
             depth = np.log(depth + 1.0)
 
         # to pixel samples
-        coord_depth, depth_flat, coord_disparity, disparity_flat, normal_for_depth, normal_for_disparity, sampled_normal_mask = self.to_pixel_samples(depth, disparity, mask, disparity_mask, normal, normal_mask, self.split, self.sample_q) 
+        coord_depth, depth_flat, coord_disparity, disparity_flat, normal_for_depth, normal_for_disparity, sampled_normal_mask, sampled_normal_mask_for_disparity = self.to_pixel_samples(depth, disparity, mask, disparity_mask, normal, normal_mask, self.split, self.sample_q)
 
         # compute cell size for original high resolution depth map
         cell = np.ones_like(coord_depth)
@@ -2393,6 +2426,12 @@ class RapidSampleQueryPairs:
         sample["sampled_normal_for_depth"] = normal_for_depth
         sample["sampled_normal_for_disparity"] = normal_for_disparity
         sample["sampled_normal_mask"] = sampled_normal_mask
+        # Per-branch masks: the depth and disparity branches draw DIFFERENT
+        # random pixel indices, so each needs its own mask aligned to its
+        # own sampled coordinates ("sampled_normal_mask" follows the depth
+        # branch and is kept for backward compatibility).
+        sample["sampled_normal_mask_for_depth"] = sampled_normal_mask
+        sample["sampled_normal_mask_for_disparity"] = sampled_normal_mask_for_disparity
 
         sample["reference_meta"] = {}
 
@@ -2422,7 +2461,8 @@ class RapidSampleQueryPairs:
             sample.pop("mask")
             sample.pop("disparity_mask")
             sample.pop("normal", None)
-        
+            sample.pop("normal_valid", None)
+
         return sample
 
     def to_pixel_samples(self, depth, disparity, mask, disparity_mask, normal, normal_mask, split, sample_q=10000):
@@ -2455,17 +2495,19 @@ class RapidSampleQueryPairs:
                 coord_disparity = np.empty((0, 2), dtype=np.float32)
                 disparity_vals = np.empty((0, 1), dtype=disparity.dtype)
                 normal_for_disparity = np.empty((0, 3), dtype=np.float32)
+                normal_mask_for_disparity = np.empty((0,), dtype=bool)
             else:
                 if sample_q is not None:
-                    sel_p = np.random.choice(idx_p, size=sample_q, replace=(sample_q > idx_p.size)) 
+                    sel_p = np.random.choice(idx_p, size=sample_q, replace=(sample_q > idx_p.size))
                 else:
                     sel_p = idx_p
                 y_p, x_p = np.divmod(sel_p, W)
                 coord_disparity = norm_coord(y_p, x_p, H, W)
                 disparity_vals = disparity[y_p, x_p].reshape(-1, 1)
                 normal_for_disparity = normal[y_p, x_p].reshape(-1, 3) if normal is not None else np.empty((0, 3), dtype=np.float32)
+                normal_mask_for_disparity = normal_mask[y_p, x_p].reshape(-1) if normal is not None else np.empty((0,), dtype=bool)
 
-            return coord_depth, depth_vals, coord_disparity, disparity_vals, normal_for_depth, normal_for_disparity, sampled_normal_mask
+            return coord_depth, depth_vals, coord_disparity, disparity_vals, normal_for_depth, normal_for_disparity, sampled_normal_mask, normal_mask_for_disparity
         
         else:
             ys = (2.0 * (np.arange(H, dtype=np.float32) + 0.5) / H) - 1.0
@@ -2477,9 +2519,11 @@ class RapidSampleQueryPairs:
             disparity_vals = disparity.reshape(-1, 1)
             normal_for_depth = normal.reshape(-1, 3) if normal is not None else np.empty((0, 3), dtype=np.float32)
             normal_for_disparity = normal.reshape(-1, 3) if normal is not None else np.empty((0, 3), dtype=np.float32)
-            sampled_normal_mask = normal_mask.reshape(-1) if normal is not None else np.empty((0, 3), dtype=np.float32)
+            sampled_normal_mask = normal_mask.reshape(-1) if normal is not None else np.empty((0,), dtype=bool)
 
-            return coord, depth_vals, coord.copy(), disparity_vals, normal_for_depth, normal_for_disparity, sampled_normal_mask
+            # Val queries are dense over the full grid, so both branches share
+            # the same coordinates and hence the same mask.
+            return coord, depth_vals, coord.copy(), disparity_vals, normal_for_depth, normal_for_disparity, sampled_normal_mask, sampled_normal_mask.copy()
 
 
 class UniformSampleQueryPairs:

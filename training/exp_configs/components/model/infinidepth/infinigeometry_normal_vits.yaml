@@ -1,0 +1,23 @@
+__include__:
+  - training/exp_configs/components/model/infinidepth/infinidepth.yaml
+
+# InfiniGeometry feasibility: ViT-S backbone (DINOv3-pretrained, end-to-end),
+# output head replaced by a 3-channel surface-normal head (normal-only).
+model:
+  # depth visualization / depth metrics are meaningless for a normal-only
+  # model and would KeyError on output["depth"] — disable.
+  save_vis_depth: False
+  compute_abs_metric: False
+  compute_rel_metric: False
+  pipeline:
+    config:
+      encoder: vits16
+      predict_normal: True
+      head:
+        out_dim: 3
+        output_act: identity     # signed components; never elu for normals
+        normalize_output: True   # L2-normalize to unit vectors
+      loss_cfg:
+        _target_: training.model.depth_estimation.utils.loss.NormalAngularLoss
+        max_deg: 90.0
+        beta_deg: 3.0

@@ -6,6 +6,7 @@ model_configs = {
 }
 
 dinov3_model_configs = {
+    "vits16": {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384], 'layer_idxs': [2, 5, 8, 11]},
     "vitl16":{'encoder': 'vitl', 'features': 256, 'out_channels': [256, 512, 1024, 1024], 'layer_idxs': [4, 11, 17, 23]},
     "vith16plus": {'encoder': 'vith', 'features': 384, 'out_channels': [1280, 1280, 1280, 1280], 'layer_idxs': [7, 15, 23, 31]},
 }

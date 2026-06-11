@@ -58,12 +58,15 @@ class ImplicitHead(nn.Module):
             fusion_type="gated",  # concat, gated
             out_dim=1,
             hidden_list=[1024, 256, 32],
+            output_act='elu',  # 'elu' for depth/disparity; 'identity' for normal (signed components)
+            normalize_output=False,  # L2-normalize predictions to unit vectors (for normal)
             ):
 
         super().__init__()
         self.hidden_dim = hidden_dim
         self.basic_dim = basic_dim
         self.fusion_type = fusion_type
+        self.normalize_output = normalize_output
 
         # Determine input dimension based on fusion type
         if fusion_type == "concat":
@@ -84,7 +87,7 @@ class ImplicitHead(nn.Module):
             in_dim=in_channels,
             out_dim=out_dim,
             hidden_list=hidden_list,
-            output_act='elu'
+            output_act=output_act
         )
 
     def _encode_feat(self, features, patch_h, patch_w):
@@ -127,8 +130,13 @@ class ImplicitHead(nn.Module):
             # If no basic features, use only DINOv3
             q_feat_fused = q_feat_dino
 
-        # Predict depth
+        # Predict depth (or normal, when out_dim=3)
         pred = self.out_layer(q_feat_fused)
+        # Normalization lives here (not in forward) so the chunked
+        # __batch_forward inference path, which calls _decode_dpt directly,
+        # also produces unit vectors.
+        if self.normalize_output:
+            pred = F.normalize(pred, p=2, dim=-1, eps=1e-6)
         return pred
 
     def _fuse_features(self, feat_dino, feat_basic):

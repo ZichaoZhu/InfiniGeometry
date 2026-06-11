@@ -141,7 +141,7 @@ class DepthEstimationModel(Model):
         batch_size = batch["image"].shape[0]
         metrics_dict = self.compute_metrics(output, batch)
         for k, v in metrics_dict.items():
-            if k in ["absolute_image_name", "relative_image_name"]:
+            if k.endswith("image_name"):
                 continue
             self.log(
                 f"val/{k}",
@@ -159,6 +159,18 @@ class DepthEstimationModel(Model):
         metrics_dict = {}
         for b in range(B):
             image_name = batch["image_name"][b]
+
+            # ---- surface-normal metrics (normal-only / joint models) ----
+            if "normal" in output and "normal" in batch:
+                metrics_dict_item = self.compute_normal_metric(output, batch, b)
+                if metrics_dict_item is not None:
+                    metrics_dict_item["image_name"] = image_name
+                    self.scene_metrics.append(metrics_dict_item)
+                    metrics_dict = self.update_metrics_dict(metrics_dict, metrics_dict_item, "normal")
+
+            if "depth" not in output:
+                continue
+
             if self._compute_abs_metric or self._compute_rel_metric:
                 pred_depth = output["depth"][b][0].float().detach().cpu().numpy()
                 if "mesh_depth" in batch:
@@ -203,6 +215,38 @@ class DepthEstimationModel(Model):
                     metrics_dict = self.update_metrics_dict(metrics_dict, metrics_dict_item, "relative")
 
         return metrics_dict
+
+    def compute_normal_metric(self, output, batch, b):
+        """
+        Standard surface-normal metrics on valid pixels: mean / median / rmse
+        angular error (degrees) and inlier ratios at 11.25 / 22.5 / 30 deg.
+        """
+        pred_n = output["normal"][b].float().detach().cpu().numpy()  # [3, H, W]
+        gt_n = batch["normal"][b].float().detach().cpu().numpy()     # [3, H, W]
+
+        if "normal_valid" in batch:
+            msk = batch["normal_valid"][b, 0].detach().cpu().numpy().astype(np.bool_)
+        else:
+            msk = np.linalg.norm(gt_n, axis=0) > 0.5
+        if "mask" in batch:
+            msk = msk & batch["mask"][b, 0].detach().cpu().numpy().astype(np.bool_)
+        if msk.sum() == 0:
+            return None
+
+        dot = np.clip((pred_n * gt_n).sum(axis=0), -1.0, 1.0)  # [H, W]
+        angle = np.degrees(np.arccos(dot[msk]))                # [n_valid]
+        if np.isnan(angle).any():
+            Log.warn("NaN values found in normal angular error")
+            return None
+
+        return {
+            "normal_mean_deg": float(np.mean(angle)),
+            "normal_median_deg": float(np.median(angle)),
+            "normal_rmse_deg": float(np.sqrt(np.mean(angle ** 2))),
+            "normal_a1_11.25": float(np.mean(angle < 11.25)),
+            "normal_a2_22.5": float(np.mean(angle < 22.5)),
+            "normal_a3_30": float(np.mean(angle < 30.0)),
+        }
 
     def update_metrics_dict(self, metrics_dict, metrics_dict_item, prefix):
         for k, v in metrics_dict_item.items():

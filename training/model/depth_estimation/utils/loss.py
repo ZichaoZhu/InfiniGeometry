@@ -882,6 +882,59 @@ class MAE_Normal_Loss(nn.Module):
         return total_loss, loss_dict
 
 
+class NormalAngularLoss(nn.Module):
+    """
+    Pure angular loss for normal-only training (no depth term).
+
+    angle = atan2(||n_pred x n_gt||, n_pred . n_gt), clamped to max_deg,
+    then beta-smoothed (MoGe style): sqrt(angle^2 + beta^2) - beta.
+    Both inputs are expected to be unit vectors; n_gt is re-normalized
+    defensively (zero vectors at masked pixels stay zero).
+    """
+
+    def __init__(self, max_deg: float = 90.0, beta_deg: float = 3.0, **kwargs):
+        super().__init__()
+        self.max_deg = max_deg
+        self.beta_deg = beta_deg
+
+    def forward(
+        self,
+        n_pred,             # [B, N, 3] unit vectors
+        n_gt,               # [B, N, 3] unit vectors (0 at invalid pixels)
+        normal_mask=None,   # [B, N] bool / 0-1
+    ):
+        eps = 1e-7
+        n_gt = n_gt / torch.linalg.norm(n_gt, dim=-1, keepdim=True).clamp(min=eps)
+
+        cross_norm = torch.linalg.norm(torch.cross(n_pred, n_gt, dim=-1), dim=-1)  # [B, N]
+        dot = (n_pred * n_gt).sum(dim=-1).clamp(-1.0 + eps, 1.0 - eps)              # [B, N]
+        angle = torch.atan2(cross_norm + eps, dot)                                  # [B, N], rad
+
+        angle = torch.clamp_max(
+            angle,
+            torch.deg2rad(torch.tensor(self.max_deg, device=angle.device, dtype=angle.dtype)),
+        )
+        beta = torch.deg2rad(torch.tensor(self.beta_deg, device=angle.device, dtype=angle.dtype))
+        smoothed = torch.sqrt(angle * angle + beta * beta) - beta                   # [B, N]
+
+        if normal_mask is not None:
+            valid = normal_mask.to(smoothed.dtype)
+            denom = valid.sum().clamp(min=1.0)
+            loss = (smoothed * valid).sum() / denom
+            mean_angle = (angle * valid).sum() / denom
+        else:
+            loss = smoothed.mean()
+            mean_angle = angle.mean()
+
+        loss_dict = {
+            "normal_loss": loss.detach(),
+            # mean angular error in degrees; "loss" in the key so the
+            # Lightning training_step auto-logs it
+            "angle_deg_loss": torch.rad2deg(mean_angle).detach(),
+        }
+        return loss, loss_dict
+
+
 class SILossLog(nn.Module):
     def __init__(
         self,

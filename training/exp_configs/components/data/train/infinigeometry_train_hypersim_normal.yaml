@@ -1,0 +1,59 @@
+# Hypersim depth+normal data for InfiniGeometry normal-only training.
+# Differences from infinidepth_train_hypersim.yaml:
+#   - load_normal: True (dataset reads official normal_cam.hdf5 beside depth)
+#   - val uses ONLY hypersim (other val datasets are not provisioned on our
+#     server) with a held-out-scene val.txt
+pts_num: 1500
+crop_resize_transforms: &crop_resize_transforms
+  - _target_: training.dataset.depth_estimation.transform.Crop_Resize
+    height: 512
+    width: 672
+    resize_prompt: True
+    resize_target: False
+  - _target_: training.dataset.depth_estimation.transform.RapidSampleQueryPairs
+    geometry_type: disparity
+    split: val
+  - _target_: training.dataset.depth_estimation.transform.PrepareForNet
+  - _target_: training.dataset.depth_estimation.transform.RandomSample
+    pts_num: ${pts_num}
+train_crop_resize_transforms: &train_crop_resize_transforms
+  - _target_: training.dataset.depth_estimation.transform.Crop_Resize
+    height: 512
+    width: 672
+    resize_prompt: True
+    resize_target: False
+  - _target_: training.dataset.depth_estimation.transform.RapidSampleQueryPairs
+    sample_q: 100000
+    geometry_type: disparity
+    split: train
+  - _target_: training.dataset.depth_estimation.transform.PrepareForNet
+  - _target_: training.dataset.depth_estimation.transform.RandomSample
+    pts_range: [50, 2500]
+  - _target_: training.dataset.depth_estimation.transform.RandomDropPatch
+    scales: [2,3,4,5,6,7,8]
+    probs:  [0.02, 0.04, 0.08, 0.16, 0.3, 0.2, 0.2]
+
+data:
+  _target_: training.datamodule.general_datamodule.GeneralDataModule
+  train_dataset:
+    dataset_opts:
+      - _target_: training.dataset.depth_estimation.depth_estimation_dataset.Dataset
+        data_root: ${oc.env:commonspace}/datasets/hypersim
+        meta_path: ${oc.env:commonspace}/processed_datasets/hypersim/train.txt
+        split: 'train'
+        dataset_name: 'hypersim'
+        load_normal: True
+        transforms: *train_crop_resize_transforms
+        num_files: 100000
+  train_loader_opts:
+    batch_size: 4
+  val_dataset:
+    dataset_opts:
+      - _target_: training.dataset.depth_estimation.depth_estimation_dataset.Dataset
+        data_root: ${oc.env:commonspace}/datasets/hypersim
+        meta_path: ${oc.env:commonspace}/processed_datasets/hypersim/val.txt
+        split: 'val'
+        frames: [0, -1, 10]
+        dataset_name: 'hypersim'
+        load_normal: True
+        transforms: *crop_resize_transforms

@@ -121,13 +121,20 @@ class InfiniDepth(nn.Module):
                 stride=4
             )
 
-        # implicit depth decoder head
+        # task: predict surface normals instead of depth (normal-only head)
+        self.predict_normal = config.get("predict_normal", False)
+
+        # implicit decoder head (depth by default; 3-channel unit normal
+        # when predict_normal is on). head.* config keys override defaults.
+        head_cfg = config.get("head", None) or {}
         self.depth_implicit_head = ImplicitHead(
             hidden_dim=dim,
             basic_dim=config.get("basic_encoder_dim", 128),
             fusion_type="concat",
-            out_dim=1,
+            out_dim=head_cfg.get("out_dim", 3 if self.predict_normal else 1),
             hidden_list=config.get("hidden_list", [1024, 256, 32]),
+            output_act=head_cfg.get("output_act", "identity" if self.predict_normal else "elu"),
+            normalize_output=head_cfg.get("normalize_output", self.predict_normal),
         )
         # Load warp function
         self.warp_func = hydra.utils.instantiate(config.warp_func)
@@ -245,6 +252,8 @@ class InfiniDepth(nn.Module):
         return {"loss": loss}
 
     def forward_test(self, batch):
+        if self.predict_normal:
+            return self._forward_test_normal(batch)
         prompt_depth, prompt_mask, reference_meta = self.warp_func.warp(
             batch[f"prompt_{self.geometry_type}"],
             ground_truth=batch[f"{self.geometry_type}"],
@@ -372,7 +381,57 @@ class InfiniDepth(nn.Module):
 
         return depth
 
+    def _forward_train_batch_normal(self, batch):
+        """
+        Normal-only training step: predict per-query unit normals and
+        supervise with an angular loss. No prompt, no warp, no depth
+        normalization — normals are scale-free camera-frame vectors.
+        """
+        query_coord = batch[f"sampled_coord_{self.geometry_type}"]      # [B, N, 2]
+        input_image = batch["image"]                                    # [B, 3, H, W]
+        pred_normal = self.__forward(                                   # [B, N, 3], unit
+            input_image,
+            query_coord,
+            prompt_depth=None,
+            prompt_mask=None,
+        )
+
+        gt_normal = batch[f"sampled_normal_for_{self.geometry_type}"]   # [B, N, 3]
+        normal_mask = batch[f"sampled_normal_mask_for_{self.geometry_type}"]  # [B, N]
+
+        loss, loss_item = self.criterion(pred_normal, gt_normal, normal_mask)
+
+        ret_dict = {}
+        ret_dict.update(loss_item)
+        ret_dict.update({"loss": loss})
+        if loss.isnan().any() or loss.isinf().any():
+            raise ValueError("loss is nan or inf")
+        return ret_dict
+
+    def _forward_test_normal(self, batch):
+        """Dense normal prediction for validation: query every pixel and
+        reshape [B, N, 3] -> [B, 3, H, W]."""
+        input_image = batch["image"]
+        query_coord = batch[f"sampled_coord_{self.geometry_type}"]      # [B, H*W, 2]
+        h, w = batch[f"{self.geometry_type}"].shape[-2:]
+
+        if self.use_batch_infer:
+            pred = self.__batch_forward(
+                input_image, query_coord,
+                prompt_depth=None, prompt_mask=None, bsize=300000,
+            )
+        else:
+            pred = self.__forward(
+                input_image, query_coord,
+                prompt_depth=None, prompt_mask=None,
+            )
+
+        normal = pred.permute(0, 2, 1).reshape(pred.shape[0], 3, h, w)
+        return {"normal": normal}
+
     def forward_train_batch(self, batch):
+        if self.predict_normal:
+            return self._forward_train_batch_normal(batch)
         prompt_depth, prompt_mask, reference_meta = self.warp_func.warp(
             batch[f"prompt_{self.geometry_type}"],
             ground_truth=batch[f"sampled_{self.geometry_type}"],
