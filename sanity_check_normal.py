@@ -10,9 +10,19 @@ Verifies, end to end on one real batch:
      the normal head and the backbone.
 
 Run on the server from the repo root:
-  $PY sanity_check_normal.py
+  SANITY_STAGE=data  $PY sanity_check_normal.py   # dataset/transform only
+  SANITY_STAGE=model $PY sanity_check_normal.py   # tiny model fwd/bwd
+  $PY sanity_check_normal.py                      # everything, full size
+                                                  # (needs > 2GB RAM)
+
+The staged + tiny variants exist because the AutoDL no-GPU mode container
+is capped at 2GB RAM; full-size single-process sanity gets OOM-killed.
 """
+import os
 import sys
+
+STAGE = os.environ.get("SANITY_STAGE", "all")  # data | model | all
+TINY = STAGE == "model"  # shrink image/queries so torch+ViT-S fit in 2GB
 
 sys.argv = [
     "sanity_check_normal.py",
@@ -27,7 +37,13 @@ import hydra
 import torch
 from training.config.config import cfg
 
-print(f"[cfg] entry={cfg.entry} encoder={cfg.model.pipeline.config.encoder} "
+torch.set_num_threads(1)
+if TINY:
+    t = cfg.data.train_dataset.dataset_opts[0].transforms
+    t[0].height, t[0].width = 128, 160   # Crop_Resize
+    t[1].sample_q = 200                  # RapidSampleQueryPairs
+
+print(f"[cfg] stage={STAGE} entry={cfg.entry} encoder={cfg.model.pipeline.config.encoder} "
       f"predict_normal={cfg.model.pipeline.config.predict_normal}")
 
 # ---- data ----
@@ -50,6 +66,10 @@ print(f"[normal GT] shape={tuple(n_gt.shape)} valid_ratio={valid_ratio:.3f}")
 if n_mask.any():
     print(f"[normal GT] |n| over valid: min={lens[n_mask].min():.4f} max={lens[n_mask].max():.4f}")
 assert valid_ratio > 0.05, "almost no valid normals in this batch — check masks"
+
+if STAGE == "data":
+    print("SANITY OK (data stage)")
+    sys.exit(0)
 
 # ---- model (CPU) ----
 pipeline = hydra.utils.instantiate(cfg.model.pipeline, _recursive_=False)
