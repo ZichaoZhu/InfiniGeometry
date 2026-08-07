@@ -44,6 +44,8 @@ def solve_global_affine_alignment(
         pred_points = pred_points.unsqueeze(0)
         gt_points = gt_points.unsqueeze(0)
         valid_mask = None if valid_mask is None else valid_mask.unsqueeze(0)
+    solve_pred = pred_points.detach()
+    solve_gt = gt_points.detach()
     valid = _valid_points(gt_points, valid_mask)
     scales, shifts, solved = [], [], []
     for batch_index in range(pred_points.shape[0]):
@@ -53,8 +55,8 @@ def solve_global_affine_alignment(
             shifts.append(pred_points.new_tensor(0.0))
             solved.append(False)
             continue
-        pred = pred_points[batch_index][mask].float()
-        gt = gt_points[batch_index][mask].float()
+        pred = solve_pred[batch_index][mask].float()
+        gt = solve_gt[batch_index][mask].float()
         weight = gt[:, 2].clamp_min(1e-5).reciprocal()
         a11 = (weight[:, None] * pred.square()).sum()
         a12 = (weight * pred[:, 2]).sum()
@@ -154,17 +156,18 @@ def edge_angle_loss(
     valid_mask: Optional[torch.Tensor] = None,
 ) -> torch.Tensor:
     valid = _valid_points(gt_points, valid_mask)
+    safe_gt = torch.where(valid[..., None], gt_points, torch.zeros_like(gt_points))
     per_image = []
     for batch_index in range(pred_points.shape[0]):
         terms = []
         for dimension in (1, 2):
             if dimension == 1:
                 pred_edge = pred_points[batch_index, 1:] - pred_points[batch_index, :-1]
-                gt_edge = gt_points[batch_index, 1:] - gt_points[batch_index, :-1]
+                gt_edge = safe_gt[batch_index, 1:] - safe_gt[batch_index, :-1]
                 edge_valid = valid[batch_index, 1:] & valid[batch_index, :-1]
             else:
                 pred_edge = pred_points[batch_index, :, 1:] - pred_points[batch_index, :, :-1]
-                gt_edge = gt_points[batch_index, :, 1:] - gt_points[batch_index, :, :-1]
+                gt_edge = safe_gt[batch_index, :, 1:] - safe_gt[batch_index, :, :-1]
                 edge_valid = valid[batch_index, :, 1:] & valid[batch_index, :, :-1]
             cosine = torch.nn.functional.cosine_similarity(pred_edge, gt_edge, dim=-1, eps=1e-6)
             if bool(edge_valid.any()):

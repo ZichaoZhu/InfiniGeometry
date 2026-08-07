@@ -26,7 +26,7 @@ from InfiniDepth.model.ssr_geometry import (
     make_dense_query_coord,
     scale_pixel_center_intrinsics,
 )
-from InfiniDepth.model.ssr_losses import affine_invariant_global_loss
+from InfiniDepth.model.ssr_losses import affine_invariant_global_loss, edge_angle_loss
 from InfiniDepth.ssr_experiment import safe_path
 
 
@@ -159,6 +159,19 @@ def test_masked_loss_ignores_invalid_supervision():
     loss, alignment = affine_invariant_global_loss(pred, gt, mask)
     assert alignment.valid.all()
     assert torch.allclose(loss, torch.zeros_like(loss), atol=1e-6)
+
+
+def test_masked_nan_edges_have_finite_backward_gradient():
+    pred = torch.randn(1, 4, 4, 3, requires_grad=True)
+    pred.data[..., 2].add_(3.0)
+    gt = pred.detach().clone()
+    gt[0, 0, 0] = float("nan")
+    mask = torch.ones(1, 4, 4, dtype=torch.bool)
+    mask[0, 0, 0] = False
+    loss = edge_angle_loss(pred, gt, mask).mean()
+    loss.backward()
+    assert torch.isfinite(loss)
+    assert torch.isfinite(pred.grad).all()
 
 
 def test_smooth_residual_bound_is_local_identity_and_bounded():

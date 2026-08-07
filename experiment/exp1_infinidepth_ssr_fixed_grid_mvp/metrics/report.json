@@ -3,7 +3,7 @@
   "baseline": null,
   "best": null,
   "experiment_id": "exp1",
-  "failure_reason": "RuntimeError: Inference tensors cannot be saved for backward. To work around you can make a clone to get a normal tensor and use it in autograd.",
+  "failure_reason": "RuntimeError: Non-finite gradient at step 1",
   "final": null,
   "peak_memory_bytes": null,
   "runtime_seconds": null,
