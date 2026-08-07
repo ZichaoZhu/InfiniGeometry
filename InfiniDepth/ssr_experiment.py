@@ -531,9 +531,12 @@ def run(config_path: Path, safe_root: Path, log_path: Path) -> None:
         if "output_layer" in name
     }
     first_step_audit = None
+    last_step = 0
+    stop_reason = "maximum_steps"
     start_time = time.perf_counter()
     ssr.train()
     for step in range(1, int(training["steps"]) + 1):
+        last_step = step
         optimizer.zero_grad(set_to_none=True)
         output = ssr(inputs, K=int(training["train_k"]), residual_bound=residual_bound)
         loss, terms = geometry_loss_sequence(
@@ -585,10 +588,25 @@ def run(config_path: Path, safe_root: Path, log_path: Path) -> None:
                 raise RuntimeError(f"First-step audit failed: {first_step_audit}")
             del initial_parameters
         if step % int(training["evaluation_interval"]) == 0 or step == int(training["steps"]):
-            metrics, _ = evaluate(
+            metrics, evaluation_outputs = evaluate(
                 ssr, inputs, gt_points, training_mask, training["evaluation_k"], residual_bound
             )
-            record = {"step": step, "geometry_loss": float(loss), **metrics}
+            evaluation_loss, _ = geometry_loss_sequence(
+                evaluation_outputs[1].points_sequence[1:],
+                gt_points,
+                training_mask,
+                global_weight=training["loss_weights"]["global"],
+                local_weight=training["loss_weights"]["local"],
+                edge_weight=training["loss_weights"]["edge"],
+                local_scales=training["local_scales"],
+                generator=generator,
+            )
+            record = {
+                "step": step,
+                "geometry_loss": float(evaluation_loss),
+                "train_geometry_loss": float(loss),
+                **metrics,
+            }
             history.append(record)
             with history_path.open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps(record, sort_keys=True) + "\n")
@@ -606,11 +624,26 @@ def run(config_path: Path, safe_root: Path, log_path: Path) -> None:
                 "k1_point_rel": metrics["k1"]["point_rel"],
                 "k3_point_rel": metrics["k3"]["point_rel"],
             }), flush=True)
+            current_point_improvement = 1.0 - score / max(
+                float(metrics["k0"]["point_rel"]), 1e-12
+            )
+            current_loss_reduction = 1.0 - float(evaluation_loss) / max(
+                float(initial_loss), 1e-12
+            )
+            if (
+                bool(training.get("stop_when_accepted", False))
+                and current_point_improvement
+                >= float(config["acceptance"]["minimum_k1_point_rel_relative_improvement"])
+                and current_loss_reduction
+                >= float(config["acceptance"]["minimum_geometry_loss_relative_reduction"])
+            ):
+                stop_reason = "acceptance_reached"
+                break
             ssr.train()
 
     elapsed = time.perf_counter() - start_time
     torch.save(
-        checkpoint_payload(ssr, optimizer, int(training["steps"]), float(history[-1]["k1"]["point_rel"]), config),
+        checkpoint_payload(ssr, optimizer, last_step, float(history[-1]["k1"]["point_rel"]), config),
         checkpoints / "last.pt",
     )
     best_checkpoint = torch.load(checkpoints / "best.pt", map_location=device, weights_only=False)
@@ -679,6 +712,7 @@ def run(config_path: Path, safe_root: Path, log_path: Path) -> None:
         },
         "final": history[-1],
         "runtime_seconds": elapsed,
+        "stop_reason": stop_reason,
         "peak_memory_bytes": int(torch.cuda.max_memory_allocated(device)),
         "adapter_regression_max_abs": regression_error,
         "initial_identity_max_abs": identity_error,
