@@ -1,0 +1,5 @@
+artifacts/checkpoints/
+artifacts/pointclouds/
+artifacts/logs/
+*.tmp
+*.partial

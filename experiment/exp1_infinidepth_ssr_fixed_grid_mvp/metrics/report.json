@@ -1,0 +1,12 @@
+{
+  "experiment_id": "exp1",
+  "status": "planned",
+  "selection_metric": "k1.point_rel",
+  "baseline": null,
+  "best": null,
+  "final": null,
+  "runtime_seconds": null,
+  "peak_memory_bytes": null,
+  "acceptance": null,
+  "failure_reason": null
+}

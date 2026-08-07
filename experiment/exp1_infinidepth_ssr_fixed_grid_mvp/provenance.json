@@ -1,0 +1,15 @@
+{
+  "experiment_id": "exp1",
+  "status": "planned",
+  "origin": "https://github.com/ZichaoZhu/InfiniGeometry.git",
+  "upstream": "https://github.com/zju3dv/InfiniDepth.git",
+  "base_commit": "36c6e0c31887fafc210184ee43ca475230704095",
+  "run_commit": null,
+  "git_dirty": null,
+  "command": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+  "started_at": null,
+  "finished_at": null,
+  "server": "ZJU3DV-S115",
+  "environment": null,
+  "sources": []
+}
