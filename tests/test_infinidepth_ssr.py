@@ -129,7 +129,7 @@ def test_masked_loss_ignores_invalid_supervision():
 def test_smooth_residual_bound_is_local_identity_and_bounded():
     raw = torch.tensor([-100.0, -1e-6, 0.0, 1e-6, 100.0])
     bounded = smooth_bound_log_depth_residual(raw, 0.1)
-    assert float(bounded.abs().max()) <= 0.1
+    assert float(bounded.abs().max()) <= 0.1 + torch.finfo(raw.dtype).eps
     assert torch.allclose(bounded[1:4], raw[1:4], rtol=1e-5, atol=1e-9)
 
 

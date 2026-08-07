@@ -195,17 +195,27 @@ def serializable_stats(stats: Mapping[str, object]) -> Dict[str, object]:
 
 
 def write_ply(path: Path, points: torch.Tensor, colors: torch.Tensor, valid: torch.Tensor) -> None:
-    from plyfile import PlyData, PlyElement
-
     xyz = points[valid].detach().cpu().numpy().astype(np.float32)
     rgb = (colors[valid].detach().cpu().numpy().clip(0, 1) * 255).astype(np.uint8)
     vertices = np.empty(
         xyz.shape[0],
-        dtype=[("x", "f4"), ("y", "f4"), ("z", "f4"), ("red", "u1"), ("green", "u1"), ("blue", "u1")],
+        dtype=[
+            ("x", "<f4"), ("y", "<f4"), ("z", "<f4"),
+            ("red", "u1"), ("green", "u1"), ("blue", "u1"),
+        ],
     )
     vertices["x"], vertices["y"], vertices["z"] = xyz[:, 0], xyz[:, 1], xyz[:, 2]
     vertices["red"], vertices["green"], vertices["blue"] = rgb[:, 0], rgb[:, 1], rgb[:, 2]
-    PlyData([PlyElement.describe(vertices, "vertex")], text=False).write(path)
+    header = (
+        "ply\nformat binary_little_endian 1.0\n"
+        f"element vertex {len(vertices)}\n"
+        "property float x\nproperty float y\nproperty float z\n"
+        "property uchar red\nproperty uchar green\nproperty uchar blue\n"
+        "end_header\n"
+    ).encode("ascii")
+    with path.open("wb") as handle:
+        handle.write(header)
+        vertices.tofile(handle)
 
 
 def colorize_depth(depth: np.ndarray, valid: np.ndarray, low: float, high: float) -> np.ndarray:
