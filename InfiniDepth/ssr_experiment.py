@@ -326,8 +326,15 @@ def update_failure(experiment_dir: Path, reason: str, started: str) -> None:
     provenance_path = experiment_dir / "provenance.json"
     report = json.loads(report_path.read_text(encoding="utf-8"))
     provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+    provenance.setdefault("attempts", []).append({
+        "status": "failed",
+        "started_at": provenance.get("started_at") or started,
+        "finished_at": now(),
+        "run_commit": provenance.get("run_commit"),
+        "failure_reason": reason,
+    })
     report.update(status="failed", failure_reason=reason)
-    provenance.update(status="failed", started_at=started, finished_at=now())
+    provenance.update(status="failed", finished_at=provenance["attempts"][-1]["finished_at"])
     atomic_json(report_path, report)
     atomic_json(provenance_path, provenance)
 
@@ -727,7 +734,15 @@ def run(config_path: Path, safe_root: Path, log_path: Path) -> None:
         },
         "failure_reason": None,
     }
-    provenance.update(status="completed", finished_at=now())
+    finished = now()
+    provenance.setdefault("attempts", []).append({
+        "status": "completed",
+        "started_at": started,
+        "finished_at": finished,
+        "run_commit": commit,
+        "failure_reason": None,
+    })
+    provenance.update(status="completed", finished_at=finished)
     atomic_json(report_path, report)
     atomic_json(provenance_path, provenance)
     sys.stdout.flush()

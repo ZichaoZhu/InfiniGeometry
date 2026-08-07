@@ -1,12 +1,12 @@
 {
-  "experiment_id": "exp1",
-  "status": "planned",
-  "selection_metric": "k1.point_rel",
+  "acceptance": null,
   "baseline": null,
   "best": null,
+  "experiment_id": "exp1",
+  "failure_reason": "RuntimeError: Inference tensors cannot be saved for backward. To work around you can make a clone to get a normal tensor and use it in autograd.",
   "final": null,
-  "runtime_seconds": null,
   "peak_memory_bytes": null,
-  "acceptance": null,
-  "failure_reason": null
+  "runtime_seconds": null,
+  "selection_metric": "k1.point_rel",
+  "status": "failed"
 }

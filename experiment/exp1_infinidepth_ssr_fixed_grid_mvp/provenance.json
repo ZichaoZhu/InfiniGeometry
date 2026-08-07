@@ -1,15 +1,52 @@
 {
-  "experiment_id": "exp1",
-  "status": "planned",
-  "origin": "https://github.com/ZichaoZhu/InfiniGeometry.git",
-  "upstream": "https://github.com/zju3dv/InfiniDepth.git",
+  "attempts": [
+    {
+      "failure_reason": "RuntimeError: Inference tensors cannot be saved for backward. To work around you can make a clone to get a normal tensor and use it in autograd.",
+      "finished_at": "2026-08-07T08:25:12.762308+00:00",
+      "run_commit": "35b71614b1d326a552948e233a2c838464c59e77",
+      "started_at": "2026-08-07T08:24:39.917208+00:00",
+      "status": "failed"
+    }
+  ],
   "base_commit": "36c6e0c31887fafc210184ee43ca475230704095",
-  "run_commit": null,
-  "git_dirty": null,
   "command": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
-  "started_at": null,
-  "finished_at": null,
+  "environment": {
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "hostname": "ZJU3DV-4090",
+    "python": "3.12.13",
+    "spconv": "2.3.8",
+    "torch": "2.8.0+cu128"
+  },
+  "experiment_id": "exp1",
+  "finished_at": "2026-08-07T08:25:12.762308+00:00",
+  "git_dirty": false,
+  "origin": "https://github.com/ZichaoZhu/InfiniGeometry.git",
+  "run_commit": "35b71614b1d326a552948e233a2c838464c59e77",
   "server": "ZJU3DV-S115",
-  "environment": null,
-  "sources": []
+  "sources": [
+    {
+      "path": "/nas1/datasets/hypersim/raw/ai_053_018/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+      "role": "rgb",
+      "sha256": "00b35002c7f6ea26da2f854601f2f52e6bbf4544caab0c9e4f9ea1e956692836"
+    },
+    {
+      "path": "/nas1/datasets/hypersim/raw/ai_053_018/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+      "role": "radial_depth",
+      "sha256": "cca0ff36579c566b9a3d2258384c6008a38a5145235dfdfd8bffd3dc89872aa3"
+    },
+    {
+      "path": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/checkpoints/depth/infinidepth.ckpt",
+      "role": "infinidepth",
+      "sha256": "6f123506b266f61b9261878548946cfb8822e6233aaf53527dfc4b3dab1e7f9c"
+    },
+    {
+      "path": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/checkpoints/moge-2-vitl-normal/model.pt",
+      "role": "moge2",
+      "sha256": "280741fd09bc3f403ccff9967784c2a391b52d2c0742ae3efdb21d9f90cc1a01"
+    }
+  ],
+  "started_at": "2026-08-07T08:24:39.917208+00:00",
+  "status": "failed",
+  "upstream": "https://github.com/zju3dv/InfiniDepth.git"
 }

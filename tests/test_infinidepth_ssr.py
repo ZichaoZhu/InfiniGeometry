@@ -6,7 +6,11 @@ import inspect
 import pytest
 import torch
 
-from InfiniDepth.model.model import DisparityAlignment, align_reference_disparity
+from InfiniDepth.model.model import (
+    DisparityAlignment,
+    InfiniDepthEncoding,
+    align_reference_disparity,
+)
 from InfiniDepth.model.ssr import (
     InfiniDepthSSR,
     factorize_points,
@@ -16,6 +20,7 @@ from InfiniDepth.model.ssr import (
 )
 from InfiniDepth.model.ssr_geometry import (
     InfiniDepthSSRInputs,
+    build_ssr_inputs,
     depth_to_points,
     fill_invalid_depth_with_median,
     make_dense_query_coord,
@@ -112,6 +117,36 @@ def test_ground_truth_is_not_an_ssr_input_or_forward_argument():
     parameters = inspect.signature(InfiniDepthSSR.forward).parameters
     assert "gt" not in parameters
     assert "gt_depth" not in parameters
+
+
+def test_cached_base_state_is_detached_but_not_an_inference_tensor():
+    class FakeBase:
+        def encode_image(self, image):
+            return InfiniDepthEncoding(
+                dino_feature=torch.zeros(1, 1024, 24, 32),
+                basic_feature=torch.zeros(1, 128, 96, 128),
+                patch_height=24,
+                patch_width=32,
+                dino_tokens=torch.zeros(1, 24 * 32, 1024),
+            )
+
+        def decode_queries(self, encoding, query_coord, chunk_size):
+            return (0.8 + 0.1 * query_coord[..., 0:1]).contiguous()
+
+    height, width = 384, 512
+    image = torch.zeros(1, 3, height, width)
+    rows = torch.linspace(0, 1, height).reshape(1, height, 1)
+    reference_depth = (1.0 / (1.6 + 0.2 * rows)).expand(1, height, width)
+    reference_mask = torch.ones_like(reference_depth)
+    intrinsics = torch.tensor(
+        [[[400.0, 0.0, 255.5], [0.0, 400.0, 191.5], [0.0, 0.0, 1.0]]]
+    )
+    inputs = build_ssr_inputs(
+        FakeBase(), image, reference_depth, reference_mask, intrinsics
+    )
+    for tensor in (inputs.points0, inputs.depth0, inputs.dino_feature, inputs.basic_feature):
+        assert not tensor.requires_grad
+        assert not torch.is_inference(tensor)
 
 
 def test_masked_loss_ignores_invalid_supervision():

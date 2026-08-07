@@ -113,7 +113,6 @@ def _as_bhw(tensor: torch.Tensor, name: str) -> torch.Tensor:
     raise ValueError(f"Expected {name} [B,H,W] or [B,1,H,W], got {tuple(tensor.shape)}")
 
 
-@torch.inference_mode()
 def build_ssr_inputs(
     model: torch.nn.Module,
     image: torch.Tensor,
@@ -144,10 +143,20 @@ def build_ssr_inputs(
     if intrinsics.shape[0] == 1 and batch > 1:
         intrinsics = intrinsics.expand(batch, -1, -1)
 
-    encoding: InfiniDepthEncoding = model.encode_image(image)
-    query = make_dense_query_coord(batch, height, width, device=image.device)
-    raw = model.decode_queries(encoding, query.reshape(batch, -1, 2), chunk_size=chunk_size)
-    raw = raw.reshape(batch, height, width).float()
+    with torch.inference_mode():
+        encoding: InfiniDepthEncoding = model.encode_image(image)
+        query = make_dense_query_coord(batch, height, width, device=image.device)
+        raw = model.decode_queries(
+            encoding, query.reshape(batch, -1, 2), chunk_size=chunk_size
+        ).reshape(batch, height, width).float()
+
+    # Tensors created in inference mode cannot be saved for backward by SSR.
+    # Cloning after the context produces ordinary detached tensors while still
+    # guaranteeing that the frozen base graph is never retained.
+    query = query.clone()
+    raw = raw.clone()
+    dino_feature = encoding.dino_feature.clone()
+    basic_feature = encoding.basic_feature.clone()
     reference_valid = (
         reference_mask_bhw
         & torch.isfinite(reference_depth_bhw)
@@ -181,8 +190,8 @@ def build_ssr_inputs(
         valid_mask=valid.detach(),
         intrinsics=intrinsics.float().detach(),
         points0=points0.detach(),
-        dino_feature=encoding.dino_feature.detach(),
-        basic_feature=encoding.basic_feature.detach(),
+        dino_feature=dino_feature,
+        basic_feature=basic_feature,
         raw_disparity=raw.detach(),
         alignment=tuple(alignment),
         source_tags=dict(source_tags or {}),
