@@ -1,12 +1,451 @@
 {
-  "acceptance": null,
-  "baseline": null,
-  "best": null,
+  "acceptance": {
+    "geometry_loss_relative_reduction": 0.15188566823450478,
+    "k1_point_rel_relative_improvement": 0.0101737530474314,
+    "passed": true,
+    "reload_passed": true
+  },
+  "adapter_regression_max_abs": 0.0,
+  "alignment": [
+    {
+      "reason": "ok",
+      "scale": 0.783755362033844,
+      "shift": 0.07006453722715378,
+      "success": true,
+      "valid_count": 196608
+    }
+  ],
+  "baseline": {
+    "geometry_loss": 0.43732962012290955,
+    "k0": {
+      "alignment_scale": 0.9709390997886658,
+      "alignment_z_shift": -0.003034326946362853,
+      "depth_rel": 0.0634041354060173,
+      "point_rel": 0.06967274844646454
+    },
+    "k1": {
+      "alignment_scale": 0.9709390997886658,
+      "alignment_z_shift": -0.003034326946362853,
+      "applied_residual_percentiles": {
+        "0": 0.0,
+        "100": 0.0,
+        "50": 0.0,
+        "95": 0.0,
+        "99": 0.0
+      },
+      "depth_rel": 0.0634041354060173,
+      "point_rel": 0.06967274844646454,
+      "raw_residual_percentiles": {
+        "0": 0.0,
+        "100": 0.0,
+        "50": 0.0,
+        "95": 0.0,
+        "99": 0.0
+      },
+      "voxel_statistics": [
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            85459,
+            30614,
+            9994,
+            2981
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            513
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        }
+      ]
+    },
+    "k3": {
+      "alignment_scale": 0.9709390997886658,
+      "alignment_z_shift": -0.003034326946362853,
+      "applied_residual_percentiles": {
+        "0": 0.0,
+        "100": 0.0,
+        "50": 0.0,
+        "95": 0.0,
+        "99": 0.0
+      },
+      "depth_rel": 0.0634041354060173,
+      "point_rel": 0.06967274844646454,
+      "raw_residual_percentiles": {
+        "0": 0.0,
+        "100": 0.0,
+        "50": 0.0,
+        "95": 0.0,
+        "99": 0.0
+      },
+      "voxel_statistics": [
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            85459,
+            30614,
+            9994,
+            2981
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            513
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        },
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            85459,
+            30614,
+            9994,
+            2981
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            513
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        },
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            85459,
+            30614,
+            9994,
+            2981
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            513
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        }
+      ]
+    }
+  },
+  "best": {
+    "geometry_loss": 0.3709055185317993,
+    "k0": {
+      "alignment_scale": 0.9709390997886658,
+      "alignment_z_shift": -0.003034326946362853,
+      "depth_rel": 0.0634041354060173,
+      "point_rel": 0.06967274844646454
+    },
+    "k1": {
+      "alignment_scale": 0.9690657258033752,
+      "alignment_z_shift": -0.0005320972413755953,
+      "applied_residual_percentiles": {
+        "0": -0.0171778816729784,
+        "100": 0.020045192912220955,
+        "50": 0.0017298347083851695,
+        "95": 0.0060541280545294285,
+        "99": 0.008376945741474628
+      },
+      "depth_rel": 0.06273043900728226,
+      "point_rel": 0.0689639151096344,
+      "raw_residual_percentiles": {
+        "0": -0.01734989695250988,
+        "100": 0.020320335403084755,
+        "50": 0.0017300071194767952,
+        "95": 0.00606154091656208,
+        "99": 0.008396622724831104
+      },
+      "voxel_statistics": [
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            85459,
+            30614,
+            9994,
+            2981
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            513
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        }
+      ]
+    },
+    "k3": {
+      "alignment_scale": 0.9645482897758484,
+      "alignment_z_shift": 0.006715802941471338,
+      "applied_residual_percentiles": {
+        "0": -0.0171778816729784,
+        "100": 0.020045192912220955,
+        "50": 0.0016978627536445856,
+        "95": 0.00569135183468461,
+        "99": 0.007595817558467388
+      },
+      "depth_rel": 0.06198005750775337,
+      "point_rel": 0.0682295486330986,
+      "raw_residual_percentiles": {
+        "0": -0.01734989695250988,
+        "100": 0.020320335403084755,
+        "50": 0.001698025967925787,
+        "95": 0.005697508342564106,
+        "99": 0.007610476575791836
+      },
+      "voxel_statistics": [
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            85459,
+            30614,
+            9994,
+            2981
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            513
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        },
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            83641,
+            30066,
+            9878,
+            2959
+          ],
+          "depth_offsets": [
+            27
+          ],
+          "depth_span": [
+            512
+          ],
+          "spatial_shape": [
+            512,
+            384,
+            512
+          ]
+        },
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            84976,
+            30492,
+            9937,
+            2978
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            514
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        }
+      ]
+    },
+    "step": 200
+  },
   "experiment_id": "exp1",
-  "failure_reason": "RuntimeError: Non-finite gradient at step 1",
-  "final": null,
-  "peak_memory_bytes": null,
-  "runtime_seconds": null,
+  "failure_reason": null,
+  "final": {
+    "geometry_loss": 0.37090548872947693,
+    "k0": {
+      "alignment_scale": 0.9709390997886658,
+      "alignment_z_shift": -0.003034326946362853,
+      "depth_rel": 0.0634041354060173,
+      "point_rel": 0.06967274844646454
+    },
+    "k1": {
+      "alignment_scale": 0.9690657258033752,
+      "alignment_z_shift": -0.0005320972413755953,
+      "applied_residual_percentiles": {
+        "0": -0.0171778816729784,
+        "100": 0.020045192912220955,
+        "50": 0.0017298347083851695,
+        "95": 0.0060541280545294285,
+        "99": 0.008376945741474628
+      },
+      "depth_rel": 0.06273043900728226,
+      "point_rel": 0.0689639151096344,
+      "raw_residual_percentiles": {
+        "0": -0.01734989695250988,
+        "100": 0.020320335403084755,
+        "50": 0.0017300071194767952,
+        "95": 0.00606154091656208,
+        "99": 0.008396622724831104
+      },
+      "voxel_statistics": [
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            85459,
+            30614,
+            9994,
+            2981
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            513
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        }
+      ]
+    },
+    "k3": {
+      "alignment_scale": 0.9645482897758484,
+      "alignment_z_shift": 0.006715802941471338,
+      "applied_residual_percentiles": {
+        "0": -0.0171778816729784,
+        "100": 0.020045192912220955,
+        "50": 0.0016978627536445856,
+        "95": 0.00569135183468461,
+        "99": 0.007595817558467388
+      },
+      "depth_rel": 0.06198005750775337,
+      "point_rel": 0.0682295486330986,
+      "raw_residual_percentiles": {
+        "0": -0.01734989695250988,
+        "100": 0.020320335403084755,
+        "50": 0.001698025967925787,
+        "95": 0.005697508342564106,
+        "99": 0.007610476575791836
+      },
+      "voxel_statistics": [
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            85459,
+            30614,
+            9994,
+            2981
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            513
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        },
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            83641,
+            30066,
+            9878,
+            2959
+          ],
+          "depth_offsets": [
+            27
+          ],
+          "depth_span": [
+            512
+          ],
+          "spatial_shape": [
+            512,
+            384,
+            512
+          ]
+        },
+        {
+          "active_voxels": 196608,
+          "active_voxels_per_level": [
+            196608,
+            84976,
+            30492,
+            9937,
+            2978
+          ],
+          "depth_offsets": [
+            26
+          ],
+          "depth_span": [
+            514
+          ],
+          "spatial_shape": [
+            528,
+            384,
+            512
+          ]
+        }
+      ]
+    },
+    "step": 200,
+    "train_geometry_loss": 0.3696492314338684
+  },
+  "first_step_audit": {
+    "base_gradients_none": true,
+    "base_state_detached": true,
+    "base_state_unchanged": true,
+    "gradient_norm": 4.678978443145752,
+    "k1_differs_from_k0": true,
+    "loss": 0.43732964992523193,
+    "moge2_gradients_none": true,
+    "ssr_parameter_changed": true
+  },
+  "initial_identity_max_abs": 0.0,
+  "k0_sha256": "009cc15c16a59756e5c7550496e3926e395b7896104dcf199611076defb97335",
+  "peak_memory_bytes": 4299720704,
+  "runtime_seconds": 40.45831639203243,
   "selection_metric": "k1.point_rel",
-  "status": "failed"
+  "status": "completed",
+  "stop_reason": "acceptance_reached"
 }

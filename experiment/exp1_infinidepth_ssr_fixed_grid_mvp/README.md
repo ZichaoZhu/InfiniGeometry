@@ -22,8 +22,24 @@ trainable component is the newly initialized SSR, trained at K=1 on a fixed
 
 ## Current status
 
-Planned. No result or conclusion is claimed until the server run finishes and
-`metrics/report.json` changes to `completed` or `failed`.
+Completed and accepted on 2026-08-07. The selected checkpoint was reached at
+step 200, where K1 Point Rel improved from `0.06967275` to `0.06896392`
+(`1.017%`) and deterministic geometry loss fell from `0.43732962` to
+`0.37090552` (`15.19%`). Diagnostic K3 Point Rel was `0.06822955`.
+
+K0 remained bitwise stable, the adapter and zero-initialized SSR both had zero
+maximum absolute regression error, frozen Base/MoGe2 gradients stayed `None`,
+and checkpoint reload passed the required tolerance. The run stopped when both
+primary thresholds were first satisfied. Full structured values are in
+`metrics/report.json`; the two earlier operational failures and their fixes are
+retained in `provenance.json` under the same experiment ID.
+
+## Conclusion and limitation
+
+The fixed-grid SSR MVP satisfies its scoped acceptance criteria without
+changing the frozen InfiniDepth prediction path. This is a one-sample training
+experiment and demonstrates optimization viability only; it does not establish
+generalization to held-out Hypersim scenes or other datasets.
 
 ## Reproduction
 
@@ -34,6 +50,12 @@ bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh
 ```
 
 The launcher refuses output paths outside `/mnt/data/home/zhuzichao/`.
+After the run, validate retained server assets with:
+
+```bash
+python experiment/validate_experiment.py --require-untracked-assets \
+  experiment/exp1_infinidepth_ssr_fixed_grid_mvp
+```
 
 ## Asset policy
 

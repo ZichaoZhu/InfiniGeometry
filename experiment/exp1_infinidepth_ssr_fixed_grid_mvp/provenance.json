@@ -13,6 +13,13 @@
       "run_commit": "613d3842001bffd05225f597a07527c81707bfe9",
       "started_at": "2026-08-07T08:44:21.418922+00:00",
       "status": "failed"
+    },
+    {
+      "failure_reason": null,
+      "finished_at": "2026-08-07T09:02:58.970325+00:00",
+      "run_commit": "ae887f8c7c9f3ac857a0aec33e38f4e7cb622a52",
+      "started_at": "2026-08-07T09:01:51.390457+00:00",
+      "status": "completed"
     }
   ],
   "base_commit": "36c6e0c31887fafc210184ee43ca475230704095",
@@ -26,10 +33,10 @@
     "torch": "2.8.0+cu128"
   },
   "experiment_id": "exp1",
-  "finished_at": "2026-08-07T08:44:47.273683+00:00",
+  "finished_at": "2026-08-07T09:02:58.970325+00:00",
   "git_dirty": false,
   "origin": "https://github.com/ZichaoZhu/InfiniGeometry.git",
-  "run_commit": "613d3842001bffd05225f597a07527c81707bfe9",
+  "run_commit": "ae887f8c7c9f3ac857a0aec33e38f4e7cb622a52",
   "server": "ZJU3DV-S115",
   "sources": [
     {
@@ -53,7 +60,7 @@
       "sha256": "280741fd09bc3f403ccff9967784c2a391b52d2c0742ae3efdb21d9f90cc1a01"
     }
   ],
-  "started_at": "2026-08-07T08:44:21.418922+00:00",
-  "status": "failed",
+  "started_at": "2026-08-07T09:01:51.390457+00:00",
+  "status": "completed",
   "upstream": "https://github.com/zju3dv/InfiniDepth.git"
 }

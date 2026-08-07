@@ -56,7 +56,11 @@ def tracked_files(root: Path) -> set[Path]:
     }
 
 
-def validate_experiment(path: Path, tracked: set[Path]) -> list[str]:
+def validate_experiment(
+    path: Path,
+    tracked: set[Path],
+    require_untracked_assets: bool = False,
+) -> list[str]:
     errors = []
     match = EXPERIMENT_NAME.fullmatch(path.name)
     if match is None:
@@ -94,8 +98,11 @@ def validate_experiment(path: Path, tracked: set[Path]) -> list[str]:
             continue
         registered.add(relative)
         asset = path / relative
+        if not isinstance(entry.get("tracked_by_git"), bool):
+            errors.append(f"{path.name}: tracked_by_git must be boolean for {relative}")
         if not asset.exists():
-            if report.get("status") == "completed":
+            require_asset = entry.get("tracked_by_git") or require_untracked_assets
+            if report.get("status") == "completed" and require_asset:
                 errors.append(f"{path.name}: completed asset is missing: {relative}")
             continue
         actual_size = asset.stat().st_size
@@ -127,6 +134,11 @@ def validate_experiment(path: Path, tracked: set[Path]) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("paths", nargs="*", type=Path)
+    parser.add_argument(
+        "--require-untracked-assets",
+        action="store_true",
+        help="require server-only assets such as checkpoints, point clouds, and logs",
+    )
     args = parser.parse_args()
     root = Path(__file__).resolve().parent
     paths = args.paths or sorted(
@@ -140,7 +152,13 @@ def main() -> int:
         match = EXPERIMENT_NAME.fullmatch(path.name)
         if match:
             numbers.append(int(match.group(1)))
-        errors.extend(validate_experiment(path, tracked))
+        errors.extend(
+            validate_experiment(
+                path,
+                tracked,
+                require_untracked_assets=args.require_untracked_assets,
+            )
+        )
     if numbers and sorted(numbers) != list(range(1, max(numbers) + 1)):
         errors.append(f"experiment numbering is not contiguous: {sorted(numbers)}")
     if errors:

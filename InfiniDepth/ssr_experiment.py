@@ -219,7 +219,8 @@ def write_ply(path: Path, points: torch.Tensor, colors: torch.Tensor, valid: tor
 
 
 def colorize_depth(depth: np.ndarray, valid: np.ndarray, low: float, high: float) -> np.ndarray:
-    normalized = np.clip((depth - low) / max(high - low, 1e-8), 0, 1)
+    safe_depth = np.where(valid & np.isfinite(depth), depth, high)
+    normalized = np.clip((safe_depth - low) / max(high - low, 1e-8), 0, 1)
     image = cv2.applyColorMap(
         np.round(255 * (1 - normalized)).astype(np.uint8), cv2.COLORMAP_TURBO
     )
@@ -580,7 +581,7 @@ def run(config_path: Path, safe_root: Path, log_path: Path) -> None:
                 "ssr_parameter_changed": parameter_changed,
                 "k1_differs_from_k0": k1_changed,
                 "gradient_norm": float(gradient_norm),
-                "loss": float(loss),
+                "loss": float(loss.detach()),
                 "base_state_detached": all(not tensor.requires_grad for tensor in (
                     inputs.points0, inputs.dino_feature, inputs.basic_feature
                 )),

@@ -1,4 +1,77 @@
 {
-  "experiment_id": "exp1",
-  "assets": []
+  "assets": [
+    {
+      "bytes": 61734,
+      "generated_by": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+      "path": "artifacts/figures/training_curve.png",
+      "role": "training curve",
+      "sha256": "ecc6ed1b4054c0017400d6dd9970c686200360ec2d4ec5762ad2df90e860c9b9",
+      "tracked_by_git": true
+    },
+    {
+      "bytes": 619438,
+      "generated_by": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+      "path": "artifacts/figures/geometry_comparison.png",
+      "role": "GT/K0/K1/K3 comparison",
+      "sha256": "14803715db8cf5f8ed483e2bb21f9be06b535c7b5b24b956f24064e04cd09ab5",
+      "tracked_by_git": true
+    },
+    {
+      "bytes": 609478319,
+      "generated_by": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+      "path": "artifacts/checkpoints/best.pt",
+      "role": "best K1 Point Rel checkpoint",
+      "sha256": "c83555403650b236d9bcf00f2d8515d2a14ec4c4ae40c06ca5a2519f623e2057",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 609478319,
+      "generated_by": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+      "path": "artifacts/checkpoints/last.pt",
+      "role": "last resumable checkpoint",
+      "sha256": "75f12c67b540f82d5e20a6b16c6d70a7c0921d4c7673d694007de64dd99fa3dc",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949000,
+      "generated_by": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+      "path": "artifacts/pointclouds/gt.ply",
+      "role": "ground-truth point cloud",
+      "sha256": "4972261882ce9264ec431bda4a7ff13d999f45a199caac5e4c5c204d6c8bce04",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949000,
+      "generated_by": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+      "path": "artifacts/pointclouds/k0.ply",
+      "role": "frozen base point cloud",
+      "sha256": "9c444e64025cd8151f763dfbe6213aac6975a4653b65d350ebbc3ae70e4af384",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949000,
+      "generated_by": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+      "path": "artifacts/pointclouds/k1.ply",
+      "role": "selected one-step point cloud",
+      "sha256": "0a319bd904d60acf3015f6fdb077a0738063297d3235f9ced6bf6f971f969a06",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949000,
+      "generated_by": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+      "path": "artifacts/pointclouds/k3.ply",
+      "role": "diagnostic three-step point cloud",
+      "sha256": "d31fbb92f2dc03a41ea5b5cdc42678dc2990e9893ddbb05af50068d22cbf8c4f",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 1332,
+      "generated_by": "bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh",
+      "path": "artifacts/logs/run.log",
+      "role": "raw server run log",
+      "sha256": "91541a4d321c918d62fe989a7d4e01d519493094a61db7d13a4e9af029978f9f",
+      "tracked_by_git": false
+    }
+  ],
+  "experiment_id": "exp1"
 }
