@@ -48,103 +48,10 @@ def _make_dense_query_coord(batch: int, h: int, w: int, device: torch.device) ->
 class _InferenceState:
     gt_depth: Optional[torch.Tensor] = None
     gt_depth_mask: Optional[torch.Tensor] = None
-    reference_disparity: Optional[torch.Tensor] = None
-    reference_mask: Optional[torch.Tensor] = None
     prompt_depth: Optional[torch.Tensor] = None
     prompt_mask: Optional[torch.Tensor] = None
     reference_meta: Optional[torch.Tensor] = None
     query_coord: Optional[torch.Tensor] = None
-
-
-@dataclass(frozen=True)
-class InfiniDepthEncoding:
-    """Image features that can be reused for multiple implicit queries."""
-
-    dino_feature: torch.Tensor
-    basic_feature: torch.Tensor
-    patch_height: int
-    patch_width: int
-    dino_tokens: torch.Tensor
-
-
-@dataclass(frozen=True)
-class DisparityAlignment:
-    """Result metadata for reference-disparity alignment."""
-
-    scale: float
-    shift: float
-    valid_count: int
-    success: bool
-    reason: str
-
-
-def align_reference_disparity(
-    predicted_disparity: torch.Tensor,
-    reference_disparity: torch.Tensor,
-    reference_mask: Optional[torch.Tensor] = None,
-    *,
-    random_state: int = 0,
-) -> tuple[torch.Tensor, DisparityAlignment]:
-    """Deterministically align one disparity map to an external reference."""
-    pred = predicted_disparity.detach().float().cpu().numpy().squeeze()
-    reference = reference_disparity.detach().float().cpu().numpy().squeeze()
-    if pred.shape != reference.shape:
-        raise ValueError(
-            "Predicted and reference disparities must have the same shape, got "
-            f"{pred.shape} and {reference.shape}"
-        )
-
-    valid = np.isfinite(pred) & np.isfinite(reference) & (reference > 1e-8)
-    if reference_mask is not None:
-        mask = reference_mask.detach().cpu().numpy().squeeze()
-        if mask.shape != reference.shape:
-            raise ValueError(
-                f"Reference mask shape {mask.shape} does not match {reference.shape}"
-            )
-        valid &= mask > 0
-
-    valid_count = int(valid.sum())
-    scale, shift = 1.0, 0.0
-    success = False
-    reason = "insufficient_valid_samples"
-    if valid_count >= 2:
-        pred_valid = pred[valid].astype(np.float32)
-        reference_valid = np.clip(reference[valid].astype(np.float32), 1e-8, None)
-        try:
-            estimator = make_pipeline(
-                PolynomialFeatures(degree=1, include_bias=False),
-                RANSACRegressor(max_trials=1000, random_state=int(random_state)),
-            )
-            estimator.fit(pred_valid[:, None], reference_valid)
-            fitted = estimator.named_steps["ransacregressor"].estimator_
-            scale = float(np.asarray(fitted.coef_).reshape(-1)[0])
-            shift = float(np.asarray(fitted.intercept_).reshape(-1)[0])
-            if not np.isfinite(scale) or not np.isfinite(shift):
-                scale, shift = 1.0, 0.0
-                reason = "non_finite_fit"
-            elif scale <= 0:
-                pred_mean = max(float(pred_valid.mean()), 1e-8)
-                scale = float(reference_valid.mean()) / pred_mean
-                shift = 0.0
-                success = np.isfinite(scale) and scale > 0
-                if not success:
-                    scale = 1.0
-                reason = "nonpositive_scale_mean_ratio" if success else "invalid_mean_ratio"
-            else:
-                success = True
-                reason = "ok"
-        except (ValueError, RuntimeError):
-            reason = "ransac_failure"
-
-    aligned = predicted_disparity.float() * scale + shift
-    metadata = DisparityAlignment(
-        scale=scale,
-        shift=shift,
-        valid_count=valid_count,
-        success=success,
-        reason=reason,
-    )
-    return aligned.to(predicted_disparity.dtype), metadata
 
 
 class _BaseInfiniDepthModel(nn.Module):
@@ -246,57 +153,6 @@ class _BaseInfiniDepthModel(nn.Module):
         basic_feat = self.basic_encoder(x_basic)  # [B, 128, H/4, W/4]
         return features, basic_feat, patch_h, patch_w, dino_tokens
 
-    def _encode_image_with_state(
-        self,
-        image: torch.Tensor,
-        state: _InferenceState,
-    ) -> InfiniDepthEncoding:
-        features, basic_feat, patch_h, patch_w, dino_tokens = self._prepare_backbone_features(
-            image,
-            state=state,
-        )
-        dino_feature = self.depth_implicit_head._encode_feat(features, patch_h, patch_w)
-        return InfiniDepthEncoding(
-            dino_feature=dino_feature,
-            basic_feature=basic_feat,
-            patch_height=patch_h,
-            patch_width=patch_w,
-            dino_tokens=dino_tokens,
-        )
-
-    def encode_image(self, image: torch.Tensor) -> InfiniDepthEncoding:
-        """Encode an RGB image once for reusable implicit depth queries."""
-        return self._encode_image_with_state(image, _InferenceState())
-
-    def decode_queries(
-        self,
-        encoding: InfiniDepthEncoding,
-        query_coord: torch.Tensor,
-        chunk_size: Optional[int] = 3000,
-    ) -> torch.Tensor:
-        """Decode raw disparity at ``(y, x)`` normalized query coordinates."""
-        if query_coord.ndim != 3 or query_coord.shape[-1] != 2:
-            raise ValueError(f"Expected query coordinates [B,N,2], got {tuple(query_coord.shape)}")
-        if query_coord.shape[0] != encoding.dino_feature.shape[0]:
-            raise ValueError("Query and encoding batch sizes must match")
-        count = query_coord.shape[1]
-        if chunk_size is None:
-            chunk_size = max(count, 1)
-        if int(chunk_size) <= 0:
-            raise ValueError("chunk_size must be positive or None")
-        predictions = []
-        for start in range(0, count, int(chunk_size)):
-            predictions.append(
-                self.depth_implicit_head._decode_dpt(
-                    encoding.dino_feature,
-                    encoding.basic_feature,
-                    query_coord[:, start : start + int(chunk_size)],
-                )
-            )
-        if not predictions:
-            return encoding.dino_feature.new_empty((query_coord.shape[0], 0, 1))
-        return torch.cat(predictions, dim=1)
-
     def _to_depth_disparity(self, pred: torch.Tensor):
         pred_disparity = pred
         pred_depth = 1.0 / torch.clamp(pred, min=5e-3)
@@ -313,16 +169,10 @@ class _BaseInfiniDepthModel(nn.Module):
         gt_depth_mask: Optional[torch.Tensor] = None,
         prompt_depth: Optional[torch.Tensor] = None,
         prompt_mask: Optional[torch.Tensor] = None,
-        reference_disparity: Optional[torch.Tensor] = None,
-        reference_mask: Optional[torch.Tensor] = None,
     ):
         state = _InferenceState(
             gt_depth=gt_depth,
             gt_depth_mask=gt_depth_mask,
-            reference_disparity=(
-                reference_disparity if reference_disparity is not None else gt_depth
-            ),
-            reference_mask=(reference_mask if reference_mask is not None else gt_depth_mask),
             prompt_depth=prompt_depth,
             prompt_mask=prompt_mask,
             query_coord=query_coord,
@@ -371,10 +221,22 @@ class _BaseInfiniDepthModel(nn.Module):
     ):
         """Forward pass with batching to avoid OOM."""
         state = _InferenceState(prompt_depth=prompt_depth, prompt_mask=prompt_mask)
-        encoding = self._encode_image_with_state(x, state)
-        pred = self.decode_queries(encoding, coord, chunk_size=bsize)
+        features, basic_feat, patch_h, patch_w, dino_tokens = self._prepare_backbone_features(
+            x,
+            state=state,
+        )
+        feat = self.depth_implicit_head._encode_feat(features, patch_h, patch_w)
+        n = coord.shape[1]
+        ql = 0
+        preds = []
+        while ql < n:
+            qr = min(ql + bsize, n)
+            pred = self.depth_implicit_head._decode_dpt(feat, basic_feat, coord[:, ql: qr, :])
+            preds.append(pred)
+            ql = qr
+        pred = torch.cat(preds, dim=1)
         if return_dino_tokens:
-            return pred, encoding.dino_tokens
+            return pred, dino_tokens
         return pred
 
     def forward(
@@ -386,11 +248,14 @@ class _BaseInfiniDepthModel(nn.Module):
         return_dino_tokens: bool = False,
     ):
         state = _InferenceState(prompt_depth=prompt_depth, prompt_mask=prompt_mask)
-        encoding = self._encode_image_with_state(x, state)
+        features, basic_feat, patch_h, patch_w, dino_tokens = self._prepare_backbone_features(
+            x,
+            state=state,
+        )
         with torch.autocast("cuda", enabled=True, dtype=torch.float32):
-            depth = self.decode_queries(encoding, coords, chunk_size=None)
+            depth = self.depth_implicit_head(features, basic_feat, patch_h, patch_w, coords)
         if return_dino_tokens:
-            return depth, encoding.dino_tokens
+            return depth, dino_tokens
         return depth
 
     def _prepare_dense_depthmap_for_gs(
@@ -532,6 +397,9 @@ class InfiniDepth_DepthSensor(_BaseInfiniDepthModel):
 @register_model("InfiniDepth")
 class InfiniDepth(_BaseInfiniDepthModel):
     def _init_variant_modules(self):
+        poly_features = PolynomialFeatures(degree=1, include_bias=False)
+        ransac = RANSACRegressor(max_trials=1000)
+        self.ransac_model = make_pipeline(poly_features, ransac)
         self._cached_denorm_scale: Optional[torch.Tensor] = None
         self._cached_denorm_shift: Optional[torch.Tensor] = None
 
@@ -561,16 +429,55 @@ class InfiniDepth(_BaseInfiniDepthModel):
         )
 
     def _ransac_align_depth(self, pred, gt, mask0=None):
-        pred_tensor = torch.as_tensor(pred).squeeze()
-        gt_tensor = torch.as_tensor(gt).squeeze()
-        mask_tensor = None if mask0 is None else torch.as_tensor(mask0).squeeze()
-        aligned, metadata = align_reference_disparity(
-            pred_tensor,
-            gt_tensor,
-            mask_tensor,
-            random_state=0,
-        )
-        return aligned.unsqueeze(0).unsqueeze(0), metadata.scale, metadata.shift
+        if type(pred).__module__ == torch.__name__:
+            pred = pred.cpu().numpy()
+        if type(gt).__module__ == torch.__name__:
+            gt = gt.cpu().numpy()
+        pred = pred.astype(np.float32)
+        gt = gt.astype(np.float32)
+        gt = gt.squeeze()
+        pred = pred.squeeze()
+        mask = (gt > 1e-8)  # & (pred > 1e-8)
+        if mask0 is not None and mask0.sum() > 0:
+            if type(mask0).__module__ == torch.__name__:
+                mask0 = mask0.cpu().numpy()
+            mask0 = mask0.squeeze()
+            mask0 = mask0 > 0
+            mask = mask & mask0
+        gt_mask = gt[mask].astype(np.float32)
+        pred_mask = pred[mask].astype(np.float32)
+
+        gt_mask = np.clip(gt_mask, 1e-8, None)
+
+        try:
+            self.ransac_model.fit(pred_mask[:, None], gt_mask[:, None])
+            a, b = (
+                self.ransac_model.named_steps["ransacregressor"].estimator_.coef_,
+                self.ransac_model.named_steps["ransacregressor"].estimator_.intercept_,
+            )
+            a = a.item()
+            b = b.item()
+        except Exception:
+            a, b = 1, 0
+
+        if not np.isfinite(a):
+            a = 1.0
+        if not np.isfinite(b):
+            b = 0.0
+
+        if a > 0:
+            pred_metric = a * pred + b
+        else:
+            if pred_mask.size > 0 and gt_mask.size > 0:
+                pred_mean = max(float(np.mean(pred_mask)), 1e-8)
+                gt_mean = float(np.mean(gt_mask))
+                a = gt_mean / pred_mean
+            else:
+                a = 1.0
+            b = 0.0
+            pred_metric = a * pred + b
+
+        return torch.from_numpy(pred_metric).unsqueeze(0).unsqueeze(0), float(a), float(b)
 
     @staticmethod
     def _infer_dense_query_hw(query_coord: Optional[torch.Tensor], n_query: int) -> Optional[tuple[int, int]]:
@@ -596,21 +503,21 @@ class InfiniDepth(_BaseInfiniDepthModel):
         b, _, _, _ = image.shape
         n_query = pred.shape[1]
         dense_query_hw = self._infer_dense_query_hw(state.query_coord, n_query)
-        if dense_query_hw is not None and state.reference_disparity is not None:
+        if dense_query_hw is not None and state.gt_depth is not None:
             h_query, w_query = dense_query_hw
             pred_map = pred.permute(0, 2, 1).reshape(b, 1, h_query, w_query)
-            reference_align = state.reference_disparity
-            reference_mask_align = state.reference_mask
-            if reference_align.shape[-2:] != (h_query, w_query):
-                reference_align = F.interpolate(
-                    reference_align,
+            gt_align = state.gt_depth
+            gt_mask_align = state.gt_depth_mask
+            if gt_align.shape[-2:] != (h_query, w_query):
+                gt_align = F.interpolate(
+                    gt_align,
                     size=(h_query, w_query),
                     mode="bilinear",
                     align_corners=False,
                 )
-                if reference_mask_align is not None:
-                    reference_mask_align = F.interpolate(
-                        reference_mask_align.float(),
+                if gt_mask_align is not None:
+                    gt_mask_align = F.interpolate(
+                        gt_mask_align.float(),
                         size=(h_query, w_query),
                         mode="nearest",
                     )
@@ -620,8 +527,8 @@ class InfiniDepth(_BaseInfiniDepthModel):
             for i in range(b):
                 aligned_i, scale_i, shift_i = self._ransac_align_depth(
                     pred_map[i: i + 1],
-                    reference_align[i: i + 1],
-                    None if reference_mask_align is None else reference_mask_align[i: i + 1],
+                    gt_align[i: i + 1],
+                    None if gt_mask_align is None else gt_mask_align[i: i + 1],
                 )
                 aligned_i = aligned_i.to(device=image.device, dtype=pred.dtype)
                 aligned.append(aligned_i)
