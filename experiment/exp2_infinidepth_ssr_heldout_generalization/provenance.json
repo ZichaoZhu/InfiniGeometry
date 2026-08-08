@@ -1,0 +1,16 @@
+{
+  "experiment_id": "exp2",
+  "status": "planned",
+  "base_commit": "36c6e0c31887fafc210184ee43ca475230704095",
+  "run_commit": null,
+  "git_dirty": null,
+  "origin": "https://github.com/ZichaoZhu/InfiniGeometry.git",
+  "upstream": "https://github.com/zju3dv/InfiniDepth.git",
+  "server": "ZJU3DV-S115",
+  "command": "bash experiment/exp2_infinidepth_ssr_heldout_generalization/run.sh",
+  "started_at": null,
+  "finished_at": null,
+  "environment": null,
+  "sources": [],
+  "attempts": []
+}

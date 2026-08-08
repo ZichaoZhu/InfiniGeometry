@@ -1,0 +1,11 @@
+{
+  "experiment_id": "exp2",
+  "status": "planned",
+  "evaluation_mode": "frozen_checkpoint_heldout",
+  "aggregate": null,
+  "acceptance": null,
+  "audits": null,
+  "runtime_seconds": null,
+  "peak_memory_bytes": null,
+  "failure_reason": null
+}

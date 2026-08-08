@@ -1,0 +1,323 @@
+{
+  "experiment_id": "exp2",
+  "description": "infinidepth_ssr_heldout_generalization",
+  "seed": 17,
+  "data": {
+    "split": "hypersim_10_scenes_3_frames_heldout",
+    "expected_sample_count": 30,
+    "expected_scene_count": 10,
+    "excluded_sample_ids": ["ai_053_018_cam_00_frame.0000"],
+    "source_size": [768, 1024],
+    "m_cam_from_uv": [
+      [0.5773502886487201, 0.0, 0.0],
+      [0.0, 0.4330127164865401, 0.0],
+      [0.0, 0.0, -0.9999999998898074]
+    ],
+    "samples": [
+      {
+        "sample_id": "ai_001_001_cam_00_frame.0000",
+        "scene_id": "ai_001_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_001_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "b5928ced209895eba11c2394bf7960e7d690c065f30d8e96c3b037edf2874106",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_001_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "ddbc54d7e5bbc111ef726173f027ea52539c408f9fdaf807106ae0547993fccb"
+      },
+      {
+        "sample_id": "ai_001_001_cam_00_frame.0025",
+        "scene_id": "ai_001_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_001_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "16f5f08c3469f45a078d5ba13e7e5e647b04f0ea6c0eb03e983611afdb786a95",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_001_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "10b57e15e1fbf74b23de6e983e8d252cc5737a8b8dd04cb97d74a29bd77919d2"
+      },
+      {
+        "sample_id": "ai_001_001_cam_00_frame.0050",
+        "scene_id": "ai_001_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_001_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "3b5402dbad3b30a44cc5b5efcd411a1516f8cf8382ab34ac0fb7146ffd42eee6",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_001_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "d78db82ebba358be80679816dc39529e62e41565715d98660f91575e726083e7"
+      },
+      {
+        "sample_id": "ai_005_001_cam_00_frame.0000",
+        "scene_id": "ai_005_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_005_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "b4ac887223c2698c0ea9e40b3d811c12e7bec31e7589fe12303145370ef6c8e8",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_005_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "49b9c93eb4de566cc9a569db933ff0a4feaabd623490483d560ac6642017b6a6"
+      },
+      {
+        "sample_id": "ai_005_001_cam_00_frame.0025",
+        "scene_id": "ai_005_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_005_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "0d3ed341effffbed8087b9d52c04336814151ef625fbe0fa9c8270e3bf829d4d",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_005_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "5ecd84369e045426fc5acdd34913ea0cd23776178d16f06a069cd3acbf83e2a4"
+      },
+      {
+        "sample_id": "ai_005_001_cam_00_frame.0050",
+        "scene_id": "ai_005_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_005_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "4efc7805941fa1d7597033801c3a488a2a46c32f24fde36dd5955df5905a8309",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_005_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "b3cea864767ea3a7c924c9ffd20c8256c9f73f5615431f2ef569bf3b4d9a124f"
+      },
+      {
+        "sample_id": "ai_010_001_cam_00_frame.0000",
+        "scene_id": "ai_010_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_010_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "eb5cee65347e4d2312c6808c0e1d20aebac6ab6bae58055426923b8bded73a05",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_010_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "56b89a4899774e2b5af04d75510308cd1993caeebed47c98c70ccbe8ef3d7cb4"
+      },
+      {
+        "sample_id": "ai_010_001_cam_00_frame.0025",
+        "scene_id": "ai_010_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_010_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "48c606b847094ca297c708438464fc08f96a31aba62d12a443ac1fbb0a7bbffc",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_010_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "514b1a4724c58623f33d7e93bbda920d92a1fef1781696b8cae4e5b9a24bc5b5"
+      },
+      {
+        "sample_id": "ai_010_001_cam_00_frame.0050",
+        "scene_id": "ai_010_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_010_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "66422085058a181a87f53dd0ed4858a3c2a8eb1a4b13652245b128137ce34532",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_010_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "7cec7e6eb47bba54e6ca3dc3c11a6e1baa1249e80f364eb35fa6321d483081c2"
+      },
+      {
+        "sample_id": "ai_015_001_cam_00_frame.0000",
+        "scene_id": "ai_015_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_015_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "8611ba150dedb8d695e5729bd05673e44c6506add06f87a87cc07b9db4192e5f",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_015_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "68f5bbbf859bc5f86bb0ebe72189291fab352597f1212e96dc43daf84188365d"
+      },
+      {
+        "sample_id": "ai_015_001_cam_00_frame.0025",
+        "scene_id": "ai_015_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_015_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "51482fb39b955e3a5973f3514f7de2ddcdb9e6abd94383dafe0c4c6e6de98123",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_015_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "9fc152cba280e05c66fa5f9efdb7e0472c907c9858c9603b7db8086ad067fa1c"
+      },
+      {
+        "sample_id": "ai_015_001_cam_00_frame.0050",
+        "scene_id": "ai_015_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_015_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "34b21b49e3bccfc399503dda1ebd57260c1015c951ee4815f1d40670ffb3e87c",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_015_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "69a6530b35aaafffa334ec8f1e350e4d0cea639ef5e93c3ad3770a8dc3b0d6e9"
+      },
+      {
+        "sample_id": "ai_021_001_cam_00_frame.0000",
+        "scene_id": "ai_021_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_021_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "3737741df57a1d1af7d6b11c2e9cd53de28f808f6c9612a54a96f685455600c5",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_021_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "5b9ad08cd8c2490e0296d1336a48819d751e9b34f06d25d0cf82c82b2034c2b5"
+      },
+      {
+        "sample_id": "ai_021_001_cam_00_frame.0025",
+        "scene_id": "ai_021_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_021_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "7a957dc97f20de7c1c57ba253b982da173e92d90f1ea16d4e740ead83f00b5eb",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_021_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "24fd411eb6c2022b4f2357452c4670d086d1213521ea8f848ac10b6409dfa4a7"
+      },
+      {
+        "sample_id": "ai_021_001_cam_00_frame.0050",
+        "scene_id": "ai_021_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_021_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "8e15001f9456f75489994e2875535db70800957c58edd940e64c10977faf84a2",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_021_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "47012c58da41def95554189cfccaf6ae684f17adc6bea088fdcc67d0bcb4eaa8"
+      },
+      {
+        "sample_id": "ai_026_001_cam_00_frame.0000",
+        "scene_id": "ai_026_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_026_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "2d868851e9a763525694707dfa1500082e31977f69c8f42ffd5cc3b881566b38",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_026_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "fdb3f56d552316d11ae4ec61a996c47c3a12d390f56631bf033dc87b9b53bad3"
+      },
+      {
+        "sample_id": "ai_026_001_cam_00_frame.0025",
+        "scene_id": "ai_026_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_026_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "5c4d6d75b00cc4e8f25cb031ba92523fafbbfd9add438044e6350b575d800d08",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_026_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "d8e235d062785b8e11166704975b5b0a734d5312582e7214bdf2b753b8ac60df"
+      },
+      {
+        "sample_id": "ai_026_001_cam_00_frame.0050",
+        "scene_id": "ai_026_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_026_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "6f32e8c159ca7f5d792db49f9c358114cc5c7a43bfce543a2c819eb71d3f9248",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_026_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "28f393ecb11037f4bc9de06f16e1538424092ea6739e160a7a0b0f172e8e3bde"
+      },
+      {
+        "sample_id": "ai_031_001_cam_00_frame.0000",
+        "scene_id": "ai_031_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_031_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "d2d8e79635d4af1ea11e760a1ae22fa0a78cbd6a6b1ef24ebb51884d7b1187ae",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_031_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "2badd597a1353dec47f6def5136e7bd4ad63fc265e2c54e391756383ce456259"
+      },
+      {
+        "sample_id": "ai_031_001_cam_00_frame.0025",
+        "scene_id": "ai_031_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_031_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "a3215147cfd8fe1e6852bc1b83ebbeea981086e2037317e9dab67ca1e813a4ab",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_031_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "9225024caf825d666f1aa96985a6471af058fa818eee299276654367b99366bb"
+      },
+      {
+        "sample_id": "ai_031_001_cam_00_frame.0050",
+        "scene_id": "ai_031_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_031_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "4d432437ceed0e9422f110daf9c4e7c75b9f2c67d21e534e0435fbf467cb1212",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_031_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "06fae05944091fb8fea9ea74bbae3f10776a5080d25a4e2304d98091f73a604e"
+      },
+      {
+        "sample_id": "ai_036_001_cam_00_frame.0000",
+        "scene_id": "ai_036_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_036_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "bbf494df2506b654b0b818cf8ce8b443372974c543ac731b9f93890603273d10",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_036_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "95b0fc7a70d6aaaa3b61a2050f7c08f5ea8808a4d0e373d98ef09200ad3c46d2"
+      },
+      {
+        "sample_id": "ai_036_001_cam_00_frame.0025",
+        "scene_id": "ai_036_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_036_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "a542603710f8892652f22beabf6ab1cfbe42f37b1f71e4aae80fe0eed2f403a1",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_036_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "ca937de4a41a3ed608f7d93f389fb5a5eb5be3fc86df019cd922a05078de7a8f"
+      },
+      {
+        "sample_id": "ai_036_001_cam_00_frame.0050",
+        "scene_id": "ai_036_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_036_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "04c9622c33a7ba01e03065428f65727abb817747822e02bce0b6b32ff61ce7c7",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_036_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "14dd6dae441cf068eca4e84d9f94fe3470851991a01a88414c1f5132cbf738a7"
+      },
+      {
+        "sample_id": "ai_041_001_cam_00_frame.0000",
+        "scene_id": "ai_041_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_041_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "c304b229e6365cbef2d1acff2f5abdedcf5dd652f37c3cca6f047400af20cc13",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_041_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "25701d03c166f51aa9c8cfa60f667ea60727197be52bda98bdab98267d908397"
+      },
+      {
+        "sample_id": "ai_041_001_cam_00_frame.0025",
+        "scene_id": "ai_041_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_041_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "1f85e9bcb3ac2df11351250a6eaa8dda514aac821f8c72a67ac54bbd74338ce4",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_041_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "a6b3bf2ca5ce076a4433a865db748497c96fd95276bd7c0a9e7720ca798f20ad"
+      },
+      {
+        "sample_id": "ai_041_001_cam_00_frame.0050",
+        "scene_id": "ai_041_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_041_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "fbed36a349c46ea50d57a8d3a2db195c52fb3b122777a2112bb2a4dfa38a55b0",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_041_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "7364012c314a97534425b543d59b63d658dd1a20e878767e9cab6072d0040f21"
+      },
+      {
+        "sample_id": "ai_044_001_cam_00_frame.0000",
+        "scene_id": "ai_044_001",
+        "frame_id": "0000",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_044_001/images/scene_cam_00_final_preview/frame.0000.tonemap.jpg",
+        "rgb_sha256": "827713b75ce9896757936fbd3bc8560de769bd0999bfe9bf43097268d270d22a",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_044_001/images/scene_cam_00_geometry_hdf5/frame.0000.depth_meters.hdf5",
+        "radial_depth_sha256": "245b9725aa40aa9d53352b185ff9b59ba5b36419b068910a8150319e3da72b6d"
+      },
+      {
+        "sample_id": "ai_044_001_cam_00_frame.0025",
+        "scene_id": "ai_044_001",
+        "frame_id": "0025",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_044_001/images/scene_cam_00_final_preview/frame.0025.tonemap.jpg",
+        "rgb_sha256": "7410abc03933349fcbc712525cf6e3b14142dd5d5dbcaa038b5e6d388e7ed9f3",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_044_001/images/scene_cam_00_geometry_hdf5/frame.0025.depth_meters.hdf5",
+        "radial_depth_sha256": "195b8a65301d400d645054595ab527fde4c2bc01ff3ca416afd72fc082c4d5ea"
+      },
+      {
+        "sample_id": "ai_044_001_cam_00_frame.0050",
+        "scene_id": "ai_044_001",
+        "frame_id": "0050",
+        "rgb": "/nas1/datasets/hypersim/raw/ai_044_001/images/scene_cam_00_final_preview/frame.0050.tonemap.jpg",
+        "rgb_sha256": "285232ac79921f28c59b05914752f5e032501a86155217ddfc81b93d284baad8",
+        "radial_depth": "/nas1/datasets/hypersim/raw/ai_044_001/images/scene_cam_00_geometry_hdf5/frame.0050.depth_meters.hdf5",
+        "radial_depth_sha256": "b28a8e3ca1e7b1fc4866ba9c61dbff3c588e281a03c19f794b574f8993c69b12"
+      }
+    ]
+  },
+  "model": {
+    "infinidepth_checkpoint": "checkpoints/depth/infinidepth.ckpt",
+    "infinidepth_checkpoint_sha256": "6f123506b266f61b9261878548946cfb8822e6233aaf53527dfc4b3dab1e7f9c",
+    "moge2_checkpoint": "checkpoints/moge-2-vitl-normal/model.pt",
+    "moge2_checkpoint_sha256": "280741fd09bc3f403ccff9967784c2a391b52d2c0742ae3efdb21d9f90cc1a01",
+    "ssr_checkpoint": "experiment/exp1_infinidepth_ssr_fixed_grid_mvp/artifacts/checkpoints/best.pt",
+    "ssr_checkpoint_sha256": "c83555403650b236d9bcf00f2d8515d2a14ec4c4ae40c06ca5a2519f623e2057",
+    "input_size": [384, 512],
+    "query_order": "yx",
+    "align_corners": false,
+    "trainable_modules": [],
+    "frozen_modules": ["infinidepth", "moge2", "ssr"],
+    "ssr": {
+      "backend": "spconv",
+      "channels": [32, 64, 128, 256, 512],
+      "visual_channels": 256,
+      "blocks_per_level": 2,
+      "normalization": "batch_norm",
+      "voxel_resolution": 200.0,
+      "configured_depth_span": 512,
+      "residual_bound": 0.1
+    }
+  },
+  "evaluation": {
+    "k_values": [0, 1, 3],
+    "repeat_k": 1
+  },
+  "acceptance": {
+    "minimum_mean_k1_point_rel_relative_improvement": 0.01,
+    "minimum_sample_win_rate": 0.6,
+    "maximum_scene_point_rel_relative_regression": 0.05,
+    "maximum_repeat_k1_max_abs": 0.0000001
+  },
+  "output_dir": "experiment/exp2_infinidepth_ssr_heldout_generalization"
+}

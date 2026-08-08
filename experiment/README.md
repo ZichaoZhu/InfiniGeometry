@@ -7,6 +7,7 @@
 | 编号 | 研究问题 | 状态 | 基线提交 | 运行提交 | 主要指标 | 结论 |
 |---|---|---|---|---|---|---|
 | [exp1](exp1_infinidepth_ssr_fixed_grid_mvp/README.md) | 在单个 Hypersim 样本上，固定网格 SSR 能否改善冻结的官方 InfiniDepth 基线？ | `completed` | `36c6e0c31887fafc210184ee43ca475230704095` | `ae887f8c7c9f3ac857a0aec33e38f4e7cb622a52` | K1 Point Rel | 第 200 步通过验收：K1 改善 1.017%，几何损失下降 15.19%。 |
+| [exp2](exp2_infinidepth_ssr_heldout_generalization/README.md) | exp1 的冻结 SSR checkpoint 能否改善未见 Hypersim 场景？ | `planned` | `36c6e0c31887fafc210184ee43ca475230704095` | 待运行 | K1 平均 Point Rel | 等待服务器评估。 |
 
 状态只允许使用 `planned`、`running`、`completed` 和 `failed`。尚未实际运行的
 实验不得描述为已完成。
