@@ -1,11 +1,127 @@
 {
-  "experiment_id": "exp2",
-  "status": "planned",
+  "acceptance": {
+    "deterministic_passed": true,
+    "frozen_audit_passed": true,
+    "k0_stable": true,
+    "maximum_repeat_k1_max_abs": 0.0,
+    "passed": false,
+    "thresholds": {
+      "maximum_repeat_k1_max_abs": 1e-07,
+      "maximum_scene_point_rel_relative_regression": 0.05,
+      "minimum_mean_k1_point_rel_relative_improvement": 0.01,
+      "minimum_sample_win_rate": 0.6
+    }
+  },
+  "aggregate": {
+    "maximum_sample_point_rel_relative_regression": 0.03904427021479906,
+    "maximum_scene_point_rel_relative_regression": 0.029578576697038006,
+    "mean_k1_point_rel_relative_improvement": -2.02558313688872e-05,
+    "mean_per_sample_k1_point_rel_relative_improvement": -0.0036315927352125704,
+    "median_per_sample_k1_point_rel_relative_improvement": 0.000713935761848361,
+    "metrics": {
+      "k0": {
+        "depth_rel": 0.05544042962913712,
+        "point_rel": 0.06818230586747329
+      },
+      "k1": {
+        "depth_rel": 0.05537726196149985,
+        "point_rel": 0.06818368695676327
+      },
+      "k3": {
+        "depth_rel": 0.05549661346400778,
+        "point_rel": 0.06838822184751431
+      }
+    },
+    "per_scene": {
+      "ai_001_001": {
+        "k0_point_rel": 0.01975059323012829,
+        "k1_point_rel": 0.020334787666797638,
+        "k1_point_rel_relative_improvement": -0.029578576697038006,
+        "sample_count": 3
+      },
+      "ai_005_001": {
+        "k0_point_rel": 0.1361887330810229,
+        "k1_point_rel": 0.13611667106548944,
+        "k1_point_rel_relative_improvement": 0.0005291334598918063,
+        "sample_count": 3
+      },
+      "ai_010_001": {
+        "k0_point_rel": 0.028705046822627384,
+        "k1_point_rel": 0.028669987494746845,
+        "k1_point_rel_relative_improvement": 0.0012213645947758422,
+        "sample_count": 3
+      },
+      "ai_015_001": {
+        "k0_point_rel": 0.03002646192908287,
+        "k1_point_rel": 0.030181475604573887,
+        "k1_point_rel_relative_improvement": -0.005162568798719347,
+        "sample_count": 3
+      },
+      "ai_021_001": {
+        "k0_point_rel": 0.06495822469393413,
+        "k1_point_rel": 0.06503087158004443,
+        "k1_point_rel_relative_improvement": -0.0011183631703699515,
+        "sample_count": 3
+      },
+      "ai_026_001": {
+        "k0_point_rel": 0.18255693217118582,
+        "k1_point_rel": 0.18176518380641937,
+        "k1_point_rel_relative_improvement": 0.004336994248041015,
+        "sample_count": 3
+      },
+      "ai_031_001": {
+        "k0_point_rel": 0.05531700203816096,
+        "k1_point_rel": 0.05501141771674156,
+        "k1_point_rel_relative_improvement": 0.005524238663703884,
+        "sample_count": 3
+      },
+      "ai_036_001": {
+        "k0_point_rel": 0.0621748814980189,
+        "k1_point_rel": 0.06272342801094055,
+        "k1_point_rel_relative_improvement": -0.008822638655759052,
+        "sample_count": 3
+      },
+      "ai_041_001": {
+        "k0_point_rel": 0.04426181626816591,
+        "k1_point_rel": 0.04423113539814949,
+        "k1_point_rel_relative_improvement": 0.000693167895111535,
+        "sample_count": 3
+      },
+      "ai_044_001": {
+        "k0_point_rel": 0.0578833669424057,
+        "k1_point_rel": 0.057771911223729454,
+        "k1_point_rel_relative_improvement": 0.001925522383436129,
+        "sample_count": 3
+      }
+    },
+    "sample_count": 30,
+    "sample_win_rate": 0.5333333333333333,
+    "scene_count": 10
+  },
+  "audits": {
+    "base_state_unchanged": true,
+    "gradients_none": {
+      "infinidepth": true,
+      "moge2": true,
+      "ssr": true
+    },
+    "parameters_frozen": {
+      "infinidepth": true,
+      "moge2": true,
+      "ssr": true
+    },
+    "trainable_parameter_count": 0
+  },
   "evaluation_mode": "frozen_checkpoint_heldout",
-  "aggregate": null,
-  "acceptance": null,
-  "audits": null,
-  "runtime_seconds": null,
-  "peak_memory_bytes": null,
-  "failure_reason": null
+  "experiment_id": "exp2",
+  "failure_reason": null,
+  "peak_memory_bytes": 4509985280,
+  "runtime_seconds": 51.512343199923635,
+  "source_checkpoint": {
+    "path": "experiment/exp1_infinidepth_ssr_fixed_grid_mvp/artifacts/checkpoints/best.pt",
+    "selection_score": 0.0689639151096344,
+    "sha256": "c83555403650b236d9bcf00f2d8515d2a14ec4c4ae40c06ca5a2519f623e2057",
+    "step": 200
+  },
+  "status": "completed"
 }
