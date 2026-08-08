@@ -1,64 +1,60 @@
-# exp1: InfiniDepth SSR fixed-grid MVP
+# exp1：InfiniDepth SSR 固定网格最小可行实验
 
-## Hypothesis
+## 实验假设
 
-A zero-initialized SSR attached to the frozen official InfiniDepth RGB model can
-learn a useful one-step geometric correction on one fixed Hypersim sample
-without changing K0 or introducing ground truth into the inference path.
+在冻结的官方 InfiniDepth RGB 模型后接入零初始化 SSR，可以在一个固定的
+Hypersim 样本上学习有效的单步几何修正，同时不改变 K0，也不把真值引入推理
+路径。
 
-## Single controlled change
+## 唯一受控变量
 
-The official InfiniDepth base and MoGe2 scale reference remain frozen. The only
-trainable component is the newly initialized SSR, trained at K=1 on a fixed
-384x512 grid.
+官方 InfiniDepth 基础模型与 MoGe2 尺度参考模型始终冻结。唯一可训练组件是新
+初始化的 SSR，并在固定的 `384x512` 网格上以 `K=1` 进行训练。
 
-## Acceptance criteria
+## 验收标准
 
-- K1 Point Rel improves by at least 1% relative to K0 at the selected checkpoint.
-- Deterministic geometry loss falls by at least 5% from initialization.
-- K0 tensor SHA-256 remains unchanged throughout training.
-- Base and MoGe2 parameters never receive gradients.
-- Save/reload agrees at `rtol=1e-6`, `atol=1e-7`.
+- 所选 checkpoint 的 K1 Point Rel 相比 K0 至少改善 1%。
+- 确定性几何损失相比初始化至少下降 5%。
+- K0 tensor 的 SHA-256 在整个训练过程中保持不变。
+- Base 和 MoGe2 参数始终不接收梯度。
+- 保存并重新加载后的结果满足 `rtol=1e-6`、`atol=1e-7`。
 
-## Current status
+## 当前状态
 
-Completed and accepted on 2026-08-07. The selected checkpoint was reached at
-step 200, where K1 Point Rel improved from `0.06967275` to `0.06896392`
-(`1.017%`) and deterministic geometry loss fell from `0.43732962` to
-`0.37090552` (`15.19%`). Diagnostic K3 Point Rel was `0.06822955`.
+实验于 2026-08-07 完成并通过验收。第 200 步得到所选 checkpoint：K1 Point Rel
+从 `0.06967275` 改善到 `0.06896392`，相对改善 `1.017%`；确定性几何损失从
+`0.43732962` 下降到 `0.37090552`，相对下降 `15.19%`。作为诊断指标，K3
+Point Rel 为 `0.06822955`。
 
-K0 remained bitwise stable, the adapter and zero-initialized SSR both had zero
-maximum absolute regression error, frozen Base/MoGe2 gradients stayed `None`,
-and checkpoint reload passed the required tolerance. The run stopped when both
-primary thresholds were first satisfied. Full structured values are in
-`metrics/report.json`; the two earlier operational failures and their fixes are
-retained in `provenance.json` under the same experiment ID.
+K0 保持逐位稳定；适配层和零初始化 SSR 的最大绝对回归误差均为 `0`；冻结的
+Base/MoGe2 梯度始终为 `None`；checkpoint 重载结果满足规定容差。两个主要阈值
+首次同时满足时，训练自动停止。完整结构化数值见 `metrics/report.json`；此前
+两次运行故障及其修复均保留在同一实验编号的 `provenance.json` 中。
 
-## Conclusion and limitation
+## 结论与局限
 
-The fixed-grid SSR MVP satisfies its scoped acceptance criteria without
-changing the frozen InfiniDepth prediction path. This is a one-sample training
-experiment and demonstrates optimization viability only; it does not establish
-generalization to held-out Hypersim scenes or other datasets.
+固定网格 SSR 最小可行实验在不改变冻结 InfiniDepth 预测路径的前提下，满足了
+本实验范围内的验收标准。本实验只在单个样本上训练，只能说明优化过程可行，
+不能证明其能够泛化到未参与训练的 Hypersim 场景或其他数据集。
 
-## Reproduction
+## 复现方法
 
-Run on `ZJU3DV-S115` from the server checkout:
+在 `ZJU3DV-S115` 的服务器代码目录中运行：
 
 ```bash
 bash experiment/exp1_infinidepth_ssr_fixed_grid_mvp/run.sh
 ```
 
-The launcher refuses output paths outside `/mnt/data/home/zhuzichao/`.
-After the run, validate retained server assets with:
+启动脚本会拒绝任何位于 `/mnt/data/home/zhuzichao/` 之外的输出路径。运行完成后，
+使用以下命令严格验证服务器保留资产：
 
 ```bash
 python experiment/validate_experiment.py --require-untracked-assets \
   experiment/exp1_infinidepth_ssr_fixed_grid_mvp
 ```
 
-## Asset policy
+## 资产保留规则
 
-Only `best.pt`, `last.pt`, `gt.ply`, `k0.ply`, `k1.ply`, `k3.ply`, one training
-curve, one geometry comparison, and one raw run log may be retained. Large
-assets stay on the server and are represented in `artifacts/manifest.json`.
+只允许保留 `best.pt`、`last.pt`、`gt.ply`、`k0.ply`、`k1.ply`、`k3.ply`、一张
+训练曲线、一张几何对比图和一份原始运行日志。大型资产只保留在服务器，并在
+`artifacts/manifest.json` 中登记。

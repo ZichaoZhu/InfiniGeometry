@@ -1,46 +1,42 @@
 # expN_short_ascii_description
 
-## Hypothesis
+## 实验假设
 
-State one falsifiable research question and its acceptance criterion.
+写明一个可证伪的研究问题及其验收标准。
 
-## Single controlled change
+## 唯一受控变量
 
-Describe the primary variable. Do not mix unrelated implementation changes.
+说明本实验的主要变量，不得混入无关的实现变更。
 
-## Configuration
+## 实验配置
 
-- Code commit and clean/dirty state:
-- Base commit:
-- Data and immutable source checksums:
-- Model checkpoints and checksums:
-- Trainable modules:
-- Resolution, batch size, and seed:
-- Optimizer and losses:
-- Hardware and software environment:
+- 代码提交及工作区 clean/dirty 状态：
+- 基线提交：
+- 数据及不可变输入的校验和：
+- 模型 checkpoint 及校验和：
+- 可训练模块：
+- 分辨率、batch size 和随机种子：
+- 优化器和损失：
+- 硬件及软件环境：
 
-The resolved machine-readable configuration belongs in `config.json`; do not
-duplicate the complete JSON here.
+解析后的机器可读配置统一写入 `config.json`，不要在本文档中重复粘贴完整 JSON。
 
-## Results
+## 实验结果
 
-Summarize baseline, best, final, runtime, peak memory, and numerical status.
-The canonical values belong in `metrics/report.json` and evaluation history in
-`metrics/history.jsonl`.
+概述基线、最佳、最终指标、运行时间、峰值显存和数值状态。规范的结构化数值
+写入 `metrics/report.json`，逐次评估历史写入 `metrics/history.jsonl`。
 
-## Conclusion and limitations
+## 结论与局限
 
-State what the result demonstrates and what it cannot establish. Failed or
-incomplete runs remain evidence and must be labelled accurately.
+说明结果能够证明什么、不能证明什么。失败或未完成的运行同样属于实验依据，
+必须准确标注状态。
 
-## Reproduction
+## 复现方法
 
-Keep the launcher in `run.sh`. Record the exact invocation and environment in
-`provenance.json`.
+启动脚本固定为 `run.sh`。在 `provenance.json` 中记录准确的运行命令和环境。
 
-## Assets
+## 资产清单
 
-Register every retained asset in `artifacts/manifest.json` with its role,
-relative or external path, size, SHA-256, generating command, and Git status.
-Do not copy datasets, pretrained weights, source snapshots, caches, or duplicate
-metric formats into the experiment directory.
+所有保留资产都必须在 `artifacts/manifest.json` 中登记用途、相对或外部路径、
+文件大小、SHA-256、生成命令及 Git 状态。不得将数据集、预训练权重、源码快照、
+缓存或内容重复的指标格式复制到实验目录中。
