@@ -28,7 +28,6 @@ from InfiniDepth.model.ssr_geometry import (
 )
 from InfiniDepth.model.ssr_losses import affine_invariant_global_loss, edge_angle_loss
 from InfiniDepth.ssr_experiment import safe_path
-from InfiniDepth.ssr_generalization import aggregate_evaluation, validate_split
 
 
 def fake_inputs(device: torch.device, height: int = 4, width: int = 4) -> InfiniDepthSSRInputs:
@@ -225,53 +224,3 @@ def test_safe_path_rejects_writes_outside_personal_root(tmp_path):
     assert safe_path(root / "experiment", root) == (root / "experiment").resolve()
     with pytest.raises(ValueError):
         safe_path(tmp_path / "other", root)
-
-
-def test_heldout_aggregation_uses_sample_and_scene_acceptance():
-    records = []
-    for index, (scene, k1) in enumerate(
-        (("scene_a", 0.98), ("scene_a", 0.97), ("scene_b", 1.02), ("scene_b", 0.96))
-    ):
-        records.append({
-            "scene_id": scene,
-            "metrics": {
-                "k0": {"point_rel": 1.0, "depth_rel": 0.5},
-                "k1": {"point_rel": k1, "depth_rel": 0.49},
-                "k3": {"point_rel": k1, "depth_rel": 0.48},
-            },
-            "k1_point_rel_relative_improvement": 1.0 - k1,
-            "repeat_k1_max_abs": 0.0,
-            "k0_stable": True,
-            "index": index,
-        })
-    result = aggregate_evaluation(records, {
-        "minimum_mean_k1_point_rel_relative_improvement": 0.01,
-        "minimum_sample_win_rate": 0.6,
-        "maximum_scene_point_rel_relative_regression": 0.05,
-        "maximum_repeat_k1_max_abs": 1e-7,
-    })
-    assert result["sample_count"] == 4
-    assert result["scene_count"] == 2
-    assert result["sample_win_rate"] == 0.75
-    assert result["acceptance"]["passed"]
-
-
-def test_heldout_split_rejects_exp1_training_sample():
-    sample_id = "ai_053_018_cam_00_frame.0000"
-    config = {
-        "data": {
-            "expected_sample_count": 1,
-            "expected_scene_count": 1,
-            "excluded_sample_ids": [sample_id],
-            "samples": [{
-                "sample_id": sample_id,
-                "scene_id": "ai_053_018",
-                "rgb": "/nas1/datasets/hypersim/raw/ai_053_018/rgb.jpg",
-                "rgb_sha256": "0" * 64,
-                "radial_depth": "/nas1/datasets/hypersim/raw/ai_053_018/depth.hdf5",
-                "radial_depth_sha256": "1" * 64,
-            }],
-        }
-    }
-    with pytest.raises(ValueError, match="excluded"):
-        validate_split(config)

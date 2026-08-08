@@ -159,7 +159,7 @@ def main() -> int:
                 require_untracked_assets=args.require_untracked_assets,
             )
         )
-    if not args.paths and numbers and sorted(numbers) != list(range(1, max(numbers) + 1)):
+    if numbers and sorted(numbers) != list(range(1, max(numbers) + 1)):
         errors.append(f"experiment numbering is not contiguous: {sorted(numbers)}")
     if errors:
         print("\n".join(f"ERROR: {error}" for error in errors), file=sys.stderr)
