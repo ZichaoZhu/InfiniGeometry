@@ -1,0 +1,11 @@
+{
+  "acceptance": {
+    "minimum_successful_runs": 3,
+    "required_completed_runs": 5,
+    "required_k3_relative_improvement": 0.01
+  },
+  "experiment_id": "exp1_infinidepth_disparity_ssr_single_image_overfit",
+  "result": null,
+  "runs": [],
+  "status": "planned"
+}

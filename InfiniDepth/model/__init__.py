@@ -1,11 +1,18 @@
 from .registry import MODEL_REGISTRY, register_model
-from .model import InfiniDepth, InfiniDepth_DepthSensor
+from .model import (
+    DisparityRefinementOutput,
+    InfiniDepth,
+    InfiniDepth_DepthSensor,
+    InfiniDepthEncoding,
+)
 
 __all__ = [
     "MODEL_REGISTRY",
     "register_model",
     "InfiniDepth",
     "InfiniDepth_DepthSensor",
+    "InfiniDepthEncoding",
+    "DisparityRefinementOutput",
 ]
 
 

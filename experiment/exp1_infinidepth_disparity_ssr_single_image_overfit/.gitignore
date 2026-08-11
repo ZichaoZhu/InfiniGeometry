@@ -1,0 +1,8 @@
+runs/*/checkpoints/*.pt
+runs/*/checkpoints/*.tmp
+runs/*/artifacts/*.ply
+runs/*/artifacts/*.jpg
+runs/*/artifacts/*.jpeg
+runs/*/logs/
+viewer_data/
+*.tmp

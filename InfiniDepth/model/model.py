@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 from sklearn.linear_model import RANSACRegressor
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
@@ -16,6 +16,7 @@ from .block.config import dinov3_model_configs
 from .block.prompt_models import GeneralPromptModel, SelfAttnPromptModel
 from .block.implicit_decoder import ImplicitHead
 from .block.convolution import BasicEncoder
+from .disparity_refiner import DisparitySparseRefiner, bound_disparity_residual
 
 acc_dtype = (
     torch.bfloat16
@@ -54,6 +55,25 @@ class _InferenceState:
     query_coord: Optional[torch.Tensor] = None
 
 
+@dataclass
+class InfiniDepthEncoding:
+    """Image features reused by arbitrary disparity queries and fixed-grid refinement."""
+
+    dino_features: torch.Tensor
+    basic_features: torch.Tensor
+    patch_size: Tuple[int, int]
+    dino_tokens: torch.Tensor
+
+
+@dataclass
+class DisparityRefinementOutput:
+    disparity: torch.Tensor
+    disparity_sequence: List[torch.Tensor]
+    raw_residuals: List[torch.Tensor]
+    bounded_residuals: List[torch.Tensor]
+    voxel_statistics: List[Dict[str, object]]
+
+
 class _BaseInfiniDepthModel(nn.Module):
     def __init__(
         self,
@@ -87,6 +107,7 @@ class _BaseInfiniDepthModel(nn.Module):
         self.register_buffer("_mean", torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
         self.register_buffer("_std", torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
         self._init_variant_modules()
+        self.disparity_refiner: Optional[DisparitySparseRefiner] = None
 
         if model_path is not None:
             if os.path.exists(model_path):
@@ -152,6 +173,121 @@ class _BaseInfiniDepthModel(nn.Module):
         x_basic = 2.0 * x - 1.0
         basic_feat = self.basic_encoder(x_basic)  # [B, 128, H/4, W/4]
         return features, basic_feat, patch_h, patch_w, dino_tokens
+
+    def _encode_image_with_state(
+        self,
+        image: torch.Tensor,
+        state: _InferenceState,
+    ) -> InfiniDepthEncoding:
+        features, basic_feat, patch_h, patch_w, dino_tokens = self._prepare_backbone_features(
+            image,
+            state=state,
+        )
+        dino_features = self.depth_implicit_head._encode_feat(features, patch_h, patch_w)
+        return InfiniDepthEncoding(
+            dino_features=dino_features,
+            basic_features=basic_feat,
+            patch_size=(patch_h, patch_w),
+            dino_tokens=dino_tokens,
+        )
+
+    def encode_image(
+        self,
+        image: torch.Tensor,
+        prompt_depth: Optional[torch.Tensor] = None,
+        prompt_mask: Optional[torch.Tensor] = None,
+    ) -> InfiniDepthEncoding:
+        state = _InferenceState(prompt_depth=prompt_depth, prompt_mask=prompt_mask)
+        return self._encode_image_with_state(image, state)
+
+    def decode_disparity(
+        self,
+        encoding: InfiniDepthEncoding,
+        query_coord: torch.Tensor,
+        chunk_size: Optional[int] = None,
+    ) -> torch.Tensor:
+        if query_coord.ndim != 3 or query_coord.shape[-1] != 2:
+            raise ValueError(f"Expected query coordinates [B,N,2], got {tuple(query_coord.shape)}")
+        if query_coord.shape[0] != encoding.dino_features.shape[0]:
+            raise ValueError("Encoding and query batch sizes do not match")
+        count = query_coord.shape[1]
+        if count <= 0:
+            raise ValueError("At least one query coordinate is required")
+        if chunk_size is None:
+            chunk_size = max(1, count)
+        if int(chunk_size) <= 0:
+            raise ValueError("chunk_size must be positive")
+        predictions = []
+        for start in range(0, count, int(chunk_size)):
+            predictions.append(
+                self.depth_implicit_head._decode_dpt(
+                    encoding.dino_features,
+                    encoding.basic_features,
+                    query_coord[:, start : start + int(chunk_size)],
+                )
+            )
+        return torch.cat(predictions, dim=1)
+
+    def attach_disparity_refiner(
+        self,
+        *,
+        backend: str = "spconv",
+        voxel_resolution: float = 200.0,
+        max_disparity_span: Optional[int] = None,
+    ) -> DisparitySparseRefiner:
+        visual_dim = int(self.pretrained.blocks[0].attn.qkv.in_features)
+        self.disparity_refiner = DisparitySparseRefiner(
+            visual_dim=visual_dim,
+            voxel_resolution=voxel_resolution,
+            backend=backend,
+            max_disparity_span=max_disparity_span,
+        ).to(next(self.parameters()).device)
+        return self.disparity_refiner
+
+    def forward_dense_refined(
+        self,
+        image: torch.Tensor,
+        *,
+        query_hw: Tuple[int, int] = (384, 512),
+        num_refinement_steps: int = 3,
+        detach_base_from_refiner: bool = False,
+        chunk_size: int = 10000,
+    ) -> DisparityRefinementOutput:
+        if self.disparity_refiner is None:
+            raise RuntimeError("Call attach_disparity_refiner() before refined inference")
+        height, width = (int(value) for value in query_hw)
+        if height <= 0 or width <= 0:
+            raise ValueError("query_hw must contain positive values")
+        if not 0 <= int(num_refinement_steps) <= 7:
+            raise ValueError("num_refinement_steps must be in [0, 7]")
+        encoding = self.encode_image(image)
+        query = _make_dense_query_coord(image.shape[0], height, width, image.device)
+        decoded = self.decode_disparity(encoding, query, chunk_size=chunk_size)
+        base_disparity = decoded[..., 0].reshape(image.shape[0], height, width).float()
+        disparity_sequence = [base_disparity]
+        raw_residuals: List[torch.Tensor] = []
+        bounded_residuals: List[torch.Tensor] = []
+        voxel_statistics: List[Dict[str, object]] = []
+        refined = base_disparity.detach() if detach_base_from_refiner else base_disparity
+        visual = encoding.dino_features.float()
+        if detach_base_from_refiner:
+            visual = visual.detach()
+        with torch.autocast(device_type=image.device.type, enabled=False):
+            for _ in range(int(num_refinement_steps)):
+                raw, statistics = self.disparity_refiner(refined.float(), visual)
+                bounded = bound_disparity_residual(raw, max_abs=0.1)
+                refined = refined + bounded
+                raw_residuals.append(raw)
+                bounded_residuals.append(bounded)
+                voxel_statistics.append(statistics)
+                disparity_sequence.append(refined)
+        return DisparityRefinementOutput(
+            disparity=disparity_sequence[-1],
+            disparity_sequence=disparity_sequence,
+            raw_residuals=raw_residuals,
+            bounded_residuals=bounded_residuals,
+            voxel_statistics=voxel_statistics,
+        )
 
     def _to_depth_disparity(self, pred: torch.Tensor):
         pred_disparity = pred
@@ -221,22 +357,10 @@ class _BaseInfiniDepthModel(nn.Module):
     ):
         """Forward pass with batching to avoid OOM."""
         state = _InferenceState(prompt_depth=prompt_depth, prompt_mask=prompt_mask)
-        features, basic_feat, patch_h, patch_w, dino_tokens = self._prepare_backbone_features(
-            x,
-            state=state,
-        )
-        feat = self.depth_implicit_head._encode_feat(features, patch_h, patch_w)
-        n = coord.shape[1]
-        ql = 0
-        preds = []
-        while ql < n:
-            qr = min(ql + bsize, n)
-            pred = self.depth_implicit_head._decode_dpt(feat, basic_feat, coord[:, ql: qr, :])
-            preds.append(pred)
-            ql = qr
-        pred = torch.cat(preds, dim=1)
+        encoding = self._encode_image_with_state(x, state)
+        pred = self.decode_disparity(encoding, coord, chunk_size=bsize)
         if return_dino_tokens:
-            return pred, dino_tokens
+            return pred, encoding.dino_tokens
         return pred
 
     def forward(
@@ -248,14 +372,11 @@ class _BaseInfiniDepthModel(nn.Module):
         return_dino_tokens: bool = False,
     ):
         state = _InferenceState(prompt_depth=prompt_depth, prompt_mask=prompt_mask)
-        features, basic_feat, patch_h, patch_w, dino_tokens = self._prepare_backbone_features(
-            x,
-            state=state,
-        )
+        encoding = self._encode_image_with_state(x, state)
         with torch.autocast("cuda", enabled=True, dtype=torch.float32):
-            depth = self.depth_implicit_head(features, basic_feat, patch_h, patch_w, coords)
+            depth = self.decode_disparity(encoding, coords)
         if return_dino_tokens:
-            return depth, dino_tokens
+            return depth, encoding.dino_tokens
         return depth
 
     def _prepare_dense_depthmap_for_gs(
