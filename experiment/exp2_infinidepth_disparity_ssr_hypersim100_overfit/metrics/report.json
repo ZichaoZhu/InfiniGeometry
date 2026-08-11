@@ -1,0 +1,10 @@
+{
+  "acceptance": {
+    "minimum_improved_images": 80,
+    "required_k3_relative_improvement": 0.01
+  },
+  "experiment_id": "exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+  "result": null,
+  "runs": [],
+  "status": "running"
+}

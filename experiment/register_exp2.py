@@ -70,8 +70,8 @@ def main() -> None:
             "stages": {
                 "stage1": {
                     "checkpoint_every": 2500,
-                    "dino_freeze_steps": 0,
-                    "dino_warmup_end": 0,
+                    "dino_freeze_steps": 1000,
+                    "dino_warmup_end": 2000,
                     "eval_every": 500,
                     "full_eval_every": 2500,
                     "learning_rates": {"dino": 5e-8, "head": 1e-6, "ssr": 1e-5},
@@ -108,7 +108,7 @@ def main() -> None:
 
 ## 训练
 
-阶段一执行 20,000 个 detached optimizer step；阶段二继续 10,000 个 joint step。全局 batch 固定为 8，microbatch 由登记时根据单卡显存选择 1 或 2，梯度累积保持全局 batch 不变。`stage1_best.pt` 和 `joint_best.pt` 分别保留，联合终点不能覆盖更好的阶段一结果。
+阶段一执行 20,000 个 detached optimizer step；阶段二继续 10,000 个 joint step。全局 batch 固定为 8，microbatch 由登记时根据单卡显存选择 1 或 2，梯度累积保持全局 batch 不变。Stage1 前 1,000 step 冻结 DINO，随后在 step 1,000 至 2,000 线性预热到 $5\\times10^{-8}$；Joint 阶段从第一步起以 $10^{-8}$ 更新 DINO。`stage1_best.pt` 和 `joint_best.pt` 分别保留，联合终点不能覆盖更好的阶段一结果。
 
 ## 验收
 
@@ -159,6 +159,7 @@ runs/*/checkpoints/*.tmp
 runs/*/artifacts/*.ply
 runs/*/artifacts/*.jpg
 runs/*/logs/
+runs/*/monitor/
 *.tmp
 """
     write_text(target / ".gitignore", ignore)
@@ -167,13 +168,27 @@ runs/*/logs/
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CONFIG="$ROOT/experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit/config.json"
+OUTPUT="$ROOT/experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit/runs/main"
 source "$ROOT/experiment/server_environment_guard.sh"
 cd "$ROOT"
 export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
-exec python -m training.disparity_refiner.train \\
-  --config "$CONFIG" \\
-  --run-id main \\
-  --output "$ROOT/experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit/runs/main"
+mkdir -p "$OUTPUT/monitor"
+python experiment/monitor_exp2.py \\
+  --experiment "$(dirname "$(dirname "$OUTPUT")")" \\
+  --training-pid "$$" \\
+  --interval-seconds 300 \\
+  --stale-seconds 7200 \\
+  --daemon >>"$OUTPUT/monitor/daemon.log" 2>&1 &
+ARGS=(
+  --config "$CONFIG"
+  --run-id main
+  --output "$OUTPUT"
+  --device "${INFINIDEPTH_DEVICE:-cuda:0}"
+)
+if [[ -f "$OUTPUT/checkpoints/last.pt" ]]; then
+  ARGS+=(--resume "$OUTPUT/checkpoints/last.pt")
+fi
+exec python -m training.disparity_refiner.train "${ARGS[@]}"
 """
     run_path = target / "run.sh"
     write_text(run_path, run_script)

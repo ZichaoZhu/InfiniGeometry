@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import random
@@ -81,6 +82,29 @@ def _seed_everything(seed: int) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+
+
+def _capture_rng_state(generator: random.Random) -> Dict[str, object]:
+    return {
+        "python": random.getstate(),
+        "numpy": np.random.get_state(),
+        "torch_cpu": torch.get_rng_state(),
+        "torch_cuda": torch.cuda.get_rng_state() if torch.cuda.is_available() else None,
+        "sampling": generator.getstate(),
+    }
+
+
+def _restore_rng_state(state: Mapping[str, object], generator: random.Random) -> bool:
+    rng = state.get("resume_state", {}).get("rng")
+    if not isinstance(rng, Mapping):
+        return False
+    random.setstate(rng["python"])
+    np.random.set_state(rng["numpy"])
+    torch.set_rng_state(rng["torch_cpu"].cpu())
+    if rng["torch_cuda"] is not None and torch.cuda.is_available():
+        torch.cuda.set_rng_state(rng["torch_cuda"].cpu())
+    generator.setstate(rng["sampling"])
+    return True
 
 
 def _selected_run(
@@ -321,6 +345,9 @@ def _save_checkpoint(
     config_sha256: str,
     evaluation: Mapping[str, object],
     include_optimizer: bool,
+    generator: Optional[random.Random] = None,
+    stage_state: Optional[Mapping[str, object]] = None,
+    completed_stage_reports: Sequence[Mapping[str, object]] = (),
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -336,6 +363,13 @@ def _save_checkpoint(
     }
     if include_optimizer:
         checkpoint["optimizer"] = optimizer.state_dict()
+        if generator is None or stage_state is None:
+            raise ValueError("Resumable checkpoints require RNG and stage state")
+        checkpoint["resume_state"] = {
+            "completed_stage_reports": list(completed_stage_reports),
+            "rng": _capture_rng_state(generator),
+            "stage": dict(stage_state),
+        }
     torch.save(checkpoint, temporary)
     temporary.replace(path)
 
@@ -356,6 +390,39 @@ def _restore_checkpoint(
     model.load_state_dict(checkpoint["model"], strict=True)
     optimizer.load_state_dict(checkpoint["optimizer"])
     return checkpoint
+
+
+def _checkpoint_stage_state(checkpoint: Mapping[str, object]) -> Dict[str, object]:
+    resume = checkpoint.get("resume_state", {})
+    saved = resume.get("stage") if isinstance(resume, Mapping) else None
+    if isinstance(saved, Mapping):
+        return dict(saved)
+    evaluation = checkpoint["evaluation"]
+    return {
+        "best_evaluation": evaluation,
+        "best_score": _selection_score(evaluation),
+        "best_step": int(checkpoint["stage_step"]),
+        "elapsed_seconds": 0.0,
+        "final_evaluation": evaluation,
+        "previous_full_score": _selection_score(evaluation),
+        "stale_evaluations": 0,
+    }
+
+
+def _stage_report(stage: str, stage_step: int, state: Mapping[str, object]) -> Dict[str, object]:
+    best_evaluation = state.get("best_evaluation")
+    final_evaluation = state.get("final_evaluation")
+    if best_evaluation is None or final_evaluation is None:
+        raise RuntimeError(f"Cannot complete {stage} without full evaluation state")
+    return {
+        "stage": stage,
+        "completed_steps": int(stage_step),
+        "best_step": int(state["best_step"]),
+        "best_score": float(state["best_score"]),
+        "best_evaluation": best_evaluation,
+        "final_evaluation": final_evaluation,
+        "elapsed_seconds": float(state.get("elapsed_seconds", 0.0)),
+    }
 
 
 def _checkpoint_manifest(checkpoint_dir: Path) -> Dict[str, object]:
@@ -429,6 +496,8 @@ def train_stage(
     generator: random.Random,
     total_step: int,
     initial_stage_step: int = 0,
+    initial_stage_state: Optional[Mapping[str, object]] = None,
+    completed_stage_reports: Sequence[Mapping[str, object]] = (),
 ) -> Tuple[Dict[str, object], int]:
     training = config["training"]
     model_cfg = config["model"]
@@ -455,12 +524,14 @@ def train_stage(
     ]
     if not sampled_eval_indices:
         sampled_eval_indices = list(range(min(8, len(samples))))
-    best_score = float("inf")
-    best_step = 0
-    best_evaluation: Optional[Dict[str, object]] = None
-    previous_full_score: Optional[float] = None
-    stale_evaluations = 0
-    final_evaluation: Optional[Dict[str, object]] = None
+    restored = dict(initial_stage_state or {})
+    best_score = float(restored.get("best_score", float("inf")))
+    best_step = int(restored.get("best_step", 0))
+    best_evaluation = restored.get("best_evaluation")
+    previous_full_score = restored.get("previous_full_score")
+    stale_evaluations = int(restored.get("stale_evaluations", 0))
+    final_evaluation = restored.get("final_evaluation")
+    elapsed_before = float(restored.get("elapsed_seconds", 0.0))
     checkpoint_dir = output / "checkpoints"
     history_path = output / "metrics" / "history.jsonl"
     start_time = time.time()
@@ -488,19 +559,25 @@ def train_stage(
                 gradient_weight=float(training["gradient_weight"]),
                 gradient_scales=int(training["gradient_scales"]),
             )
+            if not bool(torch.isfinite(loss)):
+                raise FloatingPointError("Training loss is non-finite")
             (loss / accumulation).backward()
             monitored = {
                 **{key: float(value.item()) for key, value in metrics.items()},
                 **_refinement_monitor(output_value),
             }
             for key, value in monitored.items():
+                if not math.isfinite(value):
+                    raise FloatingPointError(f"Training monitor {key} is non-finite")
                 accumulated_metrics[key] = accumulated_metrics.get(key, 0.0) + value / accumulation
         gradient_norms = {}
         for name, parameters in parameter_groups.items():
             active = [parameter for parameter in parameters if parameter.grad is not None]
             if active:
                 norm = torch.nn.utils.clip_grad_norm_(
-                    active, float(training["gradient_clip_norm"])
+                    active,
+                    float(training["gradient_clip_norm"]),
+                    error_if_nonfinite=True,
                 )
                 gradient_norms[name] = float(norm.item())
             else:
@@ -529,7 +606,7 @@ def train_stage(
                 "learning_rates": rates,
                 "gradient_norms": gradient_norms,
                 "evaluation": evaluation,
-                "elapsed_seconds": time.time() - start_time,
+                "elapsed_seconds": elapsed_before + time.time() - start_time,
                 "peak_cuda_memory_bytes": int(torch.cuda.max_memory_allocated(device)),
             }
             _append_jsonl(history_path, record)
@@ -570,6 +647,15 @@ def train_stage(
                     or stage_step == maximum_steps
                     or should_stop
                 ):
+                    stage_state = {
+                        "best_evaluation": best_evaluation,
+                        "best_score": best_score,
+                        "best_step": best_step,
+                        "elapsed_seconds": elapsed_before + time.time() - start_time,
+                        "final_evaluation": final_evaluation,
+                        "previous_full_score": previous_full_score,
+                        "stale_evaluations": stale_evaluations,
+                    }
                     _save_checkpoint(
                         checkpoint_dir / "last.pt",
                         model=model,
@@ -580,6 +666,9 @@ def train_stage(
                         config_sha256=config_sha256,
                         evaluation=evaluation,
                         include_optimizer=True,
+                        generator=generator,
+                        stage_state=stage_state,
+                        completed_stage_reports=completed_stage_reports,
                     )
                 if should_stop:
                     break
@@ -587,15 +676,14 @@ def train_stage(
         raise RuntimeError("Stage completed without a full evaluation")
     if best_evaluation is None:
         raise RuntimeError("Stage completed without selecting a best checkpoint")
-    return {
-        "stage": stage,
-        "completed_steps": stage_step,
-        "best_step": best_step,
-        "best_score": best_score,
+    state = {
         "best_evaluation": best_evaluation,
+        "best_score": best_score,
+        "best_step": best_step,
+        "elapsed_seconds": elapsed_before + time.time() - start_time,
         "final_evaluation": final_evaluation,
-        "elapsed_seconds": time.time() - start_time,
-    }, total_step
+    }
+    return _stage_report(stage, stage_step, state), total_step
 
 
 def main() -> None:
@@ -636,12 +724,21 @@ def main() -> None:
     total_step = 0
     initial_stage = None
     initial_stage_step = 0
+    initial_stage_state: Optional[Mapping[str, object]] = None
+    reports: List[Dict[str, object]] = []
+    generator = random.Random(seed + 1)
     if args.resume is not None:
         resume = ensure_within(args.resume, safe_root, name="resume checkpoint")
         state = _restore_checkpoint(resume, model, optimizer, config_sha256)
         total_step = int(state["total_step"])
         initial_stage = str(state["stage"])
         initial_stage_step = int(state["stage_step"])
+        initial_stage_state = _checkpoint_stage_state(state)
+        resume_state = state.get("resume_state", {})
+        if isinstance(resume_state, Mapping):
+            reports = [dict(value) for value in resume_state.get("completed_stage_reports", [])]
+        if not _restore_rng_state(state, generator):
+            generator.seed(seed + total_step + 1)
 
     provenance = _provenance(
         project_root,
@@ -656,32 +753,54 @@ def main() -> None:
         sample.sample_id: list(sample.disparity_quantiles) for sample in samples
     }
     _atomic_json(output / "provenance.json", provenance)
+    _atomic_json(
+        output / "metrics" / "report.json",
+        {
+            "experiment_id": config["experiment_id"],
+            "format": "infinidepth-disparity-refiner-report-v1",
+            "resumed_from": str(args.resume) if args.resume is not None else None,
+            "run_id": run["id"],
+            "started_at_unix": time.time(),
+            "status": "running",
+        },
+    )
 
-    reports = []
     stages = config["training"]["stages"]
     for stage in ("stage1", "joint"):
-        if initial_stage is not None and stage != initial_stage and not reports:
-            if initial_stage == "joint" and stage == "stage1":
-                continue
+        if initial_stage == "joint" and stage == "stage1":
+            if not any(report.get("stage") == "stage1" for report in reports):
+                stage1_path = output / "metrics" / "stage1_report.json"
+                if not stage1_path.is_file():
+                    raise RuntimeError("Joint resume requires the persisted Stage1 report")
+                reports.append(json.loads(stage1_path.read_text(encoding="utf-8")))
+            continue
         stage_start = initial_stage_step if initial_stage == stage else 0
-        report, total_step = train_stage(
-            stage=stage,
-            stage_config=stages[stage],
-            model=model,
-            optimizer=optimizer,
-            parameter_groups=groups,
-            samples=samples,
-            output=output,
-            device=device,
-            config=config,
-            config_sha256=config_sha256,
-            generator=random.Random(seed + total_step + 1),
-            total_step=total_step,
-            initial_stage_step=stage_start,
-        )
+        if initial_stage == stage and stage_start >= int(stages[stage]["max_steps"]):
+            report = _stage_report(stage, stage_start, initial_stage_state or {})
+        else:
+            report, total_step = train_stage(
+                stage=stage,
+                stage_config=stages[stage],
+                model=model,
+                optimizer=optimizer,
+                parameter_groups=groups,
+                samples=samples,
+                output=output,
+                device=device,
+                config=config,
+                config_sha256=config_sha256,
+                generator=generator,
+                total_step=total_step,
+                initial_stage_step=stage_start,
+                initial_stage_state=initial_stage_state if initial_stage == stage else None,
+                completed_stage_reports=reports,
+            )
+        reports = [value for value in reports if value.get("stage") != stage]
         reports.append(report)
+        _atomic_json(output / "metrics" / f"{stage}_report.json", report)
         initial_stage = None
         initial_stage_step = 0
+        initial_stage_state = None
 
     manifest = _checkpoint_manifest(output / "checkpoints")
     _atomic_json(output / "artifacts" / "checkpoint_manifest.json", manifest)

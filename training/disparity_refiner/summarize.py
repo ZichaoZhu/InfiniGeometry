@@ -67,6 +67,7 @@ def collect_assets(experiment: Path, experiment_tag: str) -> List[Dict[str, obje
     }
     patterns = (
         "runs/*/checkpoints/*.pt",
+        "runs/**/*.log",
         "artifacts/*.png",
         f"../viewer/public/data/{experiment_tag}/**/*",
     )
@@ -87,6 +88,12 @@ def collect_assets(experiment: Path, experiment_tag: str) -> List[Dict[str, obje
             )
             if path.suffix == ".pt" and run_id is not None:
                 purpose = "保留的训练 checkpoint"
+                run_argument = "" if run_id == "main" else f" {run_id}"
+                generated_by = (
+                    f"bash experiment/{experiment.name}/run.sh{run_argument}"
+                )
+            elif path.suffix == ".log" and run_id is not None:
+                purpose = "训练日志"
                 run_argument = "" if run_id == "main" else f" {run_id}"
                 generated_by = (
                     f"bash experiment/{experiment.name}/run.sh{run_argument}"

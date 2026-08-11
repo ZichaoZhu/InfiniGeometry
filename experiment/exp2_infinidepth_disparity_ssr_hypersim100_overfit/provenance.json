@@ -1,0 +1,12 @@
+{
+  "base_commit": "36c6e0c31887fafc210184ee43ca475230704095",
+  "implementation_source": {
+    "commit": "5796a09d24de5515bf9ea7ea14b1727f4bb37526",
+    "repository": "https://github.com/ZichaoZhu/MoGe.git"
+  },
+  "manifest_sha256": "801f544ef7e0326ff2df0aa2d604e8ab01a6d0ba001762696b85a040fafd8a24",
+  "origin_url": "https://github.com/ZichaoZhu/InfiniGeometry.git",
+  "run_commit": null,
+  "status": "running",
+  "upstream_url": "https://github.com/zju3dv/InfiniDepth.git"
+}

@@ -461,7 +461,7 @@ def main() -> None:
             "shortLabel": f"Exp{experiment_number}",
             "stageDetails": {
                 "initial": "官方 InfiniDepth 初始预测",
-                "stage1_best": "仅训练 Detach Refiner 的最佳检查点",
+                "stage1_best": "Detach 阶段最佳检查点",
                 "joint_best": "联合训练的最佳检查点",
             },
             "stageLabels": {

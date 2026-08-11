@@ -18,10 +18,14 @@ async function canvasColorCount(page: import("@playwright/test").Page, testId: s
   });
 }
 
-test("renders and switches the three Exp1 point-cloud windows", async ({ page }) => {
+test("switches experiments and renders the three point-cloud windows", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Disparity Refiner/ })).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(3);
+  const exp2 = page.getByTestId("experiment-exp2_infinidepth_disparity_ssr_hypersim100_overfit");
+  await expect(exp2).toBeVisible();
+  await exp2.click();
+  await expect(exp2).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("viewer-left")).toContainText("官方初始 · K=0");
   await expect(page.getByTestId("viewer-right")).toContainText("联合最佳 · K=3");
   await expect(page.getByText(/GT 的 2%\/98% disparity 统计反归一化/)).toBeVisible();
