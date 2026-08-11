@@ -1,0 +1,23 @@
+{
+  "assets": [
+    {
+      "bytes": 1432504633,
+      "path": "stage1_best.pt",
+      "sha256": "bf876698f04316e92097fc9a14a3bc346a8380a8b479b63ffe6638f192d54fee",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 1432503971,
+      "path": "joint_best.pt",
+      "sha256": "020cad4fb5c0a2672e99f17b0073c9a5360b588743c30e362f3582811075b893",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 4296757084,
+      "path": "last.pt",
+      "sha256": "0391381a59cf04f7f077951c2c0044b8cdf8938954c492cc8dcfd838c392eb6c",
+      "tracked_by_git": false
+    }
+  ],
+  "version": 1
+}

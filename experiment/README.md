@@ -4,7 +4,7 @@
 
 | 编号 | 状态 | 研究问题 | 代码提交 | 主指标 | 结论 | 目录 |
 | --- | --- | --- | --- | --- | --- | --- |
-| exp1 | planned | 固定网格 disparity 稀疏三维 Refiner 能否在五张单图上完成稳定过拟合？ | 待运行 | K3 全图 MAE + 锁定细结构 MAE | 待实验 | [exp1](exp1_infinidepth_disparity_ssr_single_image_overfit/) |
+| exp1 | completed | 固定网格 disparity 稀疏三维 Refiner 能否在五张单图上完成稳定过拟合？ | `e38c65d105bc` | K3 全图 MAE + 锁定细结构 MAE | 5/5 个单图运行通过 1% 门槛，可登记 Exp2 | [exp1](exp1_infinidepth_disparity_ssr_single_image_overfit/) |
 
 状态只允许 `planned`、`running`、`completed`、`failed`。只有 Exp1 的五个独立运行全部结束且至少 3/5 通过门槛后，才能登记 Exp2；当前没有 Exp2 目录，也不作泛化性声明。
 

@@ -7,7 +7,60 @@
   },
   "manifest_sha256": "801f544ef7e0326ff2df0aa2d604e8ab01a6d0ba001762696b85a040fafd8a24",
   "origin_url": "https://github.com/ZichaoZhu/InfiniGeometry.git",
-  "run_commit": null,
-  "status": "planned",
+  "run_commits": [
+    "171d4d1b67904a96442a6a130c6a51cea139403d",
+    "7262cdfa625de960331efbdf6e505e8421613c59",
+    "ac190284b27289f32a5f01503f2ab5b59a0e0006",
+    "e4b50e1553fc02005d2f364cb873fca15a3b1ac5"
+  ],
+  "runs": {
+    "01": {
+      "code_commit": "e4b50e1553fc02005d2f364cb873fca15a3b1ac5",
+      "code_dirty": false,
+      "config_sha256": "a857af8a6240da14ad3b0b1f134cfa4a77260cdaf88179cec65b2e6c3d37bb3c",
+      "sample_ids": [
+        "ai_019_004_cam_00_frame.0000"
+      ],
+      "seed": 91
+    },
+    "02": {
+      "code_commit": "7262cdfa625de960331efbdf6e505e8421613c59",
+      "code_dirty": false,
+      "config_sha256": "6ffe4009ca89b65e2f4d6d8327b149e73ae93a6ffc6c4a2e00afb86f4373dd52",
+      "sample_ids": [
+        "ai_054_008_cam_00_frame.0000"
+      ],
+      "seed": 92
+    },
+    "03": {
+      "code_commit": "171d4d1b67904a96442a6a130c6a51cea139403d",
+      "code_dirty": false,
+      "config_sha256": "6ffe4009ca89b65e2f4d6d8327b149e73ae93a6ffc6c4a2e00afb86f4373dd52",
+      "sample_ids": [
+        "ai_053_018_cam_00_frame.0000"
+      ],
+      "seed": 93
+    },
+    "04": {
+      "code_commit": "ac190284b27289f32a5f01503f2ab5b59a0e0006",
+      "code_dirty": false,
+      "config_sha256": "6ffe4009ca89b65e2f4d6d8327b149e73ae93a6ffc6c4a2e00afb86f4373dd52",
+      "sample_ids": [
+        "ai_002_003_cam_00_frame.0000"
+      ],
+      "seed": 94
+    },
+    "05": {
+      "code_commit": "ac190284b27289f32a5f01503f2ab5b59a0e0006",
+      "code_dirty": true,
+      "config_sha256": "6ffe4009ca89b65e2f4d6d8327b149e73ae93a6ffc6c4a2e00afb86f4373dd52",
+      "sample_ids": [
+        "ai_019_004_cam_00_frame.0099"
+      ],
+      "seed": 95
+    }
+  },
+  "status": "completed",
+  "summary_commit": "e38c65d105bc8d51a96fedbd5729f854e7f2d0e2",
   "upstream_url": "https://github.com/zju3dv/InfiniDepth.git"
 }

@@ -1,0 +1,225 @@
+{
+  "completed_at_unix": 1786200332.9563391,
+  "experiment_id": "exp1_infinidepth_disparity_ssr_single_image_overfit",
+  "format": "infinidepth-disparity-refiner-report-v1",
+  "peak_cuda_memory_bytes": 13783800832,
+  "run_id": "01",
+  "stages": [
+    {
+      "best_evaluation": {
+        "aggregate": {
+          "k0": {
+            "composite_score": 0.007923949975520372,
+            "full_mae": 0.004396231845021248,
+            "structure_mae": 0.0035277181304991245
+          },
+          "k1": {
+            "composite_score": 0.007783542620018125,
+            "full_mae": 0.004305817186832428,
+            "structure_mae": 0.0034777254331856966
+          },
+          "k3": {
+            "composite_score": 0.007497469428926706,
+            "full_mae": 0.003962446004152298,
+            "structure_mae": 0.0035350234247744083
+          },
+          "k5": {
+            "composite_score": 0.03620159067213535,
+            "full_mae": 0.016487114131450653,
+            "structure_mae": 0.0197144765406847
+          }
+        },
+        "k3_better_than_k0_count": 1,
+        "per_image": {
+          "ai_019_004_cam_00_frame.0000": {
+            "k0": {
+              "composite_score": 0.007923949975520372,
+              "full_mae": 0.004396231845021248,
+              "structure_mae": 0.0035277181304991245
+            },
+            "k1": {
+              "composite_score": 0.007783542620018125,
+              "full_mae": 0.004305817186832428,
+              "structure_mae": 0.0034777254331856966
+            },
+            "k3": {
+              "composite_score": 0.007497469428926706,
+              "full_mae": 0.003962446004152298,
+              "structure_mae": 0.0035350234247744083
+            },
+            "k5": {
+              "composite_score": 0.03620159067213535,
+              "full_mae": 0.016487114131450653,
+              "structure_mae": 0.0197144765406847
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "best_score": 0.007497469428926706,
+      "best_step": 4000,
+      "completed_steps": 5000,
+      "elapsed_seconds": 3264.488470554352,
+      "final_evaluation": {
+        "aggregate": {
+          "k0": {
+            "composite_score": 0.007145938230678439,
+            "full_mae": 0.00402558408677578,
+            "structure_mae": 0.0031203541439026594
+          },
+          "k1": {
+            "composite_score": 0.005517923040315509,
+            "full_mae": 0.0032845078967511654,
+            "structure_mae": 0.0022334151435643435
+          },
+          "k3": {
+            "composite_score": 0.008800065144896507,
+            "full_mae": 0.004371381364762783,
+            "structure_mae": 0.004428683780133724
+          },
+          "k5": {
+            "composite_score": 0.024395284242928028,
+            "full_mae": 0.0109149981290102,
+            "structure_mae": 0.013480286113917828
+          }
+        },
+        "k3_better_than_k0_count": 0,
+        "per_image": {
+          "ai_019_004_cam_00_frame.0000": {
+            "k0": {
+              "composite_score": 0.007145938230678439,
+              "full_mae": 0.00402558408677578,
+              "structure_mae": 0.0031203541439026594
+            },
+            "k1": {
+              "composite_score": 0.005517923040315509,
+              "full_mae": 0.0032845078967511654,
+              "structure_mae": 0.0022334151435643435
+            },
+            "k3": {
+              "composite_score": 0.008800065144896507,
+              "full_mae": 0.004371381364762783,
+              "structure_mae": 0.004428683780133724
+            },
+            "k5": {
+              "composite_score": 0.024395284242928028,
+              "full_mae": 0.0109149981290102,
+              "structure_mae": 0.013480286113917828
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "stage": "stage1"
+    },
+    {
+      "best_evaluation": {
+        "aggregate": {
+          "k0": {
+            "composite_score": 0.0063729723915457726,
+            "full_mae": 0.003558969125151634,
+            "structure_mae": 0.0028140032663941383
+          },
+          "k1": {
+            "composite_score": 0.005885646678507328,
+            "full_mae": 0.0031411570962518454,
+            "structure_mae": 0.0027444895822554827
+          },
+          "k3": {
+            "composite_score": 0.004090445581823587,
+            "full_mae": 0.0023693819530308247,
+            "structure_mae": 0.0017210636287927628
+          },
+          "k5": {
+            "composite_score": 0.013869480695575476,
+            "full_mae": 0.006085094064474106,
+            "structure_mae": 0.00778438663110137
+          }
+        },
+        "k3_better_than_k0_count": 1,
+        "per_image": {
+          "ai_019_004_cam_00_frame.0000": {
+            "k0": {
+              "composite_score": 0.0063729723915457726,
+              "full_mae": 0.003558969125151634,
+              "structure_mae": 0.0028140032663941383
+            },
+            "k1": {
+              "composite_score": 0.005885646678507328,
+              "full_mae": 0.0031411570962518454,
+              "structure_mae": 0.0027444895822554827
+            },
+            "k3": {
+              "composite_score": 0.004090445581823587,
+              "full_mae": 0.0023693819530308247,
+              "structure_mae": 0.0017210636287927628
+            },
+            "k5": {
+              "composite_score": 0.013869480695575476,
+              "full_mae": 0.006085094064474106,
+              "structure_mae": 0.00778438663110137
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "best_score": 0.004090445581823587,
+      "best_step": 3000,
+      "completed_steps": 5000,
+      "elapsed_seconds": 4902.937974691391,
+      "final_evaluation": {
+        "aggregate": {
+          "k0": {
+            "composite_score": 0.0071912361308932304,
+            "full_mae": 0.003809570102021098,
+            "structure_mae": 0.0033816660288721323
+          },
+          "k1": {
+            "composite_score": 0.006198303075507283,
+            "full_mae": 0.0035216042306274176,
+            "structure_mae": 0.0026766988448798656
+          },
+          "k3": {
+            "composite_score": 0.004436324466951191,
+            "full_mae": 0.0026531831827014685,
+            "structure_mae": 0.001783141284249723
+          },
+          "k5": {
+            "composite_score": 0.009765633381903172,
+            "full_mae": 0.0038391421549022198,
+            "structure_mae": 0.005926491227000952
+          }
+        },
+        "k3_better_than_k0_count": 1,
+        "per_image": {
+          "ai_019_004_cam_00_frame.0000": {
+            "k0": {
+              "composite_score": 0.0071912361308932304,
+              "full_mae": 0.003809570102021098,
+              "structure_mae": 0.0033816660288721323
+            },
+            "k1": {
+              "composite_score": 0.006198303075507283,
+              "full_mae": 0.0035216042306274176,
+              "structure_mae": 0.0026766988448798656
+            },
+            "k3": {
+              "composite_score": 0.004436324466951191,
+              "full_mae": 0.0026531831827014685,
+              "structure_mae": 0.001783141284249723
+            },
+            "k5": {
+              "composite_score": 0.009765633381903172,
+              "full_mae": 0.0038391421549022198,
+              "structure_mae": 0.005926491227000952
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "stage": "joint"
+    }
+  ],
+  "status": "completed",
+  "total_steps": 10000
+}

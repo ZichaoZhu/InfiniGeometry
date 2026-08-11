@@ -1,0 +1,225 @@
+{
+  "completed_at_unix": 1786218201.0175774,
+  "experiment_id": "exp1_infinidepth_disparity_ssr_single_image_overfit",
+  "format": "infinidepth-disparity-refiner-report-v1",
+  "peak_cuda_memory_bytes": 13277646336,
+  "run_id": "03",
+  "stages": [
+    {
+      "best_evaluation": {
+        "aggregate": {
+          "k0": {
+            "composite_score": 0.001778405683580786,
+            "full_mae": 0.0006628448027186096,
+            "structure_mae": 0.0011155608808621764
+          },
+          "k1": {
+            "composite_score": 0.001043575641233474,
+            "full_mae": 0.00035815691808238626,
+            "structure_mae": 0.0006854187231510878
+          },
+          "k3": {
+            "composite_score": 0.0009477788407821208,
+            "full_mae": 0.00032887826091609895,
+            "structure_mae": 0.0006189005798660219
+          },
+          "k5": {
+            "composite_score": 0.001056104025337845,
+            "full_mae": 0.00037546828389167786,
+            "structure_mae": 0.0006806357414461672
+          }
+        },
+        "k3_better_than_k0_count": 1,
+        "per_image": {
+          "ai_053_018_cam_00_frame.0000": {
+            "k0": {
+              "composite_score": 0.001778405683580786,
+              "full_mae": 0.0006628448027186096,
+              "structure_mae": 0.0011155608808621764
+            },
+            "k1": {
+              "composite_score": 0.001043575641233474,
+              "full_mae": 0.00035815691808238626,
+              "structure_mae": 0.0006854187231510878
+            },
+            "k3": {
+              "composite_score": 0.0009477788407821208,
+              "full_mae": 0.00032887826091609895,
+              "structure_mae": 0.0006189005798660219
+            },
+            "k5": {
+              "composite_score": 0.001056104025337845,
+              "full_mae": 0.00037546828389167786,
+              "structure_mae": 0.0006806357414461672
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "best_score": 0.0009477788407821208,
+      "best_step": 4900,
+      "completed_steps": 5000,
+      "elapsed_seconds": 2309.5551221370697,
+      "final_evaluation": {
+        "aggregate": {
+          "k0": {
+            "composite_score": 0.0018645702512003481,
+            "full_mae": 0.0006471847300417721,
+            "structure_mae": 0.001217385521158576
+          },
+          "k1": {
+            "composite_score": 0.001052938459906727,
+            "full_mae": 0.0003701972891576588,
+            "structure_mae": 0.0006827411707490683
+          },
+          "k3": {
+            "composite_score": 0.0009582445782143623,
+            "full_mae": 0.0003352195199113339,
+            "structure_mae": 0.0006230250583030283
+          },
+          "k5": {
+            "composite_score": 0.005979166948236525,
+            "full_mae": 0.001535525661893189,
+            "structure_mae": 0.004443641286343336
+          }
+        },
+        "k3_better_than_k0_count": 1,
+        "per_image": {
+          "ai_053_018_cam_00_frame.0000": {
+            "k0": {
+              "composite_score": 0.0018645702512003481,
+              "full_mae": 0.0006471847300417721,
+              "structure_mae": 0.001217385521158576
+            },
+            "k1": {
+              "composite_score": 0.001052938459906727,
+              "full_mae": 0.0003701972891576588,
+              "structure_mae": 0.0006827411707490683
+            },
+            "k3": {
+              "composite_score": 0.0009582445782143623,
+              "full_mae": 0.0003352195199113339,
+              "structure_mae": 0.0006230250583030283
+            },
+            "k5": {
+              "composite_score": 0.005979166948236525,
+              "full_mae": 0.001535525661893189,
+              "structure_mae": 0.004443641286343336
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "stage": "stage1"
+    },
+    {
+      "best_evaluation": {
+        "aggregate": {
+          "k0": {
+            "composite_score": 0.0012110854731872678,
+            "full_mae": 0.0005258126766420901,
+            "structure_mae": 0.0006852727965451777
+          },
+          "k1": {
+            "composite_score": 0.0006425011379178613,
+            "full_mae": 0.0002618314465507865,
+            "structure_mae": 0.00038066969136707485
+          },
+          "k3": {
+            "composite_score": 0.0005788434064015746,
+            "full_mae": 0.00023426563711836934,
+            "structure_mae": 0.00034457776928320527
+          },
+          "k5": {
+            "composite_score": 0.000698439049301669,
+            "full_mae": 0.00027515014517121017,
+            "structure_mae": 0.00042328890413045883
+          }
+        },
+        "k3_better_than_k0_count": 1,
+        "per_image": {
+          "ai_053_018_cam_00_frame.0000": {
+            "k0": {
+              "composite_score": 0.0012110854731872678,
+              "full_mae": 0.0005258126766420901,
+              "structure_mae": 0.0006852727965451777
+            },
+            "k1": {
+              "composite_score": 0.0006425011379178613,
+              "full_mae": 0.0002618314465507865,
+              "structure_mae": 0.00038066969136707485
+            },
+            "k3": {
+              "composite_score": 0.0005788434064015746,
+              "full_mae": 0.00023426563711836934,
+              "structure_mae": 0.00034457776928320527
+            },
+            "k5": {
+              "composite_score": 0.000698439049301669,
+              "full_mae": 0.00027515014517121017,
+              "structure_mae": 0.00042328890413045883
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "best_score": 0.0005788434064015746,
+      "best_step": 4200,
+      "completed_steps": 5000,
+      "elapsed_seconds": 2262.7009510993958,
+      "final_evaluation": {
+        "aggregate": {
+          "k0": {
+            "composite_score": 0.0017636833945289254,
+            "full_mae": 0.0008815025212243199,
+            "structure_mae": 0.0008821808733046055
+          },
+          "k1": {
+            "composite_score": 0.0007415543077513576,
+            "full_mae": 0.00032218004344031215,
+            "structure_mae": 0.0004193742643110454
+          },
+          "k3": {
+            "composite_score": 0.0006285783601924777,
+            "full_mae": 0.0002556701947469264,
+            "structure_mae": 0.0003729081654455513
+          },
+          "k5": {
+            "composite_score": 0.0007442441419698298,
+            "full_mae": 0.0002961366262752563,
+            "structure_mae": 0.0004481075156945735
+          }
+        },
+        "k3_better_than_k0_count": 1,
+        "per_image": {
+          "ai_053_018_cam_00_frame.0000": {
+            "k0": {
+              "composite_score": 0.0017636833945289254,
+              "full_mae": 0.0008815025212243199,
+              "structure_mae": 0.0008821808733046055
+            },
+            "k1": {
+              "composite_score": 0.0007415543077513576,
+              "full_mae": 0.00032218004344031215,
+              "structure_mae": 0.0004193742643110454
+            },
+            "k3": {
+              "composite_score": 0.0006285783601924777,
+              "full_mae": 0.0002556701947469264,
+              "structure_mae": 0.0003729081654455513
+            },
+            "k5": {
+              "composite_score": 0.0007442441419698298,
+              "full_mae": 0.0002961366262752563,
+              "structure_mae": 0.0004481075156945735
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "stage": "joint"
+    }
+  ],
+  "status": "completed",
+  "total_steps": 10000
+}

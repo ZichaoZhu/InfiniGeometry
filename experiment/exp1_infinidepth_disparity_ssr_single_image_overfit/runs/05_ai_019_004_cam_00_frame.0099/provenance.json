@@ -1,0 +1,41 @@
+{
+  "base_checkpoint": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/checkpoints/depth/infinidepth.ckpt",
+  "base_checkpoint_sha256": "6f123506b266f61b9261878548946cfb8822e6233aaf53527dfc4b3dab1e7f9c",
+  "code_commit": "ac190284b27289f32a5f01503f2ab5b59a0e0006",
+  "code_dirty": true,
+  "command": [
+    "python",
+    "-m",
+    "training.disparity_refiner.train",
+    "--config",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/experiment/exp1_infinidepth_disparity_ssr_single_image_overfit/config.json",
+    "--run-id",
+    "05",
+    "--output",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/experiment/exp1_infinidepth_disparity_ssr_single_image_overfit/runs/05_ai_019_004_cam_00_frame.0099"
+  ],
+  "config_path": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/experiment/exp1_infinidepth_disparity_ssr_single_image_overfit/config.json",
+  "config_sha256": "6ffe4009ca89b65e2f4d6d8327b149e73ae93a6ffc6c4a2e00afb86f4373dd52",
+  "cuda_version": "12.8",
+  "device": "NVIDIA GeForce RTX 4090",
+  "disparity_quantiles": {
+    "ai_019_004_cam_00_frame.0099": [
+      0.11973807215690613,
+      0.5511302351951599
+    ]
+  },
+  "experiment_id": "exp1_infinidepth_disparity_ssr_single_image_overfit",
+  "format": "infinidepth-disparity-refiner-provenance-v1",
+  "hostname": "ZJU3DV-4090",
+  "manifest_sha256": "801f544ef7e0326ff2df0aa2d604e8ab01a6d0ba001762696b85a040fafd8a24",
+  "origin_url": "https://github.com/ZichaoZhu/InfiniGeometry.git",
+  "run_id": "05",
+  "sample_ids": [
+    "ai_019_004_cam_00_frame.0099"
+  ],
+  "seed": 95,
+  "source_root": "/nas1/datasets/hypersim/raw",
+  "started_at_unix": 1786248445.5720131,
+  "torch_version": "2.8.0+cu128",
+  "upstream_url": "https://github.com/zju3dv/InfiniDepth.git"
+}

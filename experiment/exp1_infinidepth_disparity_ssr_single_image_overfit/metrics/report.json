@@ -4,8 +4,68 @@
     "required_completed_runs": 5,
     "required_k3_relative_improvement": 0.01
   },
+  "completed_run_count": 5,
   "experiment_id": "exp1_infinidepth_disparity_ssr_single_image_overfit",
-  "result": null,
-  "runs": [],
-  "status": "planned"
+  "failed_runs": [],
+  "gate_passed": true,
+  "result": "5/5 个单图运行通过 1% 门槛，可登记 Exp2",
+  "runs": [
+    {
+      "k0_composite_score": 0.0063729723915457726,
+      "k3_better_than_k0_count": 1,
+      "k3_composite_score": 0.004090445581823587,
+      "passed": true,
+      "relative_improvement": 0.35815733530403,
+      "run_id": "01",
+      "sample_id": "ai_019_004_cam_00_frame.0000",
+      "selected_stage": "joint",
+      "selected_step": 3000
+    },
+    {
+      "k0_composite_score": 0.005253715207800269,
+      "k3_better_than_k0_count": 1,
+      "k3_composite_score": 0.002080560603644699,
+      "passed": true,
+      "relative_improvement": 0.6039829870192317,
+      "run_id": "02",
+      "sample_id": "ai_054_008_cam_00_frame.0000",
+      "selected_stage": "joint",
+      "selected_step": 1700
+    },
+    {
+      "k0_composite_score": 0.0012110854731872678,
+      "k3_better_than_k0_count": 1,
+      "k3_composite_score": 0.0005788434064015746,
+      "passed": true,
+      "relative_improvement": 0.5220457851928432,
+      "run_id": "03",
+      "sample_id": "ai_053_018_cam_00_frame.0000",
+      "selected_stage": "joint",
+      "selected_step": 4200
+    },
+    {
+      "k0_composite_score": 0.010403529042378068,
+      "k3_better_than_k0_count": 1,
+      "k3_composite_score": 0.0013511042925529182,
+      "passed": true,
+      "relative_improvement": 0.8701301945667391,
+      "run_id": "04",
+      "sample_id": "ai_002_003_cam_00_frame.0000",
+      "selected_stage": "joint",
+      "selected_step": 4700
+    },
+    {
+      "k0_composite_score": 0.049230536445975304,
+      "k3_better_than_k0_count": 1,
+      "k3_composite_score": 0.03321057464927435,
+      "passed": true,
+      "relative_improvement": 0.3254070126633897,
+      "run_id": "05",
+      "sample_id": "ai_019_004_cam_00_frame.0099",
+      "selected_stage": "joint",
+      "selected_step": 3800
+    }
+  ],
+  "status": "completed",
+  "successful_run_count": 5
 }
