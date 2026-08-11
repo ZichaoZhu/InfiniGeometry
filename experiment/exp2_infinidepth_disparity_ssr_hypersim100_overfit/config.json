@@ -54,7 +54,7 @@
     "safe_root": "/mnt/data/home/zhuzichao",
     "temporary": "/mnt/data/home/zhuzichao/tmp/infinidepth_disparity_ssr"
   },
-  "status": "running",
+  "status": "completed",
   "structure_selections": [
     {
       "crop_xyxy": [

@@ -39,7 +39,7 @@
 
 方法：使用全局 batch 8、microbatch 1 和梯度累积 8。Stage1 训练 20,000 step，Joint 训练 10,000 step；训练监督 K=0、1、2、3，评估 K=0、1、3、5。每 500 step 进行抽样评估，每 2,500 step 进行百图完整评估并保存可恢复 checkpoint。
 
-结果：实验已登记并进入服务器验证与训练，正式结果待训练完成。
+结果：实验已登记，CUDA smoke test 和 checkpoint 恢复验证通过；2026-08-10 已在 ZJU3DV-S115 的隔离 GPU 3 上启动正式训练，正式指标待训练完成。
 
 ### 实验结果
 
@@ -59,3 +59,36 @@
 - Joint 阶段取消 SSR 到 Base Head 和 DINO 的梯度截断；DINO 从第一步起以 \(10^{-8}\) 更新。
 - last.pt 保存 optimizer、当前阶段最佳结果、已完成阶段报告、采样器以及 Python、NumPy、PyTorch CPU 和当前训练 GPU 的 RNG 状态。
 - 标准库监控器每 5 分钟检查一次，仅观察 Exp2 自己的 PID、工作目录、指标和输出目录；异常修复与恢复均记录到 Exp2 的 monitor 目录。
+
+## 2026-08-11 exp2
+
+### 实验简述
+
+目的：完成 Exp2 百图训练域实验，并验证 SSR 在同一 checkpoint 下相对 K=0 的独立收益。
+
+方法：按既定配置完成 Stage1 20,000 step 和 Joint 10,000 step，每 2,500 step 执行百图完整评测与 checkpoint 保存，最终导出固定五图的 Exp2 viewer 资产。
+
+结果：训练正常完成，最终选择 Joint step 10,000。K3 相比同 checkpoint 的 K0 平均综合分数改善 23.98%，94/100 张训练图改善，通过预设验收标准。该结果不代表泛化能力。
+
+### 实验结果
+
+- [实验设计与验收标准](./exp2_infinidepth_disparity_ssr_hypersim100_overfit/README.md)
+- [最终汇总报告](./exp2_infinidepth_disparity_ssr_hypersim100_overfit/metrics/report.json)
+- [Stage1 详细报告](./exp2_infinidepth_disparity_ssr_hypersim100_overfit/runs/main/metrics/stage1_report.json)
+- [Joint 详细报告](./exp2_infinidepth_disparity_ssr_hypersim100_overfit/runs/main/metrics/joint_report.json)
+- [训练曲线](./exp2_infinidepth_disparity_ssr_hypersim100_overfit/artifacts/training_curve.png)
+- [Disparity 对比图](./exp2_infinidepth_disparity_ssr_hypersim100_overfit/artifacts/disparity_comparison.png)
+- [在线查看器](https://infinidepth-disparity-refiner-viewe.vercel.app)
+- [本地查看器](http://127.0.0.1:3000)
+
+### 其他
+
+- 全训练过程没有出现 NaN、Inf、OOM 或有界残差越界，也没有触发 checkpoint 恢复。
+- SSR 网络可以输出绝对值大于 0.1 的 raw residual，但实际加到 disparity 上的是
+
+  \[
+  r_{bounded}=0.1\tanh\left(\frac{r_{raw}}{0.1}\right),
+  \]
+
+  因此每轮实际更新始终满足 \(\lvert r_{bounded}\rvert\leq0.1\)。本次记录到的最大绝对值分别为 raw residual 0.773 和 bounded residual 0.100，属于正常的平滑限幅。
+- 资产归档时发现汇总器未登记 `train.log` 和 `monitor/daemon.log`，已将 `runs/` 下的运行日志纳入资产清单后重新汇总，服务器完整性校验通过。该修复不改变训练语义、配置或 checkpoint。

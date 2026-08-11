@@ -13,6 +13,19 @@
 
 在同一最佳 checkpoint 下，K3 平均综合分数需比 K0 低至少 1%，且至少 80/100 张训练图的 K3 全图 disparity MAE 优于 K0。联合阶段不强制优于阶段一；若退化，按 Base/Refiner 联合优化冲突报告。
 
+## 结果
+
+训练于 2026-08-11 正常完成。最终选择 Joint step 10,000，K3 相比同 checkpoint 的 K0 平均综合分数改善 23.98%，94/100 张训练图改善，通过验收。该结论仅适用于固定百图训练域。
+
+- [最终汇总](metrics/report.json)
+- [Stage1 详细报告](runs/main/metrics/stage1_report.json)
+- [Joint 详细报告](runs/main/metrics/joint_report.json)
+- [训练历史](runs/main/metrics/history.jsonl)
+- [训练曲线](artifacts/training_curve.png)
+- [Disparity 对比图](artifacts/disparity_comparison.png)
+- [在线查看器](https://infinidepth-disparity-refiner-viewe.vercel.app)
+- [本地查看器](http://127.0.0.1:3000)
+
 ## 服务器命令
 
 ```bash

@@ -1,10 +1,27 @@
 {
   "acceptance": {
-    "minimum_improved_images": 80,
+    "minimum_successful_runs": 1,
+    "required_completed_runs": 1,
     "required_k3_relative_improvement": 0.01
   },
+  "completed_run_count": 1,
   "experiment_id": "exp2_infinidepth_disparity_ssr_hypersim100_overfit",
-  "result": null,
-  "runs": [],
-  "status": "running"
+  "failed_runs": [],
+  "gate_passed": true,
+  "result": "百图训练正常完成，平均综合分数改善 23.98%，94/100 张改善",
+  "runs": [
+    {
+      "k0_composite_score": 0.04935483975335956,
+      "k3_better_than_k0_count": 94,
+      "k3_composite_score": 0.037521944583859296,
+      "passed": true,
+      "relative_improvement": 0.23975146568467592,
+      "run_id": "main",
+      "sample_id": null,
+      "selected_stage": "joint",
+      "selected_step": 10000
+    }
+  ],
+  "status": "completed",
+  "successful_run_count": 1
 }

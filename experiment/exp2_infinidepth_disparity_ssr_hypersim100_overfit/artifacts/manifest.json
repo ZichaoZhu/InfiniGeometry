@@ -1,6 +1,511 @@
 {
-  "assets": [],
+  "assets": [
+    {
+      "bytes": 1432522019,
+      "generated_by": "bash experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit/run.sh",
+      "path": "exp2_infinidepth_disparity_ssr_hypersim100_overfit/runs/main/checkpoints/joint_best.pt",
+      "purpose": "保留的训练 checkpoint",
+      "sha256": "43d516addb5ebe767a749d87213d4bb53f224295f3e47e38c1621bc55a4ce0e9",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 4296808306,
+      "generated_by": "bash experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit/run.sh",
+      "path": "exp2_infinidepth_disparity_ssr_hypersim100_overfit/runs/main/checkpoints/last.pt",
+      "purpose": "保留的训练 checkpoint",
+      "sha256": "a34190bec8b7016d411ddc1ad10f82e2cc2977cf85a2f03344321a5faa69f7b8",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 1432522681,
+      "generated_by": "bash experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit/run.sh",
+      "path": "exp2_infinidepth_disparity_ssr_hypersim100_overfit/runs/main/checkpoints/stage1_best.pt",
+      "purpose": "保留的训练 checkpoint",
+      "sha256": "4b797f9517779a122736438910599d0d5105e9398d08ab9ef07cbf8baf6a9a09",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 436,
+      "generated_by": "bash experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit/run.sh",
+      "path": "exp2_infinidepth_disparity_ssr_hypersim100_overfit/runs/main/logs/train.log",
+      "purpose": "训练日志",
+      "sha256": "11c2100fd302b2f7eb4a76e1dbf1fe9044c2b499dd99394b94a70226c366052e",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 0,
+      "generated_by": "bash experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit/run.sh",
+      "path": "exp2_infinidepth_disparity_ssr_hypersim100_overfit/runs/main/monitor/daemon.log",
+      "purpose": "训练日志",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 3790440,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "exp2_infinidepth_disparity_ssr_hypersim100_overfit/artifacts/disparity_comparison.png",
+      "purpose": "最终训练曲线或 disparity 定性对比图",
+      "sha256": "8189bc4aaf1c2b586c9b4f6de2da177b9acc9e01d1beb37bac6bc056cadf0953",
+      "tracked_by_git": true
+    },
+    {
+      "bytes": 144000,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "exp2_infinidepth_disparity_ssr_hypersim100_overfit/artifacts/training_curve.png",
+      "purpose": "最终训练曲线或 disparity 定性对比图",
+      "sha256": "48598c20049f6c14ba931ec0d0baeca735ccc2e821d1273f25e9df92e6dabb64",
+      "tracked_by_git": true
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/ground_truth.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "dcb963407b8490ccc7e3c6eb854b87955d3b713d1372ed25e515b7dad73450bb",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/initial_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "9f878f842218e1c78f79f2abce865316a37740be5e6d22e5a23402edd39d182a",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/joint_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "df79fcad2dbbf4058a3827a4ddbe3e3087fa7b819ff7ff7554d3a4dcfa2e2fe3",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/joint_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "83c52dc8180f0e3f8df1db7a5edec267899e442d9ad164d49dada6bfab3c8c3c",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/joint_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "eb33684632f0cc737889a5f416d65ddb457ad107130cfb222b5f1b478860a7d5",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/joint_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "a4b6bdc42d37e16898e177ee14c7b4299a66df8a0a63e8df29d89f4a4f5ff9b4",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 60927,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/source_rgb.jpg",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "355dcfd477e018d0a8fb2a61e130d14365a1f0d5bc003114ceb9781ca1d95354",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/stage1_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "d42780476535370665108a3d0c89f9ec289b7ea2cbac805c7fd517f91f2ad4c5",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/stage1_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "7c98c7913762dda891e91ab05da91f36ee483b9e6dd9e0440d2b2518f6443b17",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/stage1_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "a09ef2b4ad349383b16bfaf6ff12dc04c1fe8356751f8e2c70250836f67cc509",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_002_003_cam_00_frame.0000/stage1_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "df4fc38555bb420c73894d2c77bfccc81e654d4af438038f7f0bbeb7fbb68fb2",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/ground_truth.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "8d03b24e98a35fd5ad55d384bf0832227ab387ab36917f8ed6d5176bc3c833c8",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/initial_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "4c6fa4858f73e8b2089ea5a9e8894bd100b00097441c1f18a7bbd0b0fca0a42a",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/joint_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "7881d961db8b9da185deb0bcab54906df2dc956911e8358551251a7bfc43e8b7",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/joint_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "07946e4de21dce844a9483e6497a7114be4a78e4277a20e78e0b98076e3b2384",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/joint_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "f023c8318e0f0bd34cdc6175638a3d279fa2ec4b7c396d771a235bf6ad76e5a6",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/joint_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "c491a8f2ae8ae3a91152a2250e43393007647cf5e80505b1e850ca7e53e8d298",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 64460,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/source_rgb.jpg",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "286e1a920333e7756e3435ba4516ba3989dcc3024597bfbe020e841aa722220d",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/stage1_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "0760b0862394557b39dd91a6246bedef5561c8e25a19903ebfc97a2e9905fbe9",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/stage1_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "ca938fc3654ca67aea6b4eb5675678015a726f5adacf1003bbdb5356e8754893",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/stage1_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "a6c4dff335f6bd9a9d8b48028591d18e4392b5dca7d85878fa4e5975b635ba1a",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0000/stage1_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "88f1f9c9d5d5ff483979583514ae4432d384eb9db5edbb048064e822b1afb77d",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/ground_truth.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "1a307a0ca3011ddb62a9c705d51f27030b6ce7cc7c166bf64e61318c6298900c",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/initial_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "76ff1ba2846574df3f6e73ea164c8e28cced35af2629bf09ca0efc961509df20",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/joint_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "1e81282937f497bd115dbeede735366ba4c9987fb34d36a4cf76dd5981f14b74",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/joint_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "5e7ecf4d19d7dc600147c946f5b3d9f58fe92f4bfc948b2d2eec31caee8add1c",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/joint_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "ba4beec6ee381e39f66c77056803077e79a4710d928919845b7c6f04e3a99379",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/joint_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "31fb5f76d3f871f8ea5652dcf53ec2899b50268c608fec2884a453095ab0f47d",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 61098,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/source_rgb.jpg",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "b2dbbd787de0792c1bceec1715600868bdf53fd62ba9ce8f8694004b33db4894",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/stage1_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "7e681178c5b5f1379553358254bb4164aecc7bbc430ca53f193ae2eab9202ad2",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/stage1_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "d0e1dad742cf7b5698ea1f44cf35f6ec8488f02fd210db1b544c1ca07475826c",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/stage1_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "ad9caccffeac73419c0c50417b58b7e3d3abe9a41cdf3dad8365effd31e75548",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_019_004_cam_00_frame.0099/stage1_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "1aa8ad2004e56b15c91d72306ae6e566d09f2befea07e7e9451bc36ece5e04dd",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/ground_truth.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "da8dcebf8bce84fb4ebe3562660f33ae2d2a7fddabeb116e688567f56e766790",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/initial_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "c93a3fa3077f5bfa70ba5602544fd9fbad65b7865defcc86f3e603f86a5ab4de",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/joint_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "9bec8589884f0b59777441905d7c7493f75dece219d601afa39a82551a416821",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/joint_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "71d58fc8ea2ec015e930d38de6e9b5836f781e44b5fbc3d17d7311c811bfa1cb",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/joint_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "b141c6f4d25abeea6d964f49cd9ceca53df40021a324106d1e65c6acb4781bf8",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/joint_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "d7fb4f024a8582f9ec81b31289367d041e8a7ac7bfd659b69ef3d24fb549ec82",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 52898,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/source_rgb.jpg",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "6f3cdeaad197d24a1e24bb7987fbbb5bf486a9145717fd40cba0fcde38cd82d4",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/stage1_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "03e23af74d1057849e78870ec1a39cb764601d3b7236f6ff9fc2d1936d15d7ed",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/stage1_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "b7f8a0380fa0c5fa480030bb8888ac9dfec95e7ca7347284bf7c6c5aed9fbe88",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/stage1_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "a88f3337a555d20065784f0cf7260982927f624dce33b813852a95d85fd5ed98",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_053_018_cam_00_frame.0000/stage1_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "cd2767acdec2ce66159bff3d7ea03562c97be6dd8ae6cc298fe37ae80348e258",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/ground_truth.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "8011a78911f9fe010613165d153c76d3a19f6e76efa9236e9bb7c0bd891b8d1b",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/initial_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "2b32df1fddd221718a54e0e886bb15049ed6b871affeb918ecf4829de23a9957",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/joint_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "8e75a5e64b2d8f22f7bc7c9c9990a37958e99ee2e63e4322e8cf78108d1a42f8",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/joint_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "e8fcae6fc5960597778296dbf778e1c4b556646ac7e5d93a7812e13b52837567",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/joint_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "0bad4163c57f3000b4049c46984841f8f379683882646c424288e8e3bee15aa0",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/joint_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "b2db7d62dec417d940ab69eaeeeeb18731465488edf2c40cb0a74adbac3d5ab4",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 77807,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/source_rgb.jpg",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "c34b9d2bcb065a78eef7949910fbdf112a21df8bd0b0eb18d39a96e2bb1bf5cb",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/stage1_best_k0.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "16f369a178bc39d66f04e351869090b0623d06ec239ff18a8c903df4b793b9b6",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/stage1_best_k1.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "f5dc43c0e96e7df5915b54128ce02194564f0b683dcbcea23c4b1db1cf5ac3b9",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/stage1_best_k3.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "d1010da979886fe6f8dda15fb5f7d9c2a4fe93561a00ed4b9096ee695831368c",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 2949300,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/ai_054_008_cam_00_frame.0000/stage1_best_k5.ply",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "de93f5c9f7a816a7dda1e8b9f627786379266330c41737c5fff6f9c5afc2ce58",
+      "tracked_by_git": false
+    },
+    {
+      "bytes": 83285,
+      "generated_by": "python -m training.disparity_refiner.export_assets --experiment experiment/exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "path": "viewer/public/data/exp2/manifest.json",
+      "purpose": "三窗口查看器的服务器端数据",
+      "sha256": "ef24c9748620c7dd3e9d0135b5de9246a02cdf65eecac9b6250dfcc9a4dc6077",
+      "tracked_by_git": false
+    }
+  ],
   "experiment_id": "exp2_infinidepth_disparity_ssr_hypersim100_overfit",
-  "status": "running",
+  "status": "completed",
   "version": 1
 }
