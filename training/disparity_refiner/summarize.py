@@ -134,12 +134,13 @@ def update_index(
     status: str,
     conclusion: str,
     commit: str,
+    metric: str,
 ) -> None:
     index = project_root / "experiment" / "README.md"
     lines = index.read_text(encoding="utf-8").splitlines()
     replacement = (
         f"| exp{experiment_number} | {status} | {question} "
-        f"| `{commit[:12]}` | K3 全图 MAE + 锁定细结构 MAE | {conclusion} "
+        f"| `{commit[:12]}` | {metric} | {conclusion} "
         f"| [exp{experiment_number}]({experiment_name}/) |"
     )
     matches = [
@@ -238,10 +239,19 @@ def main() -> None:
     elif gate_passed and expected == 1:
         status = "completed"
         selected = run_results[0]
-        conclusion = (
-            f"百图训练正常完成，平均综合分数改善 {100 * float(selected['relative_improvement']):.2f}%，"
-            f"{selected['k3_better_than_k0_count']}/100 张改善"
-        )
+        if config["evaluation"].get("split") == "val":
+            count = len(config["evaluation"]["full_sample_ids"])
+            conclusion = (
+                f"全量训练正常完成，validation 平均分数改善 "
+                f"{100 * float(selected['relative_improvement']):.2f}%，"
+                f"{selected['k3_better_than_k0_count']}/{count} 张改善"
+            )
+        else:
+            conclusion = (
+                f"百图训练正常完成，平均综合分数改善 "
+                f"{100 * float(selected['relative_improvement']):.2f}%，"
+                f"{selected['k3_better_than_k0_count']}/100 张改善"
+            )
     elif gate_passed:
         status = "completed"
         conclusion = f"{successes}/{expected} 个单图运行通过 1% 门槛，可登记 Exp2"
@@ -305,6 +315,11 @@ def main() -> None:
         status,
         conclusion,
         commit,
+        (
+            "K3 validation 全图 disparity MAE"
+            if config["evaluation"].get("split") == "val"
+            else "K3 全图 MAE + 锁定细结构 MAE"
+        ),
     )
 
 

@@ -1,0 +1,7 @@
+checkpoints/*.pt
+checkpoints/*.tmp
+artifacts/*.ply
+artifacts/*.jpg
+logs/
+monitor/
+*.tmp

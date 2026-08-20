@@ -3,6 +3,8 @@ export type RefinementStep = (typeof REFINEMENT_STEPS)[number];
 export type StageName = string;
 export type CoordinateMode = "aligned" | "raw";
 export type MetricScope = "full" | "structure";
+export const DATASET_SPLITS = ["train", "val", "test"] as const;
+export type DatasetSplit = (typeof DATASET_SPLITS)[number];
 
 export type ScopeMetrics = {
   pixels: number;
@@ -39,6 +41,7 @@ export type PointCloudSample = {
   cropXYXY: [number, number, number, number];
   disparityQuantiles: [number, number];
   rgbUrl: string;
+  split?: DatasetSplit;
   websiteEnabled?: boolean;
   groundTruth: PointCloudAsset;
   stages: Record<StageName, StageAssets>;
@@ -52,6 +55,13 @@ export type PointCloudManifest = {
   steps: RefinementStep[];
   stages: StageName[];
   defaultStages?: { left: StageName; right: StageName };
+  samplePolicy?: {
+    algorithm: string;
+    countPerSplit: number;
+    seed: number;
+    splitOrder: DatasetSplit[];
+    testUsage?: string;
+  };
   websiteSampleOrder?: string[];
   coordinateSpace?: { stored: string; aligned: string; threeDisplay: string };
   voxelization: { depthScale: number; spconvOrder: string[]; depthCoordinate: string };
@@ -80,6 +90,15 @@ export function isAlias(value: PointCloudAsset | AssetAlias): value is AssetAlia
 
 export function sampleStages(sample: PointCloudSample): StageName[] {
   return Object.keys(sample.stages);
+}
+
+export function sampleSplits(manifest: PointCloudManifest): DatasetSplit[] {
+  const present = new Set(
+    manifest.samples
+      .map((sample) => sample.split)
+      .filter((split): split is DatasetSplit => Boolean(split)),
+  );
+  return DATASET_SPLITS.filter((split) => present.has(split));
 }
 
 export function resolveAsset(
@@ -139,14 +158,29 @@ export function validateManifest(manifest: PointCloudManifest): void {
   for (const sample of manifest.samples) {
     if (ids.has(sample.id)) throw new Error(`样本重复: ${sample.id}`);
     ids.add(sample.id);
+    if (sample.split && !DATASET_SPLITS.includes(sample.split)) {
+      throw new Error(`${sample.id} 的数据 split 无效`);
+    }
     const assets = [sample.groundTruth];
     for (const stage of sampleStages(sample)) {
       for (const step of manifest.steps) assets.push(resolveAsset(sample, stage, step));
     }
     for (const asset of assets) {
       if (asset.pointCount !== expectedPoints) throw new Error(`${sample.id} 点数与固定网格不一致`);
-      if (!asset.url.match(/^\/data\/exp[0-9]+\//)) throw new Error(`${sample.id} 资产 URL 越界`);
+      if (!asset.url.match(/^\/data\/exp[0-9]+(?:_[a-z0-9_]+)?\//)) throw new Error(`${sample.id} 资产 URL 越界`);
       validateMetrics(asset.metrics, sample.id);
+    }
+  }
+  if (manifest.samplePolicy) {
+    const { countPerSplit, splitOrder } = manifest.samplePolicy;
+    if (countPerSplit <= 0 || !Number.isInteger(countPerSplit)) {
+      throw new Error("随机样本每个 split 的数量无效");
+    }
+    for (const split of splitOrder) {
+      const count = manifest.samples.filter((sample) => sample.split === split).length;
+      if (count !== countPerSplit) {
+        throw new Error(`${split} 样本数 ${count} != ${countPerSplit}`);
+      }
     }
   }
 }
@@ -158,7 +192,7 @@ export function validateCatalog(catalog: ExperimentCatalog): void {
     throw new Error("实验目录存在重复项或默认实验无效");
   }
   for (const entry of catalog.experiments) {
-    if (!entry.manifestUrl.match(/^\/data\/exp[0-9]+\/manifest\.json$/)) {
+    if (!entry.manifestUrl.match(/^\/data\/exp[0-9]+(?:_[a-z0-9_]+)?\/manifest\.json$/)) {
       throw new Error(`实验 manifest URL 无效: ${entry.manifestUrl}`);
     }
   }

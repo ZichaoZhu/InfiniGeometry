@@ -75,7 +75,7 @@ def disparity_metrics(
     target: torch.Tensor,
     valid_mask: torch.Tensor,
     structure_mask: torch.Tensor | None = None,
-) -> Dict[str, float]:
+) -> Dict[str, float | None]:
     full = float(masked_disparity_mae(prediction, target, valid_mask).item())
     result = {"full_mae": full}
     if structure_mask is not None:
@@ -129,6 +129,64 @@ def depth_boundary_f1(
     precision = (prediction_edges & target_dilated).sum().float() / prediction_edges.sum()
     recall = (target_edges & prediction_dilated).sum().float() / target_edges.sum()
     return float((2 * precision * recall / (precision + recall).clamp_min(1e-8)).item())
+
+
+@torch.no_grad()
+def disparity_detail_metrics(
+    prediction: torch.Tensor,
+    target: torch.Tensor,
+    radial_depth: torch.Tensor,
+    valid_mask: torch.Tensor,
+    disparity_quantiles: Tuple[float, float],
+    *,
+    gradient_scales: int = 4,
+    boundary_threshold: float = 0.03,
+    edge_band_radius: int = 3,
+) -> Dict[str, float]:
+    low, high = (float(value) for value in disparity_quantiles)
+    if high <= low:
+        raise ValueError("Disparity quantiles must be increasing")
+    if gradient_scales <= 0 or boundary_threshold <= 0 or edge_band_radius < 0:
+        raise ValueError("Detail metric settings must be positive")
+    prediction_depth = (
+        prediction.float().mul(high - low).add(low).clamp_min(1e-6).reciprocal()
+    )
+    target_edges = _depth_edges(radial_depth.float(), valid_mask.bool(), boundary_threshold)
+    full_mae = float(masked_disparity_mae(prediction, target, valid_mask).item())
+    gradient_error = float(
+        multiscale_gradient_loss(
+            prediction[None], target[None], valid_mask[None], scales=gradient_scales
+        ).item()
+    )
+    if not bool(target_edges.any()):
+        return {
+            "full_mae": full_mae,
+            "multiscale_gradient_error": gradient_error,
+            "boundary_f1": None,
+            "edge_band_mae": None,
+            "edge_pixels": 0.0,
+        }
+    kernel_size = 2 * int(edge_band_radius) + 1
+    edge_band = F.max_pool2d(
+        target_edges.float()[None, None],
+        kernel_size=kernel_size,
+        stride=1,
+        padding=edge_band_radius,
+    )[0, 0].bool() & valid_mask.bool()
+    return {
+        "full_mae": full_mae,
+        "multiscale_gradient_error": gradient_error,
+        "boundary_f1": depth_boundary_f1(
+            prediction_depth,
+            radial_depth.float(),
+            valid_mask.bool(),
+            threshold=boundary_threshold,
+        ),
+        "edge_band_mae": float(
+            masked_disparity_mae(prediction, target, edge_band).item()
+        ),
+        "edge_pixels": float(edge_band.sum().item()),
+    }
 
 
 @torch.no_grad()

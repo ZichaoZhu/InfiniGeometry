@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   resolveAsset,
+  sampleSplits,
   validateCatalog,
   validateManifest,
   type PointCloudAsset,
@@ -88,7 +89,25 @@ describe("Exp1 viewer manifest", () => {
     expect(() => validateCatalog({
       version: 1,
       defaultExperiment: "exp12",
-      experiments: [{ id: "exp12", label: "Exp12", manifestUrl: "/data/exp12/manifest.json", summary: "next" }],
+      experiments: [{ id: "exp12", label: "Exp12", manifestUrl: "/data/exp12_revision2/manifest.json", summary: "next" }],
     })).not.toThrow();
+  });
+
+  it("validates and orders train, val, and test samples", () => {
+    const value = manifest();
+    value.samples = ["train", "val", "test"].flatMap((split, splitIndex) =>
+      [1, 2, 3, 4, 5].map((index) => ({
+        ...sample(splitIndex * 5 + index),
+        split: split as "train" | "val" | "test",
+      })),
+    );
+    value.samplePolicy = {
+      algorithm: "python-random-sample",
+      countPerSplit: 5,
+      seed: 173,
+      splitOrder: ["train", "val", "test"],
+    };
+    expect(sampleSplits(value)).toEqual(["train", "val", "test"]);
+    expect(() => validateManifest(value)).not.toThrow();
   });
 });

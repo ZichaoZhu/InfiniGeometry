@@ -1,0 +1,69 @@
+{
+  "format": "infinidepth-disparity-refiner-viewer-v1",
+  "asset_tag": "exp3_v2",
+  "artifact_suffix": "_viewer_v2",
+  "sample_policy": {
+    "algorithm": "train-fixed-exp1-exp2-val-test-python-random-sample",
+    "count_per_split": 5,
+    "seed": 173,
+    "split_order": ["train", "val", "test"],
+    "test_usage": "visualization_only"
+  },
+  "samples": [
+    {"split": "train", "sample_id": "ai_019_004_cam_00_frame.0000"},
+    {"split": "train", "sample_id": "ai_054_008_cam_00_frame.0000"},
+    {"split": "train", "sample_id": "ai_053_018_cam_00_frame.0000"},
+    {"split": "train", "sample_id": "ai_002_003_cam_00_frame.0000"},
+    {"split": "train", "sample_id": "ai_019_004_cam_00_frame.0099"},
+    {"split": "val", "sample_id": "ai_052_001_cam_01_frame.0081"},
+    {"split": "val", "sample_id": "ai_051_004_cam_00_frame.0049"},
+    {"split": "val", "sample_id": "ai_053_005_cam_00_frame.0068"},
+    {"split": "val", "sample_id": "ai_044_001_cam_00_frame.0079"},
+    {"split": "val", "sample_id": "ai_046_005_cam_00_frame.0086"},
+    {"split": "test", "sample_id": "ai_024_005_cam_00_frame.0021"},
+    {"split": "test", "sample_id": "ai_054_005_cam_00_frame.0088"},
+    {"split": "test", "sample_id": "ai_053_007_cam_01_frame.0079"},
+    {"split": "test", "sample_id": "ai_021_001_cam_00_frame.0027"},
+    {"split": "test", "sample_id": "ai_026_002_cam_00_frame.0051"}
+  ],
+  "structure_selections": [
+    {
+      "crop_xyxy": [192, 160, 384, 352],
+      "description": "楼梯扶手与平行栏杆",
+      "display_mask": {"quantile": 0.5, "type": "near_quantile"},
+      "sample_id": "ai_019_004_cam_00_frame.0000"
+    },
+    {
+      "crop_xyxy": [192, 192, 384, 384],
+      "description": "悬空楼梯踏板与支架",
+      "display_mask": {"quantile": 0.5, "type": "near_quantile"},
+      "sample_id": "ai_054_008_cam_00_frame.0000"
+    },
+    {
+      "crop_xyxy": [320, 64, 512, 256],
+      "description": "密集竖直隔断杆",
+      "display_mask": {"quantile": 0.5, "type": "near_quantile"},
+      "sample_id": "ai_053_018_cam_00_frame.0000"
+    },
+    {
+      "crop_xyxy": [128, 32, 320, 224],
+      "description": "楼梯栏杆与斜向扶手",
+      "display_mask": {"quantile": 0.5, "type": "near_quantile"},
+      "sample_id": "ai_002_003_cam_00_frame.0000"
+    },
+    {
+      "crop_xyxy": [0, 96, 192, 288],
+      "description": "玻璃楼梯细拉杆",
+      "display_mask": {"quantile": 0.5, "type": "near_quantile"},
+      "sample_id": "ai_019_004_cam_00_frame.0099"
+    }
+  ],
+  "checkpoints": {
+    "stage1_best": "runs/main/checkpoints/stage1_best.pt",
+    "joint_best": "runs/revision3_reboot_resume_20260818/checkpoints/joint_best.pt"
+  },
+  "histories": {
+    "stage1": "runs/main/metrics/history.jsonl",
+    "joint": "runs/revision3_reboot_resume_20260818/metrics/history.jsonl"
+  }
+}

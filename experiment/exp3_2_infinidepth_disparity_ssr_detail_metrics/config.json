@@ -1,0 +1,23 @@
+{
+  "checkpoints": [
+    {
+      "id": "stage1_40000",
+      "path": "experiment/exp3_infinidepth_disparity_ssr_hypersim_full/runs/main/checkpoints/stage1_best.pt"
+    },
+    {
+      "id": "joint_2500",
+      "path": "experiment/exp3_infinidepth_disparity_ssr_hypersim_full/runs/revision3_reboot_resume_20260818/checkpoints/joint_best.pt"
+    },
+    {
+      "id": "joint_20000",
+      "path": "experiment/exp3_infinidepth_disparity_ssr_hypersim_full/runs/revision3_reboot_resume_20260818/checkpoints/last.pt"
+    }
+  ],
+  "experiment_id": "exp3-2_infinidepth_disparity_ssr_detail_metrics",
+  "metrics": {
+    "boundary_threshold": 0.03,
+    "edge_band_radius": 3,
+    "gradient_scales": 4
+  },
+  "parent_config": "experiment/exp3_infinidepth_disparity_ssr_hypersim_full/config.json"
+}

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # This file is sourced by server-only entry points.
-SERVER_ENV_EXPECTED_ROOT="/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth"
+SERVER_ENV_ACTUAL_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVER_ENV_SAFE_ROOT="/mnt/data/home/zhuzichao"
+SERVER_ENV_EXPECTED_ROOT="$SERVER_ENV_SAFE_ROOT/2026_TPAMI_InfiniGeometry/InfiniDepth"
 SERVER_ENV_EXPECTED_ENV="$SERVER_ENV_SAFE_ROOT/envs/infinidepth_disparity_ssr"
 SERVER_ENV_EXPECTED_CACHE="$SERVER_ENV_SAFE_ROOT/cache/infinidepth_disparity_ssr"
-SERVER_ENV_ACTUAL_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVER_ENV_ACTIVE_PREFIX="${CONDA_PREFIX:-${VIRTUAL_ENV:-}}"
 
 if [[ "$SERVER_ENV_ACTUAL_ROOT" != "$SERVER_ENV_EXPECTED_ROOT" ]]; then
@@ -14,6 +14,10 @@ if [[ "$SERVER_ENV_ACTUAL_ROOT" != "$SERVER_ENV_EXPECTED_ROOT" ]]; then
 fi
 if [[ "$SERVER_ENV_ACTIVE_PREFIX" != "$SERVER_ENV_EXPECTED_ENV" ]]; then
   echo "拒绝执行：必须激活个人隔离环境 $SERVER_ENV_EXPECTED_ENV" >&2
+  exit 2
+fi
+if [[ "$(id -un)" != "zhuzichao" ]]; then
+  echo "拒绝执行：服务器任务必须使用 zhuzichao 账号" >&2
   exit 2
 fi
 if [[ "${TMPDIR:-}" != "$SERVER_ENV_SAFE_ROOT/tmp/infinidepth_disparity_ssr" ]]; then

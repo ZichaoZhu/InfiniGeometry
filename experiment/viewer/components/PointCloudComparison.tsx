@@ -9,12 +9,14 @@ import {
   defaultStage,
   REFINEMENT_STEPS,
   resolveAsset,
+  sampleSplits,
   sampleStages,
   stageUsesAlias,
   validateCatalog,
   validateManifest,
   type ExperimentCatalog,
   type ExperimentCatalogEntry,
+  type DatasetSplit,
   type MetricScope,
   type PointCloudAsset,
   type PointCloudManifest,
@@ -46,6 +48,11 @@ function stageLabel(experiment: ExperimentCatalogEntry, stage: StageName): strin
 
 function defaultStep(manifest: PointCloudManifest, preferred: RefinementStep): RefinementStep {
   return manifest.steps.includes(preferred) ? preferred : manifest.steps[0];
+}
+
+function hasStructureCrop(manifest: PointCloudManifest, sample: PointCloudSample): boolean {
+  const [x0, y0, x1, y1] = sample.cropXYXY;
+  return x0 !== 0 || y0 !== 0 || x1 !== manifest.resolution.width || y1 !== manifest.resolution.height;
 }
 
 function Segment<T extends string | number>({
@@ -233,6 +240,7 @@ export function PointCloudComparison() {
   const [manifest, setManifest] = useState<PointCloudManifest | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sampleId, setSampleId] = useState("");
+  const [sampleSplit, setSampleSplit] = useState<DatasetSplit | null>(null);
   const [scope, setScope] = useState<RasterScope>("crop");
   const [syncEnabled, setSyncEnabled] = useState(true);
   const [cameraSnapshot, setCameraSnapshot] = useState<CameraSnapshot | null>(null);
@@ -273,6 +281,8 @@ export function PointCloudComparison() {
         if (!selected) throw new Error(`${experiment.label} 没有可显示样本`);
         setManifest(loaded);
         setSampleId(selected.id);
+        setSampleSplit(selected.split ?? null);
+        setScope(hasStructureCrop(loaded, selected) ? "crop" : "full");
         setCameraSnapshot(null);
         setGroundFit((value) => value + 1);
         setLeft((pane) => ({ ...pane, stage: defaultStage(loaded, selected, "left"), step: defaultStep(loaded, 0), fitNonce: pane.fitNonce + 1 }));
@@ -284,18 +294,27 @@ export function PointCloudComparison() {
     return () => controller.abort();
   }, [experiment]);
 
-  const samples = useMemo(() => manifest ? orderedSamples(manifest) : [], [manifest]);
+  const allSamples = useMemo(() => manifest ? orderedSamples(manifest) : [], [manifest]);
+  const splits = useMemo(() => manifest ? sampleSplits(manifest) : [], [manifest]);
+  const samples = useMemo(
+    () => sampleSplit ? allSamples.filter((item) => item.split === sampleSplit) : allSamples,
+    [allSamples, sampleSplit],
+  );
   const sample = samples.find((item) => item.id === sampleId) ?? samples[0];
   if (error) return <LoadingPage error={error} />;
   if (!catalog || !manifest || !experiment || !sample) return <LoadingPage />;
 
   const resetView = (nextSample: PointCloudSample) => {
     setSampleId(nextSample.id);
+    setScope(hasStructureCrop(manifest, nextSample) ? "crop" : "full");
     setCameraSnapshot(null);
     setGroundFit((value) => value + 1);
     setLeft((value) => ({ ...value, stage: defaultStage(manifest, nextSample, "left"), fitNonce: value.fitNonce + 1 }));
     setRight((value) => ({ ...value, stage: defaultStage(manifest, nextSample, "right"), fitNonce: value.fitNonce + 1 }));
   };
+  const scopeValues: RasterScope[] = hasStructureCrop(manifest, sample)
+    ? ["crop", "full"]
+    : ["full"];
 
   return (
     <main className="app-shell">
@@ -307,16 +326,17 @@ export function PointCloudComparison() {
       <nav className="experiment-switcher" aria-label="实验切换"><div className="switcher-heading"><span>实验入口</span><strong>{experiment.label}</strong></div>{catalog.experiments.map((entry) => <button type="button" key={entry.id} className={entry.id === experiment.id ? "active" : ""} aria-pressed={entry.id === experiment.id} data-testid={`experiment-${entry.id}`} onClick={() => { if (entry.id !== experiment.id) setExperimentId(entry.id); }}><strong>{entry.shortLabel ?? entry.label}</strong><small>{entry.summary}</small></button>)}</nav>
       <div className="experiment-summary"><strong>{experiment.label}</strong><span>{manifest.displayNote}</span></div>
 
+      {splits.length > 1 && sampleSplit && <section className="global-toolbar split-toolbar"><Segment label="数据集" value={sampleSplit} values={splits} format={(value) => value.toUpperCase()} onChange={(value) => { setSampleSplit(value); resetView(allSamples.find((item) => item.split === value)!); }} testId="sample-split" /></section>}
       <nav className="sample-switcher" aria-label="图片切换">{samples.map((item, index) => <button type="button" key={item.id} className={item.id === sample.id ? "active" : ""} aria-pressed={item.id === sample.id} data-testid={`sample-${item.order ?? index + 1}`} onClick={() => resetView(item)}><span className="sample-thumbnail"><img src={dataUrl(item.rgbUrl)} alt="" /><span className="sample-hover-preview" aria-hidden="true"><img src={dataUrl(item.rgbUrl)} alt="" /><span>{item.description}</span></span></span><span><strong>{item.label ?? `样本 ${(index + 1).toString().padStart(2, "0")}`}</strong><small className="sample-id">{item.id}</small><small>{item.description}</small></span></button>)}</nav>
 
-      <section className="global-toolbar"><Segment label="范围" value={scope} values={["crop", "full"] as const} format={(value) => value === "crop" ? "细结构裁剪" : "完整场景"} onChange={(value) => { setScope(value); setCameraSnapshot(null); }} testId="raster-scope" /><label className={`sync-toggle ${syncEnabled ? "active" : ""}`}><input type="checkbox" checked={syncEnabled} onChange={(event) => setSyncEnabled(event.target.checked)} /><span className="toggle-track" />相机同步</label></section>
+      <section className="global-toolbar"><Segment label="范围" value={scope} values={scopeValues} format={(value) => value === "crop" ? "细结构裁剪" : "完整场景"} onChange={(value) => { setScope(value); setCameraSnapshot(null); }} testId="raster-scope" /><label className={`sync-toggle ${syncEnabled ? "active" : ""}`}><input type="checkbox" checked={syncEnabled} onChange={(event) => setSyncEnabled(event.target.checked)} /><span className="toggle-track" />相机同步</label></section>
 
       <div className="comparison-grid">
         <ScenePanel id="ground-truth" kicker="窗口 A · 真实点云" title="Hypersim Ground Truth" detail="由真实深度与相机内参反投影，不经过 Base 或 Refiner" asset={sample.groundTruth} sample={sample} manifest={manifest} fitNonce={groundFit} onFit={() => setGroundFit((value) => value + 1)} interaction={groundInteraction} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} controls={<Segment label="鼠标左键" value={groundInteraction} values={["rotate", "pan"] as const} format={(value) => value === "rotate" ? "旋转" : "平移"} onChange={setGroundInteraction} testId="ground-truth-interaction" />} />
         <PredictionPanel id="left" pane={left} setPane={setLeft} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
         <PredictionPanel id="right" pane={right} setPane={setRight} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
       </div>
-      <footer className="page-footer"><div><strong>指标口径</strong><span>Point Rel、Depth Rel、δ1.01 与 depth-boundary F1 均按 MoGe3 的点云评测定义导出。</span></div><div><strong>归档范围</strong><span>{experiment.label} 已开放 {samples.length} 张样本；后续 ExpN 只需加入 `experiments.json` 即可切换。</span></div></footer>
+      <footer className="page-footer"><div><strong>指标口径</strong><span>Point Rel、Depth Rel、δ1.01 与 depth-boundary F1 均按 MoGe3 的点云评测定义导出。</span></div><div><strong>归档范围</strong><span>{experiment.label} 已开放 {allSamples.length} 张样本；后续 ExpN 只需加入 `experiments.json` 即可切换。</span></div></footer>
     </main>
   );
 }

@@ -34,7 +34,10 @@ test("switches experiments and renders the three point-cloud windows", async ({ 
   await expect(page.getByTestId("sample-1").locator(".sample-hover-preview")).toBeVisible();
 
   for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
-    await expect.poll(() => canvasColorCount(page, panel)).toBeGreaterThan(2);
+    await expect.poll(
+      () => canvasColorCount(page, panel),
+      { timeout: 30_000 },
+    ).toBeGreaterThan(2);
   }
 
   const leftCanvas = page.getByTestId("viewer-left").locator("canvas");
@@ -55,10 +58,55 @@ test("switches experiments and renders the three point-cloud windows", async ({ 
   await page.screenshot({ path: path.join(screenshotDirectory, "desktop.png"), fullPage: true });
 });
 
+test("shows five configured samples for each Exp3 dataset split", async ({ page }) => {
+  await page.goto("/");
+  const exp3 = page.getByTestId("experiment-exp3_infinidepth_disparity_ssr_hypersim_full");
+  await exp3.click();
+  await expect(exp3).toHaveAttribute("aria-pressed", "true");
+  const split = page.getByTestId("sample-split");
+  await expect(split.getByRole("button")).toHaveCount(3);
+  await expect(split.getByRole("button", { name: "TRAIN" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".sample-switcher button")).toHaveCount(5);
+  await expect(page.getByTestId("sample-1")).toContainText("ai_019_004_cam_00_frame.0000");
+  await expect(page.getByTestId("sample-1")).toContainText("楼梯扶手与平行栏杆");
+  await expect(page.getByTestId("raster-scope")).toContainText("细结构裁剪");
+  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await expect.poll(
+      () => canvasColorCount(page, panel),
+      { timeout: 30_000 },
+    ).toBeGreaterThan(2);
+  }
+  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  await mkdir(screenshotDirectory, { recursive: true });
+  await page.screenshot({ path: path.join(screenshotDirectory, "exp3-train-desktop.png"), fullPage: true });
+
+  await split.getByRole("button", { name: "VAL" }).click();
+  await expect(page.getByTestId("sample-6")).toContainText("Val 01");
+  await expect(page.locator(".sample-switcher button")).toHaveCount(5);
+  await split.getByRole("button", { name: "TEST" }).click();
+  await expect(page.getByTestId("sample-11")).toContainText("Test 01");
+  await expect(page.locator(".sample-switcher button")).toHaveCount(5);
+
+  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await expect.poll(
+      () => canvasColorCount(page, panel),
+      { timeout: 30_000 },
+    ).toBeGreaterThan(2);
+  }
+  await expect(page.locator(".canvas-error")).toHaveCount(0);
+  await page.screenshot({ path: path.join(screenshotDirectory, "exp3-desktop.png"), fullPage: true });
+});
+
 test("keeps controls and canvases separated on a mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await page.getByTestId("experiment-exp3_infinidepth_disparity_ssr_hypersim_full").click();
+  await expect(page.getByTestId("sample-split")).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(3);
+  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
+    await expect.poll(() => canvasColorCount(page, panel)).toBeGreaterThan(2);
+  }
   const panels = page.locator(".viewer-pane");
   await expect(panels).toHaveCount(3);
   const first = await panels.nth(0).boundingBox();

@@ -1,0 +1,15 @@
+runs/*/checkpoints/*.pt
+runs/*/checkpoints/*.tmp
+runs/*/artifacts/*.ply
+runs/*/artifacts/*.jpg
+runs/*/logs/
+runs/*/monitor/
+runs/smoke*/
+runs/ddp_smoke_*/
+scheduler/*.json
+scheduler/*.jsonl
+scheduler/*.log
+scheduler/*.pid
+scheduler/*.lock
+!scheduler/smoke_passed.json
+*.tmp

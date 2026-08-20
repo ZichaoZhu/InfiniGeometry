@@ -1,0 +1,19 @@
+{
+  "checkpoints": [
+    {
+      "id": "stage1_40000",
+      "path": "experiment/exp3_infinidepth_disparity_ssr_hypersim_full/runs/main/checkpoints/stage1_best.pt"
+    },
+    {
+      "id": "joint_2500",
+      "path": "experiment/exp3_infinidepth_disparity_ssr_hypersim_full/runs/revision3_reboot_resume_20260818/checkpoints/joint_best.pt"
+    },
+    {
+      "id": "joint_20000",
+      "path": "experiment/exp3_infinidepth_disparity_ssr_hypersim_full/runs/revision3_reboot_resume_20260818/checkpoints/last.pt"
+    }
+  ],
+  "experiment_id": "exp3-1_infinidepth_disparity_ssr_damping",
+  "parent_config": "experiment/exp3_infinidepth_disparity_ssr_hypersim_full/config.json",
+  "residual_scales": [0.25, 0.5, 0.75, 1.0]
+}

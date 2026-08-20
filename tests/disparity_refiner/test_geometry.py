@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 import inspect
+import random
+from types import SimpleNamespace
 
 import pytest
 import torch
@@ -18,6 +20,7 @@ from InfiniDepth.model.model import _make_dense_query_coord
 from InfiniDepth.model.model import _BaseInfiniDepthModel
 from training.disparity_refiner.data import ensure_within, normalize_radial_disparity
 from training.disparity_refiner.losses import (
+    disparity_detail_metrics,
     masked_disparity_mae,
     multiscale_gradient_loss,
     supervised_iteration_loss,
@@ -143,6 +146,34 @@ def test_masked_disparity_objective_ignores_invalid_pixels() -> None:
     }
 
 
+def test_detail_metrics_reward_aligned_depth_edges() -> None:
+    radial = torch.ones(9, 9)
+    radial[:, 4:] = 2.0
+    target = radial.reciprocal().sub(0.5).div(0.5)
+    valid = torch.ones_like(radial, dtype=torch.bool)
+    perfect = disparity_detail_metrics(target, target, radial, valid, (0.5, 1.0))
+    shifted = disparity_detail_metrics(
+        target.roll(2, dims=1), target, radial, valid, (0.5, 1.0)
+    )
+    assert perfect["multiscale_gradient_error"] == pytest.approx(0.0)
+    assert perfect["boundary_f1"] == pytest.approx(1.0)
+    assert perfect["edge_band_mae"] == pytest.approx(0.0)
+    assert shifted["multiscale_gradient_error"] > 0
+    assert shifted["boundary_f1"] < 1
+    assert shifted["edge_band_mae"] > 0
+    assert shifted["edge_pixels"] == perfect["edge_pixels"] > 0
+    flat = disparity_detail_metrics(
+        torch.ones(9, 9),
+        torch.ones(9, 9),
+        torch.ones(9, 9),
+        valid,
+        (0.5, 1.0),
+    )
+    assert flat["boundary_f1"] is None
+    assert flat["edge_band_mae"] is None
+    assert flat["edge_pixels"] == 0
+
+
 def test_output_path_guard_rejects_shared_or_other_user_paths() -> None:
     safe = Path("/mnt/data/home/zhuzichao")
     assert ensure_within(safe / "tmp/infinidepth_disparity_ssr", safe, name="test")
@@ -154,6 +185,41 @@ def test_refined_model_interface_has_no_gt_or_camera_input() -> None:
     parameters = inspect.signature(_BaseInfiniDepthModel.forward_dense_refined).parameters
     forbidden = {"gt", "target", "depth", "reference_depth", "intrinsics", "camera"}
     assert forbidden.isdisjoint(parameters)
+
+
+def test_residual_scale_damps_each_iterative_update() -> None:
+    class ConstantRefiner:
+        def __call__(self, disparity, visual):
+            return torch.full_like(disparity, 0.1), {}
+
+    class Model:
+        disparity_refiner = ConstantRefiner()
+        forward_dense_refined = _BaseInfiniDepthModel.forward_dense_refined
+
+        def encode_image(self, image):
+            return SimpleNamespace(dino_features=torch.zeros(1, 1, 1, 1))
+
+        def decode_disparity(self, encoding, query, chunk_size):
+            return torch.zeros(query.shape[0], query.shape[1], 1)
+
+    image = torch.zeros(1, 3, 2, 2)
+    full = Model().forward_dense_refined(
+        image, query_hw=(2, 2), num_refinement_steps=2
+    )
+    half = Model().forward_dense_refined(
+        image, query_hw=(2, 2), num_refinement_steps=2, residual_scale=0.5
+    )
+    torch.testing.assert_close(
+        half.disparity_sequence[1], full.disparity_sequence[1] * 0.5
+    )
+    torch.testing.assert_close(
+        half.disparity_sequence[2], full.disparity_sequence[2] * 0.5
+    )
+    torch.testing.assert_close(
+        half.bounded_residuals[0], full.bounded_residuals[0] * 0.5
+    )
+    with pytest.raises(ValueError, match="residual_scale"):
+        Model().forward_dense_refined(image, residual_scale=float("nan"))
 
 
 def test_best_checkpoint_is_lightweight_and_only_last_is_resumable(tmp_path: Path) -> None:
@@ -174,7 +240,18 @@ def test_best_checkpoint_is_lightweight_and_only_last_is_resumable(tmp_path: Pat
         "evaluation": evaluation,
     }
     _save_checkpoint(best_path, **common, include_optimizer=False)
-    _save_checkpoint(last_path, **common, include_optimizer=True)
+    _save_checkpoint(
+        last_path,
+        **common,
+        include_optimizer=True,
+        generator=random.Random(17),
+        stage_state={
+            "best_evaluation": evaluation,
+            "best_score": 0.1,
+            "best_step": 1000,
+            "final_evaluation": evaluation,
+        },
+    )
     best = torch.load(best_path, map_location="cpu", weights_only=False)
     last = torch.load(last_path, map_location="cpu", weights_only=False)
     assert best["optimizer_included"] is False

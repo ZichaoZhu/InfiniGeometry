@@ -250,6 +250,7 @@ class _BaseInfiniDepthModel(nn.Module):
         *,
         query_hw: Tuple[int, int] = (384, 512),
         num_refinement_steps: int = 3,
+        residual_scale: float = 1.0,
         detach_base_from_refiner: bool = False,
         chunk_size: int = 10000,
     ) -> DisparityRefinementOutput:
@@ -260,6 +261,9 @@ class _BaseInfiniDepthModel(nn.Module):
             raise ValueError("query_hw must contain positive values")
         if not 0 <= int(num_refinement_steps) <= 7:
             raise ValueError("num_refinement_steps must be in [0, 7]")
+        residual_scale = float(residual_scale)
+        if not 0.0 <= residual_scale <= 1.0:
+            raise ValueError("residual_scale must be in [0, 1]")
         encoding = self.encode_image(image)
         query = _make_dense_query_coord(image.shape[0], height, width, image.device)
         decoded = self.decode_disparity(encoding, query, chunk_size=chunk_size)
@@ -275,7 +279,7 @@ class _BaseInfiniDepthModel(nn.Module):
         with torch.autocast(device_type=image.device.type, enabled=False):
             for _ in range(int(num_refinement_steps)):
                 raw, statistics = self.disparity_refiner(refined.float(), visual)
-                bounded = bound_disparity_residual(raw, max_abs=0.1)
+                bounded = bound_disparity_residual(raw, max_abs=0.1) * residual_scale
                 refined = refined + bounded
                 raw_residuals.append(raw)
                 bounded_residuals.append(bounded)

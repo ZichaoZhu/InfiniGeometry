@@ -7,6 +7,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import time
 from typing import Mapping, Optional, Sequence
 
@@ -15,7 +16,7 @@ EXP2_NAME = "exp2_infinidepth_disparity_ssr_hypersim100_overfit"
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="监控 Exp2 训练状态")
+    parser = argparse.ArgumentParser(description="监控 disparity Refiner 训练状态")
     parser.add_argument("--experiment", type=Path, required=True)
     parser.add_argument("--training-pid", type=int, required=True)
     parser.add_argument("--interval-seconds", type=int, default=300)
@@ -80,7 +81,7 @@ def process_identity_error(pid: int, experiment: Path) -> Optional[str]:
         return f"训练进程工作目录不匹配: {cwd}"
     missing = [value for value in required if value not in command]
     if missing:
-        return f"训练进程命令不属于 Exp2: missing={missing}"
+        return f"训练进程命令不属于当前实验: missing={missing}"
     return None
 
 
@@ -146,7 +147,7 @@ def check_once(
         alerts.append(("training_failed", str(report.get("failure_message", "训练失败"))))
     elif report_status != "completed":
         if not alive:
-            alerts.append(("training_exited", "Exp2 训练进程已经退出"))
+            alerts.append(("training_exited", "训练进程已经退出"))
         elif identity_error:
             alerts.append(("process_identity_mismatch", identity_error))
 
@@ -216,7 +217,7 @@ def check_once(
 
     event = None
     if report_status == "completed":
-        event = ("training_completed", "Exp2 训练已经完成")
+        event = ("training_completed", "训练已经完成")
     elif alerts:
         event = alerts[0]
     if event is not None:
@@ -243,17 +244,20 @@ def main() -> None:
     if args.interval_seconds <= 0 or args.stale_seconds <= 0:
         raise ValueError("监控间隔和停滞阈值必须为正数")
     project_root = Path(__file__).resolve().parents[1]
-    expected = project_root / "experiment" / EXP2_NAME
     experiment = args.experiment.resolve(strict=True)
-    if experiment != expected:
-        raise PermissionError(f"监控器只允许操作 {expected}")
+    experiments_root = project_root / "experiment"
+    if (
+        experiment.parent != experiments_root
+        or re.fullmatch(r"exp[1-9][0-9]*_[a-z0-9_]+", experiment.name) is None
+    ):
+        raise PermissionError(f"监控器只允许操作 {experiments_root} 下的实验")
     monitor = experiment / "runs" / "main" / "monitor"
     monitor.mkdir(parents=True, exist_ok=True)
     with (monitor / "monitor.pid").open("w", encoding="utf-8") as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
-            raise RuntimeError("Exp2 monitor 已在运行") from exc
+            raise RuntimeError("该实验的 monitor 已在运行") from exc
         lock.write(f"{os.getpid()}\n")
         lock.flush()
         if args.daemon:

@@ -21,7 +21,7 @@ from training.disparity_refiner.data import (
     ensure_within,
     load_manifest,
     preload_samples,
-    select_training_entries,
+    select_manifest_entries,
 )
 from training.disparity_refiner.losses import point_cloud_metrics
 
@@ -59,23 +59,71 @@ def write_json(path: Path, value: object) -> None:
 
 
 def load_all_samples(
-    config: Mapping[str, object], project_root: Path
+    config: Mapping[str, object],
+    viewer_config: Mapping[str, object],
+    project_root: Path,
 ) -> Sequence[HypersimDisparitySample]:
     manifest_path = project_root / str(config["data"]["manifest"])
     manifest = load_manifest(manifest_path, str(config["data"]["manifest_sha256"]))
-    sample_ids = [str(value) for value in config["evaluation"]["sample_ids"]]
-    entries = select_training_entries(manifest, sample_ids)
+    source_root = Path(str(config["data"]["source_root"]))
+    configured_samples = viewer_config.get("samples")
+    if configured_samples:
+        sample_specs = [
+            {"sample_id": str(item["sample_id"]), "split": str(item["split"])}
+            for item in configured_samples
+        ]
+    else:
+        sample_specs = [
+            {
+                "sample_id": str(sample_id),
+                "split": str(config["evaluation"].get("split", "train")),
+            }
+            for sample_id in config["evaluation"].get(
+                "viewer_sample_ids", config["evaluation"]["sample_ids"]
+            )
+        ]
+    if len({(item["split"], item["sample_id"]) for item in sample_specs}) != len(
+        sample_specs
+    ):
+        raise ValueError("Viewer sample split/ID pairs must be unique")
+    entries_by_key = {}
+    for split in dict.fromkeys(item["split"] for item in sample_specs):
+        if split not in {"train", "val", "test"}:
+            raise ValueError(f"Unsupported viewer split: {split}")
+        sample_ids = [
+            item["sample_id"] for item in sample_specs if item["split"] == split
+        ]
+        for entry in select_manifest_entries(
+            manifest,
+            source_root=source_root,
+            split=split,
+            sample_ids=sample_ids,
+        ):
+            entries_by_key[(split, str(entry["id"]))] = entry
+    entries = [
+        entries_by_key[(item["split"], item["sample_id"])]
+        for item in sample_specs
+    ]
     selections = {
         str(entry["sample_id"]): entry
-        for entry in config["structure_selections"]
+        for entry in [
+            *config["structure_selections"],
+            *viewer_config.get("structure_selections", []),
+        ]
     }
     model_cfg = config["model"]
+    cache_root = (
+        None
+        if config["data"].get("local_cache") is None
+        else Path(str(config["data"]["local_cache"]))
+    )
     return preload_samples(
         entries,
-        source_root=Path(str(config["data"]["source_root"])),
+        source_root=source_root,
         height=int(model_cfg["height"]),
         width=int(model_cfg["width"]),
         structure_selections=selections,
+        cache_root=cache_root,
     )
 
 
@@ -184,6 +232,8 @@ def export_sample_assets(
     output: Path,
     public_root: Path,
     order: int,
+    split: str,
+    split_order: int,
     description: str,
     crop_xyxy: Sequence[int],
 ) -> Mapping[str, object]:
@@ -196,6 +246,11 @@ def export_sample_assets(
     gt_points = rays * sample.radial_depth.numpy()[..., None]
     gt_points[~sample.valid_mask.numpy()] = np.nan
     gt_tensor = torch.from_numpy(gt_points)
+    metric_structure_mask = (
+        sample.structure_mask
+        if sample.structure_mask is not None
+        else sample.valid_mask
+    )
     gt_path = sample_dir / "ground_truth.ply"
     gt_meta = write_point_cloud(gt_path, gt_points, colors)
     ground_truth = asset_record(
@@ -203,7 +258,7 @@ def export_sample_assets(
         public_root,
         gt_meta,
         point_cloud_metrics(
-            gt_tensor, gt_tensor, sample.valid_mask, sample.structure_mask
+            gt_tensor, gt_tensor, sample.valid_mask, metric_structure_mask
         ),
         "ground-truth",
     )
@@ -223,7 +278,7 @@ def export_sample_assets(
                 torch.from_numpy(points),
                 gt_tensor,
                 sample.valid_mask,
-                sample.structure_mask,
+                metric_structure_mask,
             )
             stage_assets[f"k{iteration}"] = asset_record(
                 path,
@@ -248,9 +303,10 @@ def export_sample_assets(
         "disparityQuantiles": list(sample.disparity_quantiles),
         "groundTruth": ground_truth,
         "id": sample.sample_id,
-        "label": f"样本 {order:02d}",
+        "label": f"{split.title()} {split_order:02d}",
         "order": order,
         "rgbUrl": public_url(rgb_path, public_root),
+        "split": split,
         "stages": stages,
         "websiteEnabled": True,
     }
@@ -267,59 +323,140 @@ def load_refiner_checkpoint(
     return sha256(path)
 
 
-def export_training_curve(experiment: Path, config: Mapping[str, object]) -> None:
-    run_count = len(config["runs"])
-    columns = 2 if run_count > 1 else 1
-    rows = (run_count + columns - 1) // columns
+def export_training_curve(
+    experiment: Path,
+    config: Mapping[str, object],
+    viewer_config: Mapping[str, object],
+    output_path: Path,
+) -> None:
+    configured_histories = viewer_config.get("histories")
+    if configured_histories:
+        records = []
+        for stage, relative_path in configured_histories.items():
+            history_path = ensure_within(
+                experiment / str(relative_path), experiment, name=f"{stage} history"
+            )
+            records.extend(
+                record
+                for record in (
+                    json.loads(line)
+                    for line in history_path.read_text(encoding="utf-8").splitlines()
+                    if line
+                )
+                if record["stage"] == stage
+            )
+        runs = [
+            (
+                "final",
+                records,
+                f"{config['data']['expected_train_count']} train images",
+            )
+        ]
+    else:
+        runs = []
+        for run in config["runs"]:
+            history_path = experiment / str(run["directory"]) / "metrics" / "history.jsonl"
+            records = [
+                json.loads(line)
+                for line in history_path.read_text(encoding="utf-8").splitlines()
+                if line
+            ]
+            sample_ids = run.get("sample_ids")
+            run_label = (
+                sample_ids[0]
+                if sample_ids
+                else f"{config['data']['expected_train_count']} train images"
+            )
+            runs.append((str(run["id"]), records, run_label))
+    run_count = len(runs)
     figure, axes_value = plt.subplots(
-        rows,
-        columns,
-        figsize=(13 if columns == 2 else 8, 3.8 * rows),
+        run_count,
+        2,
+        figsize=(13, 3.8 * run_count),
         sharex=False,
         squeeze=False,
     )
-    axes = axes_value.ravel()
-    for axis, run in zip(axes, config["runs"]):
-        history_path = experiment / str(run["directory"]) / "metrics" / "history.jsonl"
-        records = [json.loads(line) for line in history_path.read_text(encoding="utf-8").splitlines() if line]
+    for row, (run_id, records, run_label) in enumerate(runs):
+        evaluation_axis, loss_axis = axes_value[row]
+        full_records = [record for record in records if record.get("scope") == "full"]
+        if not full_records:
+            raise ValueError(f"Run {run_id} has no full evaluation records")
+        full_steps = [int(record["total_step"]) for record in full_records]
+        colors = {0: "#65717e", 1: "#2f6b4f", 3: "#c4473a", 5: "#9b6a35"}
+        for iteration in STEPS:
+            key = f"k{iteration}"
+            values = [
+                float(record["evaluation"]["aggregate"][key].get(
+                    "composite_score",
+                    record["evaluation"]["aggregate"][key]["full_mae"],
+                ))
+                for record in full_records
+            ]
+            evaluation_axis.plot(
+                full_steps,
+                values,
+                color=colors[iteration],
+                label=f"K{iteration}",
+                marker="o",
+                markersize=3,
+                linewidth=1.5,
+            )
+
         steps = [int(record["total_step"]) for record in records]
         losses = [float(record["training"]["loss"]) for record in records]
-        k0 = [
-            float(record["evaluation"]["aggregate"]["k0"].get(
-                "composite_score", record["evaluation"]["aggregate"]["k0"]["full_mae"]
-            ))
-            for record in records
-        ]
-        k3 = [
-            float(record["evaluation"]["aggregate"]["k3"].get(
-                "composite_score", record["evaluation"]["aggregate"]["k3"]["full_mae"]
-            ))
-            for record in records
-        ]
-        axis.plot(steps, losses, label="training loss", color="#2f6b4f", alpha=0.75)
-        axis.plot(steps, k0, label="K0 score", color="#65717e", linewidth=1.5)
-        axis.plot(steps, k3, label="K3 score", color="#c4473a", linewidth=1.5)
+        loss_axis.plot(
+            steps,
+            losses,
+            label="instantaneous loss",
+            color="#2f6b4f",
+            alpha=0.75,
+            linewidth=1.2,
+        )
         joint_records = [record for record in records if record["stage"] == "joint"]
         if joint_records:
             stage_boundary = int(joint_records[0]["total_step"]) - int(joint_records[0]["stage_step"])
-            axis.axvline(stage_boundary, color="#888", linestyle="--", linewidth=0.8)
-        sample_ids = run.get("sample_ids")
-        run_label = sample_ids[0] if sample_ids else "100 train images"
-        axis.set_title(f"Run {run['id']}: {run_label}", fontsize=9)
-        axis.set_xlabel("optimizer step")
-        axis.set_ylabel("normalized disparity objective")
-        axis.grid(alpha=0.2)
-    for axis in axes[run_count:]:
-        axis.axis("off")
-    handles, labels = axes[0].get_legend_handles_labels()
-    figure.legend(handles, labels, loc="lower right")
+            for axis in (evaluation_axis, loss_axis):
+                axis.axvline(stage_boundary, color="#888", linestyle="--", linewidth=0.8)
+        evaluation_count = int(full_records[0]["evaluation"]["sample_count"])
+        evaluation_split = str(config["evaluation"].get("split", "train"))
+        evaluation_axis.set_title(
+            f"Run {run_id}: {evaluation_count} {evaluation_split} images, full evaluation",
+            fontsize=9,
+        )
+        uses_composite_score = any(
+            "composite_score" in record["evaluation"]["aggregate"]["k0"]
+            for record in full_records
+        )
+        evaluation_axis.set_ylabel(
+            "normalized disparity composite score"
+            if uses_composite_score
+            else "normalized disparity MAE"
+        )
+        evaluation_axis.legend()
+        logging_intervals = [
+            current - previous
+            for previous, current in zip(steps, steps[1:])
+            if current > previous
+        ]
+        logging_interval = min(logging_intervals) if logging_intervals else 0
+        global_batch = int(config["training"]["global_batch_size"])
+        loss_axis.set_title(
+            f"Run {run_id}: {run_label}, batch-{global_batch} loss sampled "
+            f"every {logging_interval:,} steps",
+            fontsize=9,
+        )
+        loss_axis.set_ylabel("training loss")
+        loss_axis.legend()
+        for axis in (evaluation_axis, loss_axis):
+            axis.set_xlabel("optimizer step")
+            axis.grid(alpha=0.2)
     figure.tight_layout()
-    figure.savefig(experiment / "artifacts" / "training_curve.png", dpi=180)
+    figure.savefig(output_path, dpi=180)
     plt.close(figure)
 
 
 def export_comparison_figure(
-    experiment: Path,
+    output_path: Path,
     samples: Sequence[HypersimDisparitySample],
     all_predictions: Mapping[str, Mapping[str, Mapping[int, torch.Tensor]]],
 ) -> None:
@@ -346,7 +483,7 @@ def export_comparison_figure(
             axis.set_xticks([])
             axis.set_yticks([])
     figure.tight_layout()
-    figure.savefig(experiment / "artifacts" / "disparity_comparison.png", dpi=180)
+    figure.savefig(output_path, dpi=180)
     plt.close(figure)
 
 
@@ -357,15 +494,30 @@ def main() -> None:
     if experiment.parent != project_root / "experiment":
         raise PermissionError("Experiment must be a direct child of experiment/")
     config = load_json(experiment / "config.json")
+    viewer_config_path = experiment / "viewer.json"
+    viewer_config = (
+        load_json(viewer_config_path) if viewer_config_path.is_file() else {}
+    )
     experiment_number = int(str(config["experiment_id"]).split("_", 1)[0][3:])
     experiment_tag = f"exp{experiment_number}"
+    asset_tag = str(viewer_config.get("asset_tag", experiment_tag))
+    if not asset_tag.replace("_", "").isalnum() or not asset_tag.startswith(
+        experiment_tag
+    ):
+        raise ValueError(f"Invalid viewer asset tag: {asset_tag}")
+    artifact_suffix = str(viewer_config.get("artifact_suffix", ""))
+    if artifact_suffix and (
+        not artifact_suffix.startswith("_")
+        or not artifact_suffix.replace("_", "").isalnum()
+    ):
+        raise ValueError(f"Invalid viewer artifact suffix: {artifact_suffix}")
     safe_root = Path(str(config["server"]["safe_root"]))
     ensure_within(experiment, safe_root, name="experiment")
     device = torch.device(args.device)
     if device.type != "cuda" or not torch.cuda.is_available():
         raise RuntimeError("Asset export requires the CUDA server")
     torch.cuda.set_device(device)
-    samples = load_all_samples(config, project_root)
+    samples = load_all_samples(config, viewer_config, project_root)
     checkpoint_path = ensure_within(
         Path(str(config["model"]["checkpoint"])), safe_root, name="base checkpoint"
     )
@@ -385,8 +537,17 @@ def main() -> None:
     all_predictions: Dict[str, Dict[str, Mapping[int, torch.Tensor]]] = {}
     viewer_samples = []
     public_root = project_root / "experiment" / "viewer" / "public"
-    viewer_output = public_root / "data" / experiment_tag
-    selections = {str(item["sample_id"]): item for item in config["structure_selections"]}
+    viewer_output = public_root / "data" / asset_tag
+    selections = {
+        str(item["sample_id"]): item
+        for item in [
+            *config["structure_selections"],
+            *viewer_config.get("structure_selections", []),
+        ]
+    }
+    checkpoint_overrides = viewer_config.get("checkpoints", {})
+    sample_policy = viewer_config.get("sample_policy", {})
+    split_counts: Dict[str, int] = {}
     if len(config["runs"]) == 1:
         run_by_sample = {sample.sample_id: config["runs"][0] for sample in samples}
     else:
@@ -402,11 +563,29 @@ def main() -> None:
             ("stage1_best", "stage1_best.pt"),
             ("joint_best", "joint_best.pt"),
         ):
-            path = run_root / "checkpoints" / filename
+            configured_path = checkpoint_overrides.get(stage)
+            path = (
+                experiment / str(configured_path)
+                if configured_path
+                else run_root / "checkpoints" / filename
+            )
+            path = ensure_within(path, experiment, name=f"{stage} checkpoint")
             shas[stage] = load_refiner_checkpoint(model, path)
             predictions[stage] = predict(model, sample, device, query_hw, chunk_size)
         all_predictions[sample.sample_id] = predictions
-        selection = selections[sample.sample_id]
+        selection = selections.get(
+            sample.sample_id,
+            {
+                "description": "固定评估样本",
+                "crop_xyxy": [0, 0, query_hw[1], query_hw[0]],
+            },
+        )
+        split = str(sample.metadata.get("split", "train"))
+        split_counts[split] = split_counts.get(split, 0) + 1
+        seed = sample_policy.get("seed")
+        description = str(selection["description"])
+        if sample.sample_id not in selections and seed is not None:
+            description = f"{split.upper()} 随机样本（seed {seed}）"
         viewer_samples.append(
             export_sample_assets(
                 sample=sample,
@@ -415,7 +594,9 @@ def main() -> None:
                 output=viewer_output,
                 public_root=public_root,
                 order=order,
-                description=str(selection["description"]),
+                split=split,
+                split_order=split_counts[split],
+                description=description,
                 crop_xyxy=selection["crop_xyxy"],
             )
         )
@@ -432,6 +613,15 @@ def main() -> None:
             "displayNote": "预测点云使用每张 GT 的 2%/98% disparity 统计反归一化，不是模型原生米制输出。",
             "experiment": config["experiment_id"],
             "resolution": {"height": query_hw[0], "width": query_hw[1]},
+            "samplePolicy": {
+                "algorithm": sample_policy.get("algorithm"),
+                "countPerSplit": sample_policy.get("count_per_split"),
+                "seed": sample_policy.get("seed"),
+                "splitOrder": sample_policy.get("split_order"),
+                "testUsage": sample_policy.get("test_usage"),
+            }
+            if sample_policy
+            else None,
             "samples": viewer_samples,
             "stages": ["initial", "stage1_best", "joint_best"],
             "steps": list(STEPS),
@@ -457,7 +647,7 @@ def main() -> None:
         {
             "id": config["experiment_id"],
             "label": f"Exp{experiment_number}",
-            "manifestUrl": f"/data/{experiment_tag}/manifest.json",
+            "manifestUrl": f"/data/{asset_tag}/manifest.json",
             "shortLabel": f"Exp{experiment_number}",
             "stageDetails": {
                 "initial": "官方 InfiniDepth 初始预测",
@@ -474,8 +664,17 @@ def main() -> None:
     )
     catalog["experiments"] = sorted(entries, key=lambda entry: int(str(entry["label"])[3:]))
     write_json(catalog_path, catalog)
-    export_training_curve(experiment, config)
-    export_comparison_figure(experiment, samples, all_predictions)
+    export_training_curve(
+        experiment,
+        config,
+        viewer_config,
+        experiment / "artifacts" / f"training_curve{artifact_suffix}.png",
+    )
+    export_comparison_figure(
+        experiment / "artifacts" / f"disparity_comparison{artifact_suffix}.png",
+        samples,
+        all_predictions,
+    )
 
 
 if __name__ == "__main__":
