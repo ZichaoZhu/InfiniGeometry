@@ -1,0 +1,24 @@
+{
+  "acceptance": {
+    "minimum_improved_images": 80,
+    "required_k3_relative_improvement": 0.01
+  },
+  "experiment_id": "exp3_infinidepth_disparity_ssr_hypersim_full",
+  "gate_passed": false,
+  "result": "训练正常完成，但 Stage1 最佳 checkpoint 的 K3 比 K0 差 0.104%，56/100 张改善，未通过验收。",
+  "runs": [
+    {
+      "checkpoint": "runs/main/checkpoints/stage1_best.pt",
+      "k0_full_mae": 0.05312126792967319,
+      "k1_full_mae": 0.05304909713566303,
+      "k3_better_than_k0_count": 56,
+      "k3_full_mae": 0.05317643752321601,
+      "k3_relative_improvement": -0.0010385594262519934,
+      "k5_full_mae": 0.05351824007928371,
+      "passed": false,
+      "selected_stage": "stage1",
+      "selected_step": 40000
+    }
+  ],
+  "status": "failed"
+}

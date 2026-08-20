@@ -1,0 +1,22 @@
+{
+  "format": "infinidepth-hypersim-index-v1",
+  "source_root": "/nas1/datasets/hypersim/raw",
+  "source_access": "read-only",
+  "depth_semantics": "Euclidean distance in meters from camera optical center",
+  "coordinate_conversion": "[x,y,z]_hypersim -> [x,-y,-z]_viewer",
+  "split_policy": "Official metadata_images_split_scene_v1.csv scene split",
+  "counts": {
+    "train": 59543,
+    "val": 7386,
+    "test": 7690,
+    "excluded": 8281
+  },
+  "image_index": {
+    "path": "ml-hypersim/evermotion_dataset/analysis/metadata_images_split_scene_v1.csv",
+    "sha256": "47b7cce12f4659ffa31cf05e8fbf2aee3d69e1929d07b5ea25506603b69d5ce6"
+  },
+  "camera_index": {
+    "path": "ml-hypersim/contrib/mikeroberts3000/metadata_camera_parameters.csv",
+    "sha256": "0b40e0884ba2458e7bdcdbb27de46a4ec6eacbfbbb4ef0d70188d78098cebdc9"
+  }
+}

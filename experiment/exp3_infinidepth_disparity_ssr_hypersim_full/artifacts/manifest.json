@@ -1,0 +1,38 @@
+{
+  "assets": [
+    {
+      "bytes": 8607394,
+      "path": "exp3_infinidepth_disparity_ssr_hypersim_full/artifacts/disparity_comparison.png",
+      "purpose": "初版 disparity 定性对比图",
+      "sha256": "5dbaf0c7c685399124b0f351638dbf64dc2ba041167312e61a987c9370ffa447"
+    },
+    {
+      "bytes": 9665094,
+      "path": "exp3_infinidepth_disparity_ssr_hypersim_full/artifacts/disparity_comparison_viewer_v2.png",
+      "purpose": "修正版 train、validation、test disparity 定性对比图",
+      "sha256": "d06028d8266e6f2acf14960ba1ac619ff1bd62d5817e6e17b210fc1a1191fc4e"
+    },
+    {
+      "bytes": 140154,
+      "path": "exp3_infinidepth_disparity_ssr_hypersim_full/artifacts/training_curve.png",
+      "purpose": "初版训练曲线",
+      "sha256": "9bd4b3c7e426cbe9d9717c88e80fd4adca1b8dac9fee59ffbb8e1fad24eeda60"
+    },
+    {
+      "bytes": 198510,
+      "path": "exp3_infinidepth_disparity_ssr_hypersim_full/artifacts/training_curve_full_eval.png",
+      "purpose": "仅使用 Val100 完整评估点的训练曲线",
+      "sha256": "6624c68e9fe87a371ae55f40681ad01a1c03c05c9a3d1071af8c984cca2da00d"
+    },
+    {
+      "alias_of": "exp3_infinidepth_disparity_ssr_hypersim_full/artifacts/training_curve.png",
+      "bytes": 140154,
+      "path": "exp3_infinidepth_disparity_ssr_hypersim_full/artifacts/training_curve_viewer_v2.png",
+      "purpose": "查看器修正版训练曲线归档",
+      "sha256": "9bd4b3c7e426cbe9d9717c88e80fd4adca1b8dac9fee59ffbb8e1fad24eeda60"
+    }
+  ],
+  "experiment_id": "exp3_infinidepth_disparity_ssr_hypersim_full",
+  "status": "failed",
+  "version": 1
+}
