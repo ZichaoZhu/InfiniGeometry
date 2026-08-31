@@ -1,0 +1,26 @@
+{
+  "format": "infinidepth-exp4-deployment-v2",
+  "verified_on": "2026-08-26",
+  "status": "formal_training_resumed",
+  "deployed_code": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp4_lidar_refiner/20260823_impl13/InfiniDepth",
+  "source_deployment_record": "deployment_20260823_impl13.json",
+  "resume": {
+    "run_id": "main_retry2_20260821",
+    "checkpoint": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/runs/main_retry2_20260821/checkpoints/step_000008500",
+    "checkpoint_step": 8500,
+    "device": "physical GPU3",
+    "cuda_visible_devices": "3",
+    "process_id": 1411064,
+    "launcher_log": "/mnt/data/home/zhuzichao/tmp/infinidepth_disparity_ssr/exp4_resume_step8500_gpu3_20260826_1102.log",
+    "status": "running"
+  },
+  "resume_source_archive": {
+    "path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/runs/main_retry2_20260821/inputs/resume_step_000008500",
+    "source_file_count": 10
+  },
+  "observed_gpu": {
+    "memory_used_mib": 14441,
+    "utilization_percent_samples": [11, 52, 10]
+  },
+  "backup_policy": "local checkpoints during training; synchronous latest-checkpoint backup on completion, Python failure, SIGINT, or SIGTERM"
+}

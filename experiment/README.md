@@ -7,6 +7,7 @@
 | exp1 | completed | 固定网格 disparity 稀疏三维 Refiner 能否在五张单图上完成稳定过拟合？ | `e38c65d105bc` | K3 全图 MAE + 锁定细结构 MAE | 5/5 个单图运行通过 1% 门槛，可登记 Exp2 | [exp1](exp1_infinidepth_disparity_ssr_single_image_overfit/) |
 | exp2 | completed | 单图验证通过后，固定网格 disparity Refiner 能否扩展到 100 张 Hypersim 训练图？ | `26393474014e` | K3 全图 MAE + 锁定细结构 MAE | 百图训练正常完成，平均综合分数改善 23.98%，94/100 张改善 | [exp2](exp2_infinidepth_disparity_ssr_hypersim100_overfit/) |
 | exp3 | failed | 使用全部官方 Hypersim train 训练更久后，disparity SSR 能否改善未参与训练的 Hypersim validation 图？ | `revision2/revision3` | K3 validation 全图 disparity MAE | 训练正常完成，但 Stage1 最佳 checkpoint 的 K3 比 K0 差 0.104%，未通过验收 | [exp3](exp3_infinidepth_disparity_ssr_hypersim_full/) |
+| exp4 | completed | 冻结 LiDAR-conditioned DepthSensor 后，SSR 能否同时改善 metric disparity 误差与 MoGe-3 局部点云细节？ | `24dbd5e` | K3 metric disparity MAE + Local Point Rel | best step 22.5k 的 K3 相比 K0 全局 MAE 改善 6.98%，98/100 张改善 | [exp4](exp4_infinidepth_lidar_refiner_hypersim_full/) |
 
 状态只允许 `planned`、`running`、`completed`、`failed`。Exp2 已在 Exp1 的五个独立运行全部结束且通过登记门槛后完成；结果仅表示固定百图训练域的拟合能力，不作泛化性声明。
 

@@ -1,0 +1,82 @@
+{
+  "format": "infinidepth-exp4-deployment-v2",
+  "verified_on": "2026-08-21",
+  "status": "implementation_verified_cpu_cuda_smoke_blocked",
+  "deployed_code": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp4_lidar_refiner/20260821_impl7/InfiniDepth",
+  "formal_training_started": false,
+  "formal_run_directory_present": false,
+  "deployed_file_sha256": {
+    "InfiniDepth/model/model.py": "ef16105a698fdd5504979cd90a423b3ec1cb02845a31eb9a6c0fa351c8fdff8f",
+    "experiment/exp4_infinidepth_lidar_refiner_hypersim_full/config.json": "126eedca367b33ecebe7bf7e614dded36088d5da4f52ed9910131bf157d566ec",
+    "training/disparity_refiner/backup.py": "b22f9e0060fb43c3f5b3e141b4f9eda633b9dec3512366a903902f290b02a55c",
+    "training/disparity_refiner/lidar.py": "757b028971d5fe1ea8347360e590c9b55a15990b1833bb7dd76e1ee047752c53",
+    "training/disparity_refiner/losses.py": "05bf1c0b4acbed19c963425e22ef5eab480cc61ee9e75ec530a00c945c33cecf",
+    "training/disparity_refiner/prepare_local_masks.py": "a2de0807561516902c4c30ec87d2e898e7ff41d99600a685fd84b20dc235a761",
+    "training/disparity_refiner/train_lidar.py": "8faa551150443235ef0f7a5b7589e7ec627863fd5772a79cdec0430f36a176e6"
+  },
+  "storage": {
+    "primary_root": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner",
+    "backup_root": "/nas1/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner",
+    "checkpoint_interval_steps": 500,
+    "backup_policy": "atomic local publish, explicit file-count/size/SHA-256 verification, one-pending async NAS copy, retries after 5/15/45 seconds"
+  },
+  "server_tests": {
+    "suite": "tests/disparity_refiner",
+    "selection": "not cuda",
+    "passed": 58,
+    "deselected": 8,
+    "duration_seconds": 184.62,
+    "result": "passed",
+    "exit_observation": "pytest printed its complete passing summary, then the Python process was terminated after hanging during interpreter exit"
+  },
+  "local_cache_preflight": {
+    "source_deployment": "20260821_impl6",
+    "train_samples": 59542,
+    "validation_samples": 100,
+    "result": "passed",
+    "nas_fallback_during_training": false
+  },
+  "sam2": {
+    "repository": "/mnt/data/home/zhuzichao/dependencies/sam2/repository_20260821_impl2",
+    "repository_commit": "2b90b9f5ceec907a1c18123530e92e794ad901a4",
+    "checkpoint": "/mnt/data/home/zhuzichao/checkpoints/SAM2/sam2.1_hiera_small.pt",
+    "checkpoint_sha256": "6d1aa6f30de5c92224f8172114de081d104bbd23dd9dc5c58996f0cad5dc4d38",
+    "dependencies_added_to_existing_environment": {
+      "hydra-core": "1.3.5",
+      "omegaconf": "2.3.1",
+      "iopath": "0.1.10",
+      "antlr4-python3-runtime": "4.9.3"
+    }
+  },
+  "mask_smoke": {
+    "source_deployment": "20260821_impl6",
+    "device": "cpu",
+    "sample_id": "ai_003_010_cam_00_frame.0000",
+    "resolution": [384, 512],
+    "coarse_pixel_count": 80991,
+    "segment_count": 16,
+    "selected_union_pixel_count": 23978,
+    "manifest_status": "partial",
+    "manifest_sample_count": 1,
+    "primary_root": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/masks/val100/moge3_v2_sam2_1_small_v1",
+    "backup_root": "/nas1/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/masks/val100/moge3_v2_sam2_1_small_v1",
+    "segments_sha256": "e124723f6f4e85ce0d30ee4b42aa71b1aa85f86298d13be8df102514f5f5b31a",
+    "preview_sha256": "0b13bd639a7ae650547dea847a58b24c08df4cdcca53eac5e5e462f05c5ca8bc",
+    "primary_backup_sha256_match": true,
+    "visual_inspection": "passed"
+  },
+  "cuda_blocker": {
+    "nvidia_smi": "Failed to initialize NVML: Driver/library version mismatch",
+    "running_kernel_module_version": "580.159.03",
+    "installed_module_version": "580.173.02",
+    "nvml_library": "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.580.173.02",
+    "pytorch_error": "CUDA error 804: forward compatibility was attempted on non supported HW",
+    "requires_administrator_action": true
+  },
+  "pending_cuda_smoke": [
+    "Val5 K0/K1/K3/K5 metric evaluation",
+    "step 1 training and atomic local checkpoint",
+    "verified asynchronous NAS backup",
+    "explicit NAS restore and continuation to step 2"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "format": "infinidepth-exp4-deployment-v2",
+  "verified_on": "2026-08-23",
+  "status": "formal_training_resumed",
+  "deployed_code": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp4_lidar_refiner/20260823_impl13/InfiniDepth",
+  "deployed_file_sha256": {
+    "training/disparity_refiner/backup.py": "81e55a5d364443068840a6e80d9c60233b32a95ea81e2d9902b09c123840c336",
+    "training/disparity_refiner/train_lidar.py": "9b9f253e960af54badecf393be6c036e2425c44bf273bb5dc0dd0925023494ea",
+    "tests/disparity_refiner/test_lidar_exp4.py": "7e27eaeace4eef0be04e20f7399101f98583510f20c79c667659e70f46cf1b6e"
+  },
+  "server_tests": {
+    "suite": "tests/disparity_refiner",
+    "passed": 62,
+    "skipped": 7,
+    "duration_seconds": 12.09,
+    "result": "passed"
+  },
+  "resume": {
+    "run_id": "main_retry2_20260821",
+    "checkpoint": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/runs/main_retry2_20260821/checkpoints/step_000002500",
+    "checkpoint_step": 2500,
+    "device": "physical GPU2",
+    "cuda_visible_devices": "2",
+    "process_id": 1559036,
+    "launcher_log": "/mnt/data/home/zhuzichao/tmp/infinidepth_disparity_ssr/exp4_resume_step2500_gpu2_20260823_impl13.log",
+    "status": "running"
+  },
+  "resume_source_archive": {
+    "path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/runs/main_retry2_20260821/inputs/resume_step_000002500",
+    "original_archive_preserved": true
+  },
+  "observed_gpu": {
+    "memory_used_mib": 14205,
+    "utilization_percent_samples": [61, 58, 53]
+  },
+  "backup_policy": "local checkpoints during training; synchronous latest-checkpoint backup on completion, Python failure, SIGINT, or SIGTERM"
+}

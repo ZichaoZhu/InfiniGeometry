@@ -1,0 +1,14 @@
+{
+  "base_checkpoint_sha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267",
+  "code_commit": "24dbd5e",
+  "experiment_id": "exp4_infinidepth_lidar_refiner_hypersim_full",
+  "format": "infinidepth-exp4-provenance-v1",
+  "formal_evaluation": "metrics/formal_eval_best_step_000022500.json",
+  "selected_checkpoint": {
+    "run_id": "main_retry2_20260821",
+    "sha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+    "step": 22500
+  },
+  "status": "completed",
+  "training_run": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/runs/main_retry2_20260821"
+}

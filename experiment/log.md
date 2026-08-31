@@ -400,3 +400,184 @@
 
 - `failed` 表示未通过既定 SSR 验收，不表示训练进程异常；60,000 个 optimizer step 已完整结束。
 - K0 随训练缓慢改善，但原始 residual 步长下 K3/K5 普遍比 K0 更差。Exp3-1 与 Exp3-2 的 damping 和细节指标诊断分别独立归档。
+
+## 2026-08-20 exp4
+
+### 实验简述
+
+目的：实现 LiDAR-conditioned InfiniDepth disparity refiner，并增加结合深度不连续与法线变化的三维边缘细节指标。
+
+方法：删除单图过拟合和固定 Train100 训练阶段，正式配置只保留 59,542 张有效 Hypersim train 的单阶段 SSR-only 训练；冻结 `InfiniDepth_DepthSensor` 基座，以 64 线虚拟 LiDAR disparity 作为 prompt。新增 HEG-F1、每 500 step 不可变轻量 checkpoint、基础权重一次性归档和精确恢复。
+
+结果：代码已部署到 S115 隔离目录。完整回归为 50 passed、7 skipped；两步 CUDA smoke、step 1 到 step 2 恢复、checkpoint SHA-256、基础参数冻结和 384×512 全评测均通过。正式训练尚未启动。
+
+### 实验结果
+
+- [实验设计与验收状态](./exp4_infinidepth_lidar_refiner_hypersim_full/README.md)
+- [训练配置](./exp4_infinidepth_lidar_refiner_hypersim_full/config.json)
+- [部署与测试记录](./exp4_infinidepth_lidar_refiner_hypersim_full/deployment.json)
+
+### 其他
+
+- K0 是 LiDAR prompt conditioning 后的冻结 DepthSensor 输出；K1、K3、K5 是 SSR 迭代输出。稠密 GT 和 GT disparity 分位数不进入模型输入。
+- HEG-F1 是本项目定义的混合三维边缘指标，不是既有 benchmark 的标准同名指标；同时保留 metric disparity MAE、radial-depth AbsRel、edge point-to-plane 和 normal angle 诊断。
+- 官方 DepthSensor checkpoint 大小为 1,433,096,532 字节，SHA-256 为 `53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267`。
+- 当前只完成实现与测试；正式训练需在下一步获得授权后单独启动。
+
+## 2026-08-21 exp4
+
+### 实验简述
+
+目的：按修订方案将 Exp4 的主训练 I/O 迁到 `/mnt/data`、将 `/nas1` 限定为校验备份，并用 MoGe-3 Local Point Rel 和 Local Point \(\delta_{0.01}\) 替换 HEG-F1。
+
+方法：实现固定 Val100 的多尺度 disparity residual、top-hat/black-hat 与 SAM2 segment 筛选；局部点云评测采用每图共享尺度、每 segment 三维平移和 segment 等权汇总。新增每 500 steps 原子 checkpoint、SHA-256、限长异步 NAS 队列、失败重试、安全停止及本地/NAS 恢复逻辑。
+
+结果：代码已部署到 S115 的 `20260821_impl7` 隔离目录；非 CUDA 回归 58 passed、8 deselected，本地缓存 Train 59,542 与 Val100 预检通过。SAM2 单样本生成 16 个细节 segment，主存储与 NAS 副本校验一致。服务器 NVIDIA 内核模块 580.159.03 与用户态 580.173.02 不一致，CUDA smoke 尚不能执行，正式训练未启动。
+
+### 实验结果
+
+- [实验设计与当前状态](./exp4_infinidepth_lidar_refiner_hypersim_full/README.md)
+- [训练配置](./exp4_infinidepth_lidar_refiner_hypersim_full/config.json)
+- [当前部署与测试记录](./exp4_infinidepth_lidar_refiner_hypersim_full/deployment_20260821_impl7.json)
+
+### 其他
+
+- 当前固定 mask manifest 仅含 1/100 个 smoke 样本，状态为 `partial`；正式训练路径会拒绝不完整 manifest。
+- Val5 K0/K1/K3/K5、step 1 保存与备份、从 NAS 恢复到 step 2 的 CUDA 闭环仍待驱动恢复后执行。
+- `START_EXP4_TRAINING=YES` 启动门保持关闭；本阶段未提交 Git，旧部署、checkpoint、日志和实验资产均未覆盖。
+
+## 2026-08-21 exp4 训练启动
+
+### 实验简述
+
+目的：在管理员修复 NVIDIA 驱动后，使用空闲 GPU0 启动 Exp4 正式训练。
+
+方法：先补齐固定 Val100 的 100 个 SAM2 mask，并校验 `/mnt/data` 与 NAS 逐文件 SHA-256；随后修复两处 metric disparity 边界判断：LiDAR prompt median 和 WarpMedian 均允许合法的 `1/m < 0.01` 数值。失败的启动目录和运行记录保留，正式训练使用独立 `main_retry2_20260821` run。
+
+结果：截至当前，`main_retry2_20260821` 的 GPU0 训练进程 PID 为 341826，GPU0 显存约 16.2 GiB、利用率约 63%，尚未到达第一个 500-step checkpoint；正式训练仍在运行中。
+
+### 实验结果
+
+- [Exp4 配置](./exp4_infinidepth_lidar_refiner_hypersim_full/config.json)
+- [训练主目录（服务器）](/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/runs/main_retry2_20260821)
+
+### 其他
+
+- `main` 因环境启动脚本假设不存在 `bin/activate` 而失败；`main_retry_20260821` 因旧 WarpMedian 阈值而失败，均未覆盖。
+- 当前运行使用 `/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp4_lidar_refiner/20260821_impl11/InfiniDepth`，GPU 通过 `CUDA_VISIBLE_DEVICES=0` 固定为 GPU0。
+- mask manifest 已完成：100/100 样本、1,117 个 segment；NAS 副本校验通过。
+
+## 2026-08-22 exp4 备份策略调整
+
+### 实验简述
+
+目的：避免 NAS 延迟或权限故障阻塞并中断正式训练。
+
+方法：每 500 steps 的 checkpoint 只在 S115 `/mnt/data` 原子保存；移除训练循环内的异步 NAS 队列。训练正常结束、Python 异常、`SIGINT` 或 `SIGTERM` 中断时，再同步备份最新本地 checkpoint 和运行元数据。
+
+结果：新策略已部署到 S115 的 `20260822_impl12`；完整回归 61 passed、7 skipped。真实 S115→NAS 同步退出备份 smoke 用时 13.586 秒，local/NAS 状态均为 `completed`，完成标记校验通过。旧流程的 step 2500 补备份也已完成。
+
+### 实验结果
+
+- [Exp4 实验说明](./exp4_infinidepth_lidar_refiner_hypersim_full/README.md)
+- [Exp4 训练配置](./exp4_infinidepth_lidar_refiner_hypersim_full/config.json)
+- [部署与验证记录](./exp4_infinidepth_lidar_refiner_hypersim_full/deployment_20260822_impl12.json)
+
+### 其他
+
+- 硬断电和 `SIGKILL` 无法运行退出钩子；此时依赖 S115 上最近一次每 500 steps 保存的本地 checkpoint。
+- NAS 上已原子发布的 checkpoint 仍保留，不覆盖、不删除。
+- SIGTERM CUDA smoke 因检查时 GPU0 已占用 35.8/49.1 GiB、利用率 94% 而未启动，避免干扰其他任务。
+
+## 2026-08-23 exp4 恢复训练
+
+### 实验简述
+
+目的：在 GPU2 空闲后，从已校验的 step 2500 checkpoint 恢复 Exp4 正式训练。
+
+方法：首次使用 impl12 恢复时，旧 run 的 impl11 源码归档与新源码不同，恢复流程在进入训练前拒绝覆盖。impl13 将恢复版本源码保存到独立 `inputs/resume_step_000002500/`，保留原始源码归档；随后使用 `CUDA_VISIBLE_DEVICES=2` 从本地 step 2500 恢复。
+
+结果：impl13 完整回归 62 passed、7 skipped。正式训练已恢复，Python PID 为 1559036；GPU2 显存约 14.2 GiB，连续采样利用率为 53%–61%，运行状态为 `running`，未发现 Traceback、OOM、NaN 或 Inf。
+
+### 实验结果
+
+- [Exp4 实验说明](./exp4_infinidepth_lidar_refiner_hypersim_full/README.md)
+- [部署与恢复记录](./exp4_infinidepth_lidar_refiner_hypersim_full/deployment_20260823_impl13.json)
+- [训练配置](./exp4_infinidepth_lidar_refiner_hypersim_full/config.json)
+
+### 其他
+
+- impl12 的失败恢复发生在训练循环之前，没有更新模型、optimizer 或 checkpoint；独立 launcher 日志保留。
+- 训练期间 checkpoint 每 500 steps 仅写入 S115；正常结束或可捕获中断时，只向 NAS 同步最新 checkpoint。
+- 本阶段未提交 Git。
+
+## 2026-08-26 exp4 再次恢复训练
+
+### 实验简述
+
+目的：在 GPU3 可用后，从本地 step 8500 checkpoint 继续 Exp4 正式训练。
+
+方法：复核 step 8500 的 checkpoint 与 metadata SHA256、GPU3 显存和现有进程后，使用 impl13、`CUDA_VISIBLE_DEVICES=3`、`DEVICE=cuda:0` 恢复同一 `main_retry2_20260821` run。恢复时创建独立 `inputs/resume_step_000008500/` 源码快照。
+
+结果：训练进程 PID 为 1411064，`report.json` 状态为 `running`。GPU3 上 Exp4 显存约 12.5 GiB，总显存约 14.4 GiB，连续采样利用率为 11%–52%；未发现 Traceback、OOM、NaN 或 Inf。
+
+### 实验结果
+
+- [Exp4 实验说明](./exp4_infinidepth_lidar_refiner_hypersim_full/README.md)
+- [恢复记录](./exp4_infinidepth_lidar_refiner_hypersim_full/deployment_20260826_resume_step8500.json)
+- [训练配置](./exp4_infinidepth_lidar_refiner_hypersim_full/config.json)
+
+### 其他
+
+- step 8500 仍是本地最新 checkpoint；训练期间新的 checkpoint 只保存到 S115，本次恢复不触发 NAS I/O。
+- NAS 上 step 8500 的旧临时目录保留，不作为可恢复 checkpoint 使用。
+- 本阶段未提交 Git。
+
+## 2026-08-27 exp4 素材导出后恢复训练
+
+### 实验简述
+
+目的：使用 GPU3 导出 Exp2 固定样本的 K0-K3 面试 pipeline 素材，并在导出后继续 Exp4 正式训练。
+
+方法：确认 GPU3 上 PID 1411064 属于 Exp4 且本地最新完整 checkpoint 为 step 28,500 后，发送 `SIGTERM` 并等待同步退出备份完成。随后使用 Exp2 Joint step 10,000 selected checkpoint，对 `ai_002_003_cam_00_frame.0000` 执行一次 K0-K3 前向，导出 disparity、raw/bounded residual 和点云；导出完成后立即从 step 28,500 恢复 Exp4。
+
+结果：Exp4 在 step 28,907 收到信号，退出备份状态为 `exit_backup_completed`；素材共 19,944,198 bytes，远端 SHA256 校验全部通过。2026-08-27 16:51:06 CST，Exp4 已在 GPU3 从 step 28,500 恢复，训练 PID 为 600937。
+
+### 实验结果
+
+- [本次暂停、素材导出与恢复记录](./exp4_infinidepth_lidar_refiner_hypersim_full/deployment_20260827_resume_step28500.json)
+- [面试 pipeline 素材与生成脚本](../../../material/README.md)
+- [素材来源与数值口径](../../../material/provenance.md)
+
+### 其他
+
+- step 28,907 不是完整 checkpoint；本次恢复回退到最近的 step 28,500，因此重新计算 407 steps。
+- 素材 K0-K3 来自同一 Exp2 checkpoint 的同一次前向；GT 仅用于显示尺度还原和评测，不作为模型输入。
+- 后续同类素材继续在实验室服务器生成，不使用 AutoDL；优先使用空闲 GPU，若需暂停正式训练则沿用“确认 checkpoint、可捕获中断、短时导出、立即恢复”的流程。
+- Exp4 尚未结束，本阶段不提交 Git。
+
+## 2026-08-31 exp4
+
+### 实验简述
+
+目的：完成 Exp4 正式训练的 checkpoint 选择、固定 Val100 复测与三 split 点云查看器部署。
+
+方法：训练完成 40,000 step 后，仍以固定 Val100 的 K3 metric disparity MAE 选择 step 22,500 checkpoint；在空闲 GPU1 上重新评估 K0/K1/K3/K5，并使用确定性 LiDAR prompt 导出 train、val、test 各 5 张点云。train 复用 Exp1/Exp2 的细结构样本和裁剪，val/test 固定复用 Exp3 的 seed 173 样本。
+
+结果：step 22,500 的 K3 相比 K0，metric disparity MAE 改善 6.979%，Local Point Rel 改善 9.584%，Local Point \(\delta_{0.01}\) 增加 3.226 个百分点；K3 在 98/100 张图的全局 MAE 更好。查看器资产共 15 个样本、106 个静态文件，Exp3 split、Exp4 split/K/三个 WebGL canvas 与移动布局验收均通过。Vercel 生产发布被账户授权拒绝，尚未对外生效。
+
+### 实验结果
+
+- [正式 Val100 评估](./exp4_infinidepth_lidar_refiner_hypersim_full/metrics/formal_eval_best_step_000022500.json)
+- [训练与 Val100 曲线](./exp4_infinidepth_lidar_refiner_hypersim_full/artifacts/training_curve_full_eval.png)
+- [15 张 disparity 对比图](./exp4_infinidepth_lidar_refiner_hypersim_full/artifacts/disparity_comparison_viewer.png)
+- [资产 manifest](./exp4_infinidepth_lidar_refiner_hypersim_full/artifacts/manifest.json)
+- [部署与验收记录](./exp4_infinidepth_lidar_refiner_hypersim_full/deployment_20260831_eval1.json)
+- [查看器样本与 checkpoint 配置](./exp4_infinidepth_lidar_refiner_hypersim_full/viewer.json)
+
+### 其他
+
+- K0 是冻结 LiDAR-conditioned DepthSensor 输出，K1/K3/K5 是同一 best checkpoint 的 SSR 迭代结果；K5 相比 K3 回退，因此默认展示 K3。
+- step 40,000 是最后保存点，不是选中的正式模型；其回退不会改变 best step 22,500 的 checkpoint 选择。
+- 训练结束时 step 40,000 的本地与 NAS checkpoint 均已完成校验备份；正式评估单独使用已校验的 step 22,500。
+- Vercel CLI 返回 `Not authorized`，需要项目账户重新授权后才可将已验证的本地 `exp4_best22500` 资产发布到现有线上查看器。

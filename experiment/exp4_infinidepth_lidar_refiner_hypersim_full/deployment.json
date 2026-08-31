@@ -1,0 +1,51 @@
+{
+  "base_checkpoint": {
+    "bytes": 1433096532,
+    "path": "/mnt/data/home/zhuzichao/checkpoints/InfiniDepth/depth/infinidepth_depthsensor.ckpt",
+    "sha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267",
+    "source_commit": "b387ad877e922468fcd85190f24e5b78b28dcd66",
+    "source_url": "https://huggingface.co/ritianyu/InfiniDepth/blob/main/infinidepth_depthsensor.ckpt"
+  },
+  "cuda_smoke": {
+    "base_parameters_unchanged": true,
+    "checkpoint_steps": [
+      1,
+      2
+    ],
+    "device": "S115 physical GPU 1",
+    "peak_cuda_memory_bytes": 3299696640,
+    "resolution": [
+      96,
+      128
+    ],
+    "resume_verified": true,
+    "run_directory": "/nas1/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/smoke/20260820_impl2",
+    "sha256_verified": true
+  },
+  "deployed_code": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/deployments/exp4_lidar_refiner/20260820_impl1/InfiniDepth",
+  "formal_training_started": false,
+  "format": "infinidepth-exp4-deployment-v1",
+  "full_resolution_evaluation": {
+    "device": "S115 physical GPU 1",
+    "k_values": [
+      0,
+      1,
+      3,
+      5
+    ],
+    "peak_cuda_memory_bytes": 2300008448,
+    "resolution": [
+      384,
+      512
+    ],
+    "sample_id": "ai_003_010_cam_00_frame.0000",
+    "zero_initialized_refiner_identity_verified": true
+  },
+  "server_tests": {
+    "passed": 50,
+    "skipped": 7,
+    "suite": "tests/disparity_refiner"
+  },
+  "status": "ready_for_training",
+  "verified_on": "2026-08-20"
+}

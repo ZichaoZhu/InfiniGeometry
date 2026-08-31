@@ -1,0 +1,38 @@
+{
+  "assets": [
+    {
+      "bytes": 7332514,
+      "generated_by": "python -m training.disparity_refiner.export_lidar_assets --experiment experiment/exp4_infinidepth_lidar_refiner_hypersim_full",
+      "path": "exp4_infinidepth_lidar_refiner_hypersim_full/artifacts/disparity_comparison_viewer.png",
+      "purpose": "train、val、test 各五张的 LiDAR K0 与 best-step K3 disparity 对比图",
+      "sha256": "6bf16e242931360a11adb8efb0e8663b1bc0f2c0abcd2881bbe281bfc59fa334",
+      "tracked_by_git": true
+    },
+    {
+      "bytes": 154942,
+      "generated_by": "python -m training.disparity_refiner.export_lidar_assets --experiment experiment/exp4_infinidepth_lidar_refiner_hypersim_full",
+      "path": "exp4_infinidepth_lidar_refiner_hypersim_full/artifacts/training_curve_full_eval.png",
+      "purpose": "固定 Val100 完整评估与瞬时训练 loss 曲线",
+      "sha256": "3045d5a4356022e310ca36d6285bbb1a7860e97e765662b35b9b416cb925256d",
+      "tracked_by_git": true
+    },
+    {
+      "bytes": 208325,
+      "generated_by": "python -m training.disparity_refiner.evaluate_lidar --checkpoint step_000022500",
+      "path": "exp4_infinidepth_lidar_refiner_hypersim_full/metrics/formal_eval_best_step_000022500.json",
+      "purpose": "best step 22,500 的固定 Val100 正式逐图与聚合评估",
+      "sha256": "828af472465c6cc9f4867c5304e94297c6e97f6585a9c6a118ac58c1e88e71f9",
+      "tracked_by_git": true
+    }
+  ],
+  "experiment_id": "exp4_infinidepth_lidar_refiner_hypersim_full",
+  "status": "completed",
+  "version": 1,
+  "viewer": {
+    "asset_tag": "exp4_best22500",
+    "file_count": 106,
+    "manifest_sha256": "69ff32926a0109502e3a9c316462944bd92717b2f3cea2d2c7ef4c0a9f40ecf4",
+    "sample_count": 15,
+    "storage": "experiment/viewer/public/data/exp4_best22500 (Git ignored)"
+  }
+}

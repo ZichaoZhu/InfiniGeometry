@@ -1,0 +1,46 @@
+{
+  "format": "infinidepth-exp4-deployment-v2",
+  "verified_on": "2026-08-22",
+  "status": "exit_backup_policy_verified",
+  "deployed_code": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp4_lidar_refiner/20260822_impl12/InfiniDepth",
+  "deployed_file_sha256": {
+    "training/disparity_refiner/backup.py": "81e55a5d364443068840a6e80d9c60233b32a95ea81e2d9902b09c123840c336",
+    "training/disparity_refiner/train_lidar.py": "45f0884ad600a0f6ad716fae6bef45d439c1d6ad669b1f5aca8c35082d50004d",
+    "tests/disparity_refiner/test_exp4_backup.py": "87beee8a68e5ef488dda628b9bad8fe0399a9829ff73023a97516f04fd0fa490"
+  },
+  "storage": {
+    "primary_root": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner",
+    "backup_root": "/nas1/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner",
+    "checkpoint_interval_steps": 500,
+    "backup_policy": "local checkpoints during training; synchronous latest-checkpoint backup on completion, Python failure, SIGINT, or SIGTERM"
+  },
+  "server_tests": {
+    "suite": "tests/disparity_refiner",
+    "passed": 61,
+    "skipped": 7,
+    "duration_seconds": 11.11,
+    "result": "passed"
+  },
+  "nas_exit_backup_smoke": {
+    "primary_run": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/smoke/20260822_exit_backup_impl12_retry1",
+    "backup_run": "/nas1/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/smoke/20260822_exit_backup_impl12_retry1",
+    "elapsed_seconds": 13.586,
+    "local_status": "completed",
+    "nas_status": "completed",
+    "backup_complete_marker": true,
+    "result": "passed"
+  },
+  "formal_run_checkpoint_backup": {
+    "run_id": "main_retry2_20260821",
+    "latest_local_step": 2500,
+    "latest_nas_verified_step": 2500,
+    "status": "checkpoint_verified"
+  },
+  "cuda_sigterm_smoke": {
+    "status": "not_run_gpu_busy",
+    "gpu_index": 0,
+    "observed_memory_used_mib": 35772,
+    "observed_memory_total_mib": 49140,
+    "observed_utilization_percent": 94
+  }
+}

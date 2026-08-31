@@ -1,0 +1,15 @@
+{
+  "checkpoint": "step_000022500",
+  "experiment_id": "exp4_infinidepth_lidar_refiner_hypersim_full",
+  "formal_evaluation": "formal_eval_best_step_000022500.json",
+  "result": "固定 Val100 上，K3 相比 K0 的 metric disparity MAE 改善 6.979%，Local Point Rel 改善 9.584%，Local Point delta_0.01 增加 3.226 个百分点。",
+  "selected_metrics": {
+    "k0_metric_disparity_mae_1_per_m": 0.003687306085630553,
+    "k0_local_point_rel": 0.017438294656988276,
+    "k3_better_than_k0_count": 98,
+    "k3_local_point_rel": 0.015767024036024962,
+    "k3_local_point_rel_better_than_k0_count": 88,
+    "k3_metric_disparity_mae_1_per_m": 0.003429971063014818
+  },
+  "status": "completed"
+}

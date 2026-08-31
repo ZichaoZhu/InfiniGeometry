@@ -1,0 +1,44 @@
+{
+  "format": "infinidepth-exp4-deployment-v2",
+  "verified_on": "2026-08-27",
+  "status": "formal_training_resumed_after_material_export",
+  "deployed_code": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp4_lidar_refiner/20260823_impl13/InfiniDepth",
+  "source_deployment_record": "deployment_20260823_impl13.json",
+  "pause": {
+    "previous_process_id": 1411064,
+    "signal": "SIGTERM",
+    "interrupted_step": 28907,
+    "latest_complete_checkpoint_step": 28500,
+    "exit_backup_status": "exit_backup_completed"
+  },
+  "material_export": {
+    "experiment": "exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+    "sample_id": "ai_002_003_cam_00_frame.0000",
+    "checkpoint_sha256": "43d516addb5ebe767a749d87213d4bb53f224295f3e47e38c1621bc55a4ce0e9",
+    "iterations": [0, 1, 2, 3],
+    "device": "physical GPU3",
+    "output": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/material/server_output/exp2_ai_002_003_joint10k_20260827",
+    "output_bytes": 19944198,
+    "sha256_verified": true
+  },
+  "resume": {
+    "run_id": "main_retry2_20260821",
+    "checkpoint": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/runs/main_retry2_20260821/checkpoints/step_000028500",
+    "checkpoint_step": 28500,
+    "started_at": "2026-08-27 16:51:06 CST",
+    "device": "physical GPU3",
+    "cuda_visible_devices": "3",
+    "launcher_process_id": 600932,
+    "process_id": 600937,
+    "launcher_log": "/mnt/data/home/zhuzichao/tmp/infinidepth_disparity_ssr/exp4_resume_step28500_gpu3_20260827_1647.log",
+    "status": "running",
+    "last_verified_at": "2026-08-27 17:43:25 CST",
+    "latest_complete_checkpoint_step": 29000,
+    "gpu_memory_mib": 17842
+  },
+  "resume_source_archive": {
+    "path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/runs/main_retry2_20260821/inputs/resume_step_000028500",
+    "source_file_count": 11
+  },
+  "backup_policy": "local checkpoints during training; synchronous latest-checkpoint backup on completion, Python failure, SIGINT, or SIGTERM"
+}

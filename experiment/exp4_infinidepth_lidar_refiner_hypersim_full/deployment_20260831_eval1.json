@@ -1,0 +1,36 @@
+{
+  "checkpoint": {
+    "path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/runs/main_retry2_20260821/checkpoints/step_000022500",
+    "sha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+    "selection": "lowest fixed-Val100 K3 metric disparity MAE",
+    "step": 22500
+  },
+  "deployed_code": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp4_lidar_refiner/20260831_eval1/InfiniDepth",
+  "evaluation": {
+    "device": "S115 physical GPU 1",
+    "output": "runs/main_retry2_20260821/metrics/formal_eval_best_step_000022500.json",
+    "result": "completed",
+    "sample_count": 100
+  },
+  "format": "infinidepth-exp4-evaluation-deployment-v1",
+  "server_tests": {
+    "result": "passed",
+    "suite": "tests/disparity_refiner/test_lidar_exp4.py + test_exp4_backup.py"
+  },
+  "status": "viewer_assets_ready_production_publish_pending_authorization",
+  "verified_on": "2026-08-31",
+  "viewer": {
+    "asset_tag": "exp4_best22500",
+    "file_count": 106,
+    "local_browser_checks": [
+      "npm run typecheck",
+      "npm test",
+      "npm run build:next",
+      "Playwright Exp3 split",
+      "Playwright Exp4 split/K/canvas",
+      "Playwright mobile"
+    ],
+    "sample_counts": {"test": 5, "train": 5, "val": 5},
+    "vercel_publish": "blocked: Not authorized"
+  }
+}
