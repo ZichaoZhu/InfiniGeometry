@@ -72,6 +72,7 @@ class DisparityRefinementOutput:
     raw_residuals: List[torch.Tensor]
     bounded_residuals: List[torch.Tensor]
     voxel_statistics: List[Dict[str, object]]
+    reference_scale: Optional[torch.Tensor] = None
 
 
 class _BaseInfiniDepthModel(nn.Module):
@@ -111,7 +112,7 @@ class _BaseInfiniDepthModel(nn.Module):
 
         if model_path is not None:
             if os.path.exists(model_path):
-                checkpoint = torch.load(model_path, map_location="cpu")
+                checkpoint = torch.load(model_path, map_location="cpu", weights_only=True)
                 self.load_state_dict({k[9:]: v for k, v in checkpoint["state_dict"].items()})
             else:
                 raise FileNotFoundError(f"Model file {model_path} not found")
@@ -248,6 +249,8 @@ class _BaseInfiniDepthModel(nn.Module):
         self,
         image: torch.Tensor,
         *,
+        prompt_disparity: Optional[torch.Tensor] = None,
+        prompt_mask: Optional[torch.Tensor] = None,
         query_hw: Tuple[int, int] = (384, 512),
         num_refinement_steps: int = 3,
         residual_scale: float = 1.0,
@@ -264,7 +267,15 @@ class _BaseInfiniDepthModel(nn.Module):
         residual_scale = float(residual_scale)
         if not 0.0 <= residual_scale <= 1.0:
             raise ValueError("residual_scale must be in [0, 1]")
-        encoding = self.encode_image(image)
+        state = _InferenceState(
+            prompt_depth=prompt_disparity,
+            prompt_mask=prompt_mask,
+        )
+        if prompt_disparity is not None or prompt_mask is not None:
+            state = self._prepare_inference(state)
+            encoding = self._encode_image_with_state(image, state)
+        else:
+            encoding = self.encode_image(image)
         query = _make_dense_query_coord(image.shape[0], height, width, image.device)
         decoded = self.decode_disparity(encoding, query, chunk_size=chunk_size)
         base_disparity = decoded[..., 0].reshape(image.shape[0], height, width).float()
@@ -291,6 +302,7 @@ class _BaseInfiniDepthModel(nn.Module):
             raw_residuals=raw_residuals,
             bounded_residuals=bounded_residuals,
             voxel_statistics=voxel_statistics,
+            reference_scale=state.reference_meta,
         )
 
     def _to_depth_disparity(self, pred: torch.Tensor):
@@ -483,21 +495,22 @@ class InfiniDepth_DepthSensor(_BaseInfiniDepthModel):
         )
 
     def _prepare_inference(self, state: _InferenceState) -> _InferenceState:
-        if (
-            state.prompt_depth is None
-            or state.prompt_mask is None
-            or state.gt_depth is None
-            or state.gt_depth_mask is None
-        ):
+        if state.prompt_depth is None or state.prompt_mask is None:
             raise ValueError(
-                "InfiniDepth_DepthSensor inference requires gt_depth, gt_depth_mask, prompt_depth, and prompt_mask."
+                "InfiniDepth_DepthSensor inference requires prompt_depth and prompt_mask."
+            )
+        warp_kwargs = {
+            "prompt_depth": state.prompt_depth,
+            "prompt_mask": state.prompt_mask,
+        }
+        if state.gt_depth is not None and state.gt_depth_mask is not None:
+            warp_kwargs.update(
+                ground_truth=state.gt_depth,
+                ground_truth_mask=state.gt_depth_mask,
             )
         prompt_depth, prompt_mask, reference_meta = self.warp_func.warp(
             state.prompt_depth,
-            prompt_depth=state.prompt_depth,
-            prompt_mask=state.prompt_mask,
-            ground_truth=state.gt_depth,
-            ground_truth_mask=state.gt_depth_mask,
+            **warp_kwargs,
         )
         state.prompt_depth = prompt_depth
         state.prompt_mask = prompt_mask

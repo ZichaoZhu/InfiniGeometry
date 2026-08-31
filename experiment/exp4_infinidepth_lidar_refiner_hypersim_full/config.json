@@ -1,0 +1,121 @@
+{
+  "claim_boundary": "使用官方 Hypersim train 中 59,542 张有效 depth 图像训练 LiDAR-conditioned SSR；固定 Hypersim Val100 仅用于评测和 checkpoint 选择，test 不参与开发。",
+  "data": {
+    "excluded_sample_ids": [
+      "ai_012_007_cam_01_frame.0000"
+    ],
+    "expected_train_count": 59542,
+    "lazy_loading": true,
+    "local_cache": "/mnt/data/home/zhuzichao/cache/infinidepth_disparity_ssr/hypersim_exp3",
+    "manifest": "experiment/data/hypersim_full_manifest.json",
+    "manifest_sha256": "d213f287b744c7c79044c860b683a719645a73dd0175277a0be88c2912de8e9b",
+    "require_complete_local_cache": true,
+    "source_root": "/nas1/datasets/hypersim/raw"
+  },
+  "evaluation": {
+    "full_eval_every": 2500,
+    "local_points": {
+      "delta_threshold": 0.01,
+      "mask_root": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/masks/val100/moge3_v2_sam2_1_small_v1",
+      "max_area_fraction": 0.05,
+      "min_density": 0.3,
+      "min_overlap_pixels": 5,
+      "min_segment_pixels": 10,
+      "morphology_shape": "ellipse",
+      "morphology_sizes": [3, 5, 9, 17],
+      "residual_downsample_interpolation": "area",
+      "residual_scales": [8, 16, 32],
+      "residual_upsample_interpolation": "linear",
+      "sam2": {
+        "apply_postprocessing": true,
+        "box_nms_thresh": 0.7,
+        "checkpoint": "/mnt/data/home/zhuzichao/checkpoints/SAM2/sam2.1_hiera_small.pt",
+        "checkpoint_sha256": "6d1aa6f30de5c92224f8172114de081d104bbd23dd9dc5c58996f0cad5dc4d38",
+        "crop_n_layers": 0,
+        "min_mask_region_area": 0,
+        "model_config": "configs/sam2.1/sam2.1_hiera_s.yaml",
+        "points_per_batch": 64,
+        "points_per_side": 32,
+        "pred_iou_thresh": 0.8,
+        "repository": "/mnt/data/home/zhuzichao/dependencies/sam2/repository_20260821_impl2",
+        "repository_commit": "2b90b9f5ceec907a1c18123530e92e794ad901a4",
+        "stability_score_thresh": 0.95
+      },
+      "threshold_sigma": 3.0
+    },
+    "sample_ids": [
+      "ai_003_010_cam_00_frame.0000",
+      "ai_016_001_cam_01_frame.0062",
+      "ai_038_009_cam_00_frame.0069",
+      "ai_050_002_cam_01_frame.0056",
+      "ai_055_009_cam_01_frame.0099"
+    ],
+    "sample_ids_config": "experiment/exp3_infinidepth_disparity_ssr_hypersim_full/config.json",
+    "selection_metric": "k3_metric_disparity_mae_1_per_m",
+    "split": "val"
+  },
+  "experiment_id": "exp4_infinidepth_lidar_refiner_hypersim_full",
+  "lidar": {
+    "dropout": 0.0,
+    "horizontal_stride": 4,
+    "semantics": "co-located virtual multi-beam LiDAR over Hypersim radial range",
+    "vertical_beams": 64,
+    "vertical_margin_fraction": 0.02
+  },
+  "model": {
+    "checkpoint": "/mnt/data/home/zhuzichao/checkpoints/InfiniDepth/depth/infinidepth_depthsensor.ckpt",
+    "checkpoint_sha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267",
+    "geometry_dtype": "float32",
+    "height": 384,
+    "max_disparity_span": null,
+    "query_chunk_size": 10000,
+    "variant": "InfiniDepth_DepthSensor",
+    "voxel_resolution": 200.0,
+    "width": 512
+  },
+  "research_question": "冻结 LiDAR-conditioned InfiniDepth DepthSensor 基座后，SSR 能否同时改善 metric disparity 误差与 MoGe-3 局部点云细节？",
+  "runs": [
+    {
+      "id": "main",
+      "sample_ids": null,
+      "seed_offset": 0
+    },
+    {
+      "id": "main_retry_20260821",
+      "sample_ids": null,
+      "seed_offset": 0
+    },
+    {
+      "id": "main_retry2_20260821",
+      "sample_ids": null,
+      "seed_offset": 0
+    }
+  ],
+  "seed": 173,
+  "server": {
+    "backup_root": "/nas1/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner",
+    "backup_safe_root": "/nas1/home/zhuzichao",
+    "cache": "/mnt/data/home/zhuzichao/cache/infinidepth_disparity_ssr",
+    "environment": "/mnt/data/home/zhuzichao/envs/infinidepth_disparity_ssr",
+    "output_root": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner",
+    "safe_root": "/mnt/data/home/zhuzichao",
+    "temporary": "/mnt/data/home/zhuzichao/tmp/infinidepth_disparity_ssr"
+  },
+  "status": "completed",
+  "training": {
+    "checkpoint_every": 500,
+    "eval_every": 500,
+    "full_eval_every": 2500,
+    "global_batch_size": 8,
+    "gradient_clip_norm": 1.0,
+    "gradient_scales": 4,
+    "gradient_weight": 0.5,
+    "learning_rate": 1e-05,
+    "max_steps": 40000,
+    "microbatch_size": 1,
+    "optimizer": "AdamW",
+    "sampling": "shuffled_cycle",
+    "trainable_scope": "disparity_refiner_only",
+    "weight_decay": 0.01
+  }
+}

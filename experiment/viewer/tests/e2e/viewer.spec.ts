@@ -97,6 +97,32 @@ test("shows five configured samples for each Exp3 dataset split", async ({ page 
   await page.screenshot({ path: path.join(screenshotDirectory, "exp3-desktop.png"), fullPage: true });
 });
 
+test("shows the Exp4 LiDAR best checkpoint across all three dataset splits", async ({ page }) => {
+  await page.goto("/");
+  const exp4 = page.getByTestId("experiment-exp4_infinidepth_lidar_refiner_hypersim_full");
+  await exp4.click();
+  await expect(exp4).toHaveAttribute("aria-pressed", "true");
+  const split = page.getByTestId("sample-split");
+  await expect(split.getByRole("button")).toHaveCount(3);
+  await expect(page.getByTestId("sample-1")).toContainText("ai_019_004_cam_00_frame.0000");
+  await expect(page.getByTestId("viewer-left")).toContainText("LiDAR 初始 · K=0");
+  await expect(page.getByTestId("viewer-right")).toContainText("SSR 最佳 22.5k · K=3");
+
+  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
+  }
+  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  await mkdir(screenshotDirectory, { recursive: true });
+  await page.getByTestId("viewer-right").locator("canvas").screenshot({ path: path.join(screenshotDirectory, "exp4-k3-canvas.png") });
+  await split.getByRole("button", { name: "VAL" }).click();
+  await expect(page.getByTestId("sample-6")).toContainText("Val 01");
+  await split.getByRole("button", { name: "TEST" }).click();
+  await expect(page.getByTestId("sample-11")).toContainText("Test 01");
+  await page.getByTestId("right-k").getByRole("button", { name: "K=5" }).click();
+  await expect(page.getByTestId("viewer-right")).toContainText("SSR 最佳 22.5k · K=5");
+  await expect(page.locator(".canvas-error")).toHaveCount(0);
+});
+
 test("keeps controls and canvases separated on a mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");

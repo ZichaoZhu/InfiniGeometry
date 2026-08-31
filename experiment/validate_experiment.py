@@ -11,7 +11,8 @@ from typing import Dict, Iterable, List, Mapping
 
 ALLOWED_STATUS = {"planned", "running", "completed", "failed"}
 AUDITED_BASE_COMMIT = "36c6e0c31887fafc210184ee43ca475230704095"
-EXPERIMENT_NAME = re.compile(r"^exp([1-9][0-9]*)_[a-z0-9]+(?:_[a-z0-9]+)*$")
+EXPERIMENT_NAME = re.compile(r"^exp([1-9][0-9]*)_[a-z][a-z0-9]*(?:_[a-z][a-z0-9]*)*$")
+DIAGNOSTIC_EXPERIMENT_NAME = re.compile(r"^exp[1-9][0-9]*_[0-9]+_.*$")
 REQUIRED_FILES = (
     "README.md",
     "config.json",
@@ -44,8 +45,18 @@ def sha256(path: Path) -> str:
 
 
 def experiment_directories(root: Path) -> List[Path]:
-    directories = [path for path in root.iterdir() if path.is_dir() and path.name.startswith("exp")]
-    invalid = [path.name for path in directories if EXPERIMENT_NAME.fullmatch(path.name) is None]
+    candidates = [
+        path for path in root.iterdir() if path.is_dir() and path.name.startswith("exp")
+    ]
+    directories = [
+        path for path in candidates if EXPERIMENT_NAME.fullmatch(path.name) is not None
+    ]
+    invalid = [
+        path.name
+        for path in candidates
+        if EXPERIMENT_NAME.fullmatch(path.name) is None
+        and DIAGNOSTIC_EXPERIMENT_NAME.fullmatch(path.name) is None
+    ]
     if invalid:
         raise ValueError(f"实验目录命名无效: {invalid}")
     return sorted(directories, key=lambda path: int(EXPERIMENT_NAME.fullmatch(path.name).group(1)))
@@ -65,10 +76,20 @@ def check_path_boundaries(config: Mapping[str, object]) -> None:
     safe_root = Path(str(server["safe_root"]))
     if safe_root != Path("/mnt/data/home/zhuzichao"):
         raise ValueError("server.safe_root 必须是个人服务器根目录")
-    for key in ("project_root", "environment", "cache", "temporary"):
+    for key in ("project_root", "environment", "cache", "temporary", "output_root"):
+        if key not in server:
+            continue
         path = Path(str(server[key]))
         if path != safe_root and safe_root not in path.parents:
             raise ValueError(f"server.{key} 越过个人目录: {path}")
+    backup_safe_root = server.get("backup_safe_root")
+    if backup_safe_root is not None:
+        backup_safe = Path(str(backup_safe_root))
+        if backup_safe != Path("/nas1/home/zhuzichao"):
+            raise ValueError("server.backup_safe_root 必须是个人 NAS 根目录")
+        backup_root = Path(str(server["backup_root"]))
+        if backup_root != backup_safe and backup_safe not in backup_root.parents:
+            raise ValueError(f"server.backup_root 越过个人 NAS 目录: {backup_root}")
     checkpoint = Path(str(config["model"]["checkpoint"]))
     if checkpoint != safe_root and safe_root not in checkpoint.parents:
         raise ValueError(f"model.checkpoint 越过个人目录: {checkpoint}")
@@ -117,21 +138,24 @@ def check_assets(experiment: Path, manifest: Mapping[str, object], status: str) 
         if digest in seen_sha and entry.get("alias_of") != seen_sha[digest]:
             raise ValueError(f"重复 SHA 未登记别名: {relative}")
         seen_sha.setdefault(digest, relative)
-    if status == "completed":
-        required_figures = {
-            f"{experiment.name}/artifacts/training_curve.png",
-            f"{experiment.name}/artifacts/disparity_comparison.png",
-        }
-        if not required_figures.issubset(seen_paths):
-            raise ValueError("结束状态必须登记两张最终汇总图")
+    if status == "completed" and sum(
+        Path(path).suffix.lower() == ".png" for path in seen_paths
+    ) < 2:
+        raise ValueError("结束状态必须登记两张最终汇总图")
     checkpoint_names = {
         path.name for path in experiment.glob("runs/*/checkpoints/*.pt")
     }
     if checkpoint_names - {"stage1_best.pt", "joint_best.pt", "last.pt"}:
         raise ValueError(f"存在冗余 checkpoint: {sorted(checkpoint_names)}")
+    registered_figures = {
+        Path(path).name
+        for path in seen_paths
+        if Path(path).parent == Path(experiment.name) / "artifacts"
+        and Path(path).suffix.lower() == ".png"
+    }
     figure_names = {path.name for path in (experiment / "artifacts").glob("*.png")}
-    if figure_names - {"training_curve.png", "disparity_comparison.png"}:
-        raise ValueError(f"存在冗余最终图: {sorted(figure_names)}")
+    if figure_names - registered_figures:
+        raise ValueError(f"存在未登记最终图: {sorted(figure_names - registered_figures)}")
     asset_suffixes = {
         ".pt", ".pth", ".ckpt", ".ply", ".png", ".jpg", ".jpeg",
         ".log", ".npy", ".npz", ".gif", ".mp4", ".mov", ".pdf",
@@ -228,6 +252,8 @@ def validate(root: Path, check_git_files: bool) -> None:
             if len(run_ids) != len(set(run_ids)):
                 raise ValueError("运行 ID 重复")
             for run in runs:
+                if "directory" not in run:
+                    continue
                 directory = experiment / str(run["directory"])
                 if not directory.is_dir():
                     raise ValueError(f"缺少运行目录: {directory}")

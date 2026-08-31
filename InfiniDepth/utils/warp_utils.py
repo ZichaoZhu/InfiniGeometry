@@ -24,14 +24,16 @@ class WarpMedian:
                     raise ValueError("ground_truth is required")
             else:
                 median = torch.quantile(prompt_depth[b][prompt_mask[b] > 0.0], 0.5)
-                if (median <= 1e-2).any():
-                    ground_truth = kwargs["ground_truth"]
-                    ground_truth_mask = kwargs["ground_truth_mask"]
+                if (~torch.isfinite(median)).any() or (median <= 0).any():
+                    ground_truth = kwargs.get("ground_truth")
+                    ground_truth_mask = kwargs.get("ground_truth_mask")
+                    if ground_truth is None or ground_truth_mask is None:
+                        raise ValueError("positive prompt disparity median is required")
                     median = torch.quantile(ground_truth[b][ground_truth_mask[b] > 0.0], 0.5)
             median_val.append(median)
         median_val = torch.stack(median_val, dim=0)
         median_val = rearrange(median_val, "b -> b 1 1 1")
-        return depth / torch.clamp(median_val, min=1e-2), (depth >= 0) & (prompt_mask > 0.0), median_val
+        return depth / torch.clamp(median_val, min=EPS), (depth >= 0) & (prompt_mask > 0.0), median_val
 
     def unwarp(self, depth, **kwargs):
         median_val = kwargs.get("reference_meta")

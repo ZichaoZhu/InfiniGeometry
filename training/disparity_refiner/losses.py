@@ -69,6 +69,33 @@ def supervised_iteration_loss(
     return total, metrics
 
 
+def refiner_iteration_loss(
+    disparity_sequence: Sequence[torch.Tensor],
+    target: torch.Tensor,
+    mask: torch.Tensor,
+    *,
+    gradient_weight: float = 0.5,
+    gradient_scales: int = 4,
+) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+    """Supervise K=1..3 when the K=0 DepthSensor base is frozen."""
+    if len(disparity_sequence) != 4:
+        raise ValueError("Refiner training must produce exactly K=0,1,2,3")
+    losses = []
+    metrics: Dict[str, torch.Tensor] = {}
+    for iteration, prediction in enumerate(disparity_sequence[1:], start=1):
+        mae = masked_disparity_mae(prediction, target, mask)
+        gradient = multiscale_gradient_loss(
+            prediction, target, mask, scales=gradient_scales
+        )
+        value = mae + float(gradient_weight) * gradient
+        losses.append(value)
+        metrics[f"k{iteration}_mae"] = mae.detach()
+        metrics[f"k{iteration}_gradient"] = gradient.detach()
+    total = torch.stack(losses).mean()
+    metrics["loss"] = total.detach()
+    return total, metrics
+
+
 @torch.no_grad()
 def disparity_metrics(
     prediction: torch.Tensor,
