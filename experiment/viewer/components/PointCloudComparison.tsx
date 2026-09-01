@@ -32,6 +32,11 @@ type PaneState = {
   interaction: InteractionMode;
 };
 
+type ComparisonSource = "rgb" | "lidar";
+
+const EXP3_ID = "exp3_infinidepth_disparity_ssr_hypersim_full";
+const EXP4_ID = "exp4_infinidepth_lidar_refiner_hypersim_full";
+
 const FALLBACK_STAGE_LABELS: Record<string, string> = {
   initial: "官方初始",
   stage1_best: "Detach 最佳",
@@ -48,6 +53,15 @@ function stageLabel(experiment: ExperimentCatalogEntry, stage: StageName): strin
 
 function defaultStep(manifest: PointCloudManifest, preferred: RefinementStep): RefinementStep {
   return manifest.steps.includes(preferred) ? preferred : manifest.steps[0];
+}
+
+function defaultComparisonStage(
+  manifest: PointCloudManifest,
+  sample: PointCloudSample,
+  source: ComparisonSource,
+): StageName {
+  if (source === "rgb" && sampleStages(sample).includes("stage1_best")) return "stage1_best";
+  return defaultStage(manifest, sample, "right");
 }
 
 function hasStructureCrop(manifest: PointCloudManifest, sample: PointCloudSample): boolean {
@@ -181,8 +195,11 @@ function PredictionPanel({
   cameraSnapshot,
   onCameraChange,
   scope,
+  titlePrefix,
+  extraControls,
+  note,
 }: {
-  id: "left" | "right";
+  id: "left" | "right" | "reference";
   pane: PaneState;
   setPane: (value: PaneState) => void;
   sample: PointCloudSample;
@@ -192,6 +209,9 @@ function PredictionPanel({
   cameraSnapshot: CameraSnapshot | null;
   onCameraChange: (snapshot: CameraSnapshot) => void;
   scope: RasterScope;
+  titlePrefix?: string;
+  extraControls?: ReactNode;
+  note?: ReactNode;
 }) {
   const asset = resolveAsset(sample, pane.stage, pane.step);
   const stages = sampleStages(sample);
@@ -199,8 +219,8 @@ function PredictionPanel({
   return (
     <ScenePanel
       id={id}
-      kicker={`窗口 ${id === "left" ? "B" : "C"} · 预测点云`}
-      title={`${label} · K=${pane.step}`}
+      kicker={`窗口 ${id === "left" ? "B" : id === "right" ? "C" : "D"} · 预测点云`}
+      title={`${titlePrefix ? `${titlePrefix} · ` : ""}${label} · K=${pane.step}`}
       detail={experiment.stageDetails?.[pane.stage] ?? "固定查询网格上的 disparity 稀疏三维 Refiner 输出"}
       asset={asset}
       sample={sample}
@@ -213,11 +233,13 @@ function PredictionPanel({
       onCameraChange={onCameraChange}
       scope={scope}
       controls={<>
+        {extraControls}
         <Segment label="阶段" value={pane.stage} values={stages} format={(stage) => stageLabel(experiment, stage)} onChange={(stage) => setPane({ ...pane, stage })} testId={`${id}-stage`} />
         <Segment label="精修" value={pane.step} values={manifest.steps} format={(step) => `K=${step}`} onChange={(step) => setPane({ ...pane, step })} testId={`${id}-k`} />
         <Segment label="鼠标左键" value={pane.interaction} values={["rotate", "pan"] as const} format={(value) => value === "rotate" ? "旋转" : "平移"} onChange={(interaction) => setPane({ ...pane, interaction })} testId={`${id}-interaction`} />
       </>}
     >
+      {note}
       {stageUsesAlias(sample, pane.stage, pane.step) && <div className="identity-note">资源别名：{label} K={pane.step} 与 K=0 完全一致。</div>}
       {asset.pointRelReductionFromK0 !== undefined && <div className={asset.pointRelReductionFromK0 >= 0 ? "gain-note improved" : "gain-note degraded"}>较 K=0 {asset.pointRelReductionFromK0 >= 0 ? "改善" : "退化"} {percent(Math.abs(asset.pointRelReductionFromK0))}</div>}
     </ScenePanel>
@@ -238,6 +260,8 @@ export function PointCloudComparison() {
   const [catalog, setCatalog] = useState<ExperimentCatalog | null>(null);
   const [experimentId, setExperimentId] = useState("");
   const [manifest, setManifest] = useState<PointCloudManifest | null>(null);
+  const [rgbManifest, setRgbManifest] = useState<PointCloudManifest | null>(null);
+  const [rgbManifestError, setRgbManifestError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sampleId, setSampleId] = useState("");
   const [sampleSplit, setSampleSplit] = useState<DatasetSplit | null>(null);
@@ -248,6 +272,8 @@ export function PointCloudComparison() {
   const [groundInteraction, setGroundInteraction] = useState<InteractionMode>("rotate");
   const [left, setLeft] = useState<PaneState>({ stage: "initial", step: 0, fitNonce: 0, interaction: "rotate" });
   const [right, setRight] = useState<PaneState>({ stage: "joint_best", step: 3, fitNonce: 0, interaction: "rotate" });
+  const [comparisonSource, setComparisonSource] = useState<ComparisonSource>("rgb");
+  const [comparison, setComparison] = useState<PaneState>({ stage: "stage1_best", step: 3, fitNonce: 0, interaction: "rotate" });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -266,6 +292,26 @@ export function PointCloudComparison() {
   }, []);
 
   const experiment = catalog?.experiments.find((entry) => entry.id === experimentId);
+  const rgbExperiment = catalog?.experiments.find((entry) => entry.id === EXP3_ID);
+
+  useEffect(() => {
+    if (experiment?.id !== EXP4_ID || !rgbExperiment || rgbManifest) return;
+    const controller = new AbortController();
+    fetch(dataUrl(rgbExperiment.manifestUrl), { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`RGB 对照清单请求失败：HTTP ${response.status}`);
+        const loaded = (await response.json()) as PointCloudManifest;
+        if (loaded.experiment !== EXP3_ID) throw new Error(`RGB 对照清单不匹配：${loaded.experiment}`);
+        validateManifest(loaded);
+        setRgbManifest(loaded);
+        setRgbManifestError(null);
+      })
+      .catch((reason: unknown) => {
+        if (!(reason instanceof DOMException && reason.name === "AbortError")) setRgbManifestError(reason instanceof Error ? reason.message : String(reason));
+      });
+    return () => controller.abort();
+  }, [experiment?.id, rgbExperiment, rgbManifest]);
+
   useEffect(() => {
     if (!experiment) return;
     const controller = new AbortController();
@@ -287,6 +333,10 @@ export function PointCloudComparison() {
         setGroundFit((value) => value + 1);
         setLeft((pane) => ({ ...pane, stage: defaultStage(loaded, selected, "left"), step: defaultStep(loaded, 0), fitNonce: pane.fitNonce + 1 }));
         setRight((pane) => ({ ...pane, stage: defaultStage(loaded, selected, "right"), step: defaultStep(loaded, 3), fitNonce: pane.fitNonce + 1 }));
+        if (loaded.experiment === EXP4_ID) {
+          setComparisonSource("rgb");
+          setComparison((pane) => ({ ...pane, stage: "stage1_best", step: 3, fitNonce: pane.fitNonce + 1 }));
+        }
       })
       .catch((reason: unknown) => {
         if (!(reason instanceof DOMException && reason.name === "AbortError")) setError(reason instanceof Error ? reason.message : String(reason));
@@ -311,10 +361,36 @@ export function PointCloudComparison() {
     setGroundFit((value) => value + 1);
     setLeft((value) => ({ ...value, stage: defaultStage(manifest, nextSample, "left"), fitNonce: value.fitNonce + 1 }));
     setRight((value) => ({ ...value, stage: defaultStage(manifest, nextSample, "right"), fitNonce: value.fitNonce + 1 }));
+    const comparisonManifest = comparisonSource === "rgb" ? rgbManifest : manifest;
+    const comparisonSample = comparisonManifest && orderedSamples(comparisonManifest).find((item) => item.id === nextSample.id);
+    if (comparisonManifest && comparisonSample) {
+      setComparison((value) => ({
+        ...value,
+        stage: defaultComparisonStage(comparisonManifest, comparisonSample, comparisonSource),
+        fitNonce: value.fitNonce + 1,
+      }));
+    }
   };
   const scopeValues: RasterScope[] = hasStructureCrop(manifest, sample)
     ? ["crop", "full"]
     : ["full"];
+  const isExp4 = experiment.id === EXP4_ID;
+  const comparisonManifest = comparisonSource === "rgb" ? rgbManifest : manifest;
+  const comparisonExperiment = comparisonSource === "rgb" ? rgbExperiment : experiment;
+  const comparisonSample = comparisonManifest && orderedSamples(comparisonManifest).find((item) => item.id === sample.id);
+  const setComparisonVersion = (source: ComparisonSource) => {
+    setComparisonSource(source);
+    const nextManifest = source === "rgb" ? rgbManifest : manifest;
+    const nextSample = nextManifest && orderedSamples(nextManifest).find((item) => item.id === sample.id);
+    if (nextManifest && nextSample) {
+      setComparison((value) => ({
+        ...value,
+        stage: defaultComparisonStage(nextManifest, nextSample, source),
+        step: defaultStep(nextManifest, 3),
+        fitNonce: value.fitNonce + 1,
+      }));
+    }
+  };
 
   return (
     <main className="app-shell">
@@ -335,6 +411,7 @@ export function PointCloudComparison() {
         <ScenePanel id="ground-truth" kicker="窗口 A · 真实点云" title="Hypersim Ground Truth" detail="由真实深度与相机内参反投影，不经过 Base 或 Refiner" asset={sample.groundTruth} sample={sample} manifest={manifest} fitNonce={groundFit} onFit={() => setGroundFit((value) => value + 1)} interaction={groundInteraction} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} controls={<Segment label="鼠标左键" value={groundInteraction} values={["rotate", "pan"] as const} format={(value) => value === "rotate" ? "旋转" : "平移"} onChange={setGroundInteraction} testId="ground-truth-interaction" />} />
         <PredictionPanel id="left" pane={left} setPane={setLeft} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
         <PredictionPanel id="right" pane={right} setPane={setRight} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
+        {isExp4 && comparisonManifest && comparisonExperiment && comparisonSample ? <PredictionPanel id="reference" pane={comparison} setPane={setComparison} sample={comparisonSample} manifest={comparisonManifest} experiment={comparisonExperiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} titlePrefix={comparisonSource === "rgb" ? "RGB-only" : "LiDAR"} extraControls={<Segment label="版本" value={comparisonSource} values={["rgb", "lidar"] as const} format={(value) => value === "rgb" ? "RGB" : "LiDAR"} onChange={setComparisonVersion} testId="reference-version" />} note={<div className="identity-note">{comparisonSource === "rgb" ? "RGB-only 资产复用 Exp3 Stage1；可与右侧 LiDAR 输出并排查看。" : "LiDAR 资产复用当前 Exp4；可用于对照不同阶段或 K 值。"} 指标属于各自实验，绝对数值不可跨版本直接比较。</div>} /> : isExp4 ? <section className="viewer-pane reference-loading" data-testid="viewer-reference"><span className="pane-kicker">窗口 D · 版本对照</span><p>{rgbManifestError ?? "正在读取 RGB-only 对照点云…"}</p></section> : null}
       </div>
       <footer className="page-footer"><div><strong>指标口径</strong><span>Point Rel、Depth Rel、δ1.01 与 depth-boundary F1 均按 MoGe3 的点云评测定义导出。</span></div><div><strong>归档范围</strong><span>{experiment.label} 已开放 {allSamples.length} 张样本；后续 ExpN 只需加入 `experiments.json` 即可切换。</span></div></footer>
     </main>

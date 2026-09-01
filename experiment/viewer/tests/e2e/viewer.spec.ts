@@ -109,13 +109,17 @@ test("shows the Exp4 LiDAR best checkpoint across all three dataset splits", asy
   await expect(page.getByTestId("sample-1")).toContainText("ai_019_004_cam_00_frame.0000");
   await expect(page.getByTestId("viewer-left")).toContainText("LiDAR 初始 · K=0");
   await expect(page.getByTestId("viewer-right")).toContainText("SSR 最佳 22.5k · K=3");
+  await expect(page.getByTestId("viewer-reference")).toContainText("RGB-only · Detach 最佳 · K=3");
 
-  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right", "viewer-reference"]) {
     await page.getByTestId(panel).scrollIntoViewIfNeeded();
     await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
   }
   const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
+  await page.screenshot({ path: path.join(screenshotDirectory, "exp4-rgb-lidar-desktop.png"), fullPage: true });
+  await page.getByTestId("reference-version").getByRole("button", { name: "LiDAR" }).click();
+  await expect(page.getByTestId("viewer-reference")).toContainText("LiDAR · SSR 最佳 22.5k · K=3");
   await page.getByTestId("viewer-right").locator("canvas").screenshot({ path: path.join(screenshotDirectory, "exp4-k3-canvas.png") });
   await split.getByRole("button", { name: "VAL" }).click();
   await expect(page.getByTestId("sample-6")).toContainText("Val 01");
@@ -123,7 +127,7 @@ test("shows the Exp4 LiDAR best checkpoint across all three dataset splits", asy
   await expect(page.getByTestId("sample-11")).toContainText("Test 01");
   await page.getByTestId("right-k").getByRole("button", { name: "K=5" }).click();
   await expect(page.getByTestId("viewer-right")).toContainText("SSR 最佳 22.5k · K=5");
-  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right", "viewer-reference"]) {
     await page.getByTestId(panel).scrollIntoViewIfNeeded();
     await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
   }
@@ -138,7 +142,7 @@ test("keeps controls and canvases separated on a mobile viewport", async ({ page
   await expect(page.locator("canvas")).toHaveCount(3);
   for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
     await page.getByTestId(panel).scrollIntoViewIfNeeded();
-    await expect.poll(() => canvasColorCount(page, panel)).toBeGreaterThan(2);
+    await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
   }
   const panels = page.locator(".viewer-pane");
   await expect(panels).toHaveCount(3);

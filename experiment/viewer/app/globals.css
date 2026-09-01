@@ -78,8 +78,10 @@ button { color: inherit; }
 .sync-toggle.active .toggle-track::after { background: var(--cyan); transform: translateX(1.02rem); }
 
 .comparison-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; }
+.comparison-grid:has([data-testid="viewer-reference"]) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .viewer-pane { min-width: 0; padding: 1rem; border: 1px solid var(--line); border-radius: 1.1rem; background: var(--panel); box-shadow: var(--shadow); backdrop-filter: blur(18px); }
 .ground-truth-pane { border-color: rgba(255, 196, 107, .28); }
+.reference-loading { min-height: 16rem; color: var(--muted); }
 .pane-header { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
 .pane-header h2 { margin: .24rem 0 0; font-size: 1.3rem; letter-spacing: -.025em; }
 .stage-detail { display: block; margin-top: .25rem; color: var(--muted); font-size: .75rem; line-height: 1.5; }
@@ -106,5 +108,6 @@ button { color: inherit; }
 .page-footer div { padding: .75rem .85rem; border: 1px solid var(--line); border-radius: .75rem; background: rgba(7, 18, 26, .58); }
 .page-footer strong { display: block; margin-bottom: .2rem; color: var(--amber); }
 
-@media (max-width: 1180px) { .hero, .comparison-grid { grid-template-columns: 1fr; } .sample-switcher { grid-template-columns: repeat(2, minmax(0, 1fr)); } .canvas-shell { height: 52vh; } }
+@media (max-width: 1480px) { .comparison-grid:has([data-testid="viewer-reference"]) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1180px) { .hero, .comparison-grid, .comparison-grid:has([data-testid="viewer-reference"]) { grid-template-columns: 1fr; } .sample-switcher { grid-template-columns: repeat(2, minmax(0, 1fr)); } .canvas-shell { height: 52vh; } }
 @media (max-width: 700px) { .app-shell { padding: 1rem .75rem 2rem; } .hero { gap: 1rem; padding-top: .5rem; } .hero h1 { font-size: clamp(2rem, 12vw, 3.2rem); } .experiment-switcher { grid-template-columns: 1fr; } .sample-switcher { grid-template-columns: 1fr; } .sample-hover-preview { display: none; } .pane-controls { min-height: 0; } .canvas-shell { min-height: 20rem; } .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .metrics-grid div:nth-child(2) { border-right: 0; } .metrics-grid div:nth-child(-n + 2) { border-bottom: 1px solid var(--line); } .page-footer { grid-template-columns: 1fr; } }
