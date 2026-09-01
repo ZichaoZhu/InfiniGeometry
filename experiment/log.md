@@ -581,3 +581,21 @@
 - step 40,000 是最后保存点，不是选中的正式模型；其回退不会改变 best step 22,500 的 checkpoint 选择。
 - 训练结束时 step 40,000 的本地与 NAS checkpoint 均已完成校验备份；正式评估单独使用已校验的 step 22,500。
 - Vercel CLI 返回 `Not authorized`，需要项目账户重新授权后才可将已验证的本地 `exp4_best22500` 资产发布到现有线上查看器。
+
+## 2026-09-01 exp4 线上查看器发布
+
+### 实验简述
+
+目的：将已完成验收的 Exp4 best step 22,500 点云资产发布到现有生产查看器，并验证线上渲染。
+
+方法：使用已授权的 Vercel 项目账户将现有查看器生产发布；在线检查 Exp4 manifest、代表性 PLY SHA-256，并以 Playwright 切换 train、val、test 和 K 值后读取三块 WebGL canvas 的非背景像素。
+
+结果：生产地址已更新，Exp4 三个 split、K0/K3/K5 和三窗口点云均通过线上验收。离屏 canvas 在无头 Chromium 中不会稳定合成，验收测试已改为先滚动到画布可见区域再读像素，实际用户滚动到面板后渲染正常。
+
+### 实验结果
+
+- [生产发布与线上验收记录](./exp4_infinidepth_lidar_refiner_hypersim_full/deployment_20260901_vercel.json)
+
+### 其他
+
+- 本次仅发布既有 `exp4_best22500` 静态资产和测试稳定性修正，未重新导出点云、未修改模型或 checkpoint。

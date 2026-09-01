@@ -1,0 +1,35 @@
+{
+  "format": "infinidepth-exp4-viewer-production-deployment-v1",
+  "published_on": "2026-09-01",
+  "viewer": {
+    "project": "infinidepth-disparity-refiner-viewer",
+    "account": "zichaozhu",
+    "asset_tag": "exp4_best22500",
+    "file_count": 106,
+    "sample_counts": {
+      "train": 5,
+      "val": 5,
+      "test": 5
+    },
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-mwwxlpebz.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app"
+  },
+  "verification": {
+    "public_manifest": "passed: Exp4 manifest exposes initial/best_step_22500, K=0/1/3/5, and 15 samples",
+    "representative_ply": {
+      "url": "https://infinidepth-disparity-refiner-viewe.vercel.app/data/exp4_best22500/ai_019_004_cam_00_frame.0000/best_step_22500_k3.ply",
+      "sha256": "f58950f63eb42f07a4a9b40b0aa51ddf5d918d46e52e47546fb0101fecefb065",
+      "result": "matches local asset"
+    },
+    "browser_e2e": {
+      "command": "PLAYWRIGHT_BASE_URL=https://infinidepth-disparity-refiner-viewe.vercel.app npx playwright test -g 'Exp4 LiDAR'",
+      "result": "passed",
+      "checks": [
+        "train/val/test split switching",
+        "K=0, K=3, and K=5 selection",
+        "train initial and test K=5 three-canvas non-background pixels",
+        "no canvas-error"
+      ]
+    }
+  }
+}

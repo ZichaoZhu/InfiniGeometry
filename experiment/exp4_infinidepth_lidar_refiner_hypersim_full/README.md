@@ -83,7 +83,7 @@ K3 相比同 checkpoint 的 K0：metric disparity MAE 改善 6.979%，Local Poin
 - [资产 manifest](artifacts/manifest.json)
 - [在线三窗口查看器](https://infinidepth-disparity-refiner-viewe.vercel.app)
 
-生产 Vercel 发布需要项目账户重新授权；本地和 S115 部署目录的资产、清单和浏览器验收已完成，见 [deployment_20260831_eval1.json](deployment_20260831_eval1.json)。
+2026-09-01 已发布至生产查看器。线上清单、点云文件 SHA-256 和 train/test 的三块 WebGL canvas 验收均通过，见 [deployment_20260901_vercel.json](deployment_20260901_vercel.json)。此前的本地/S115 验收及待授权状态保留在 [deployment_20260831_eval1.json](deployment_20260831_eval1.json)。
 
 ## 最终验收状态
 
@@ -91,4 +91,4 @@ K3 相比同 checkpoint 的 K0：metric disparity MAE 改善 6.979%，Local Poin
 - 恢复与备份：step 40,000 本地 checkpoint 与 NAS 备份均有完成标记并通过校验；best step 22,500 checkpoint 已单独校验。
 - 数据：Train 59,542 与 Val100 本地缓存预检通过；固定 Val100 mask 为 100/100、1,117 个 segment。
 - 代码：S115 `20260831_eval1` 隔离部署中的 Exp4 LiDAR 与 checkpoint 回归测试通过。
-- 查看器：`exp4_best22500` 含 15 个样本和 106 个静态文件；本地 Next 构建、类型检查、单元测试及 Exp3/Exp4/移动端 Playwright 验收通过。
+- 查看器：`exp4_best22500` 含 15 个样本和 106 个静态文件；本地 Next 构建、类型检查、单元测试及 Exp3/Exp4/移动端 Playwright 验收通过，并已在生产网站复验。
