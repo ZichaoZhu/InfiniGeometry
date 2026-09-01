@@ -1,0 +1,47 @@
+{
+  "format": "infinidepth-exp4-rgb-lidar-viewer-release-v1",
+  "published_on": "2026-09-01",
+  "code_commit": "8fd9817",
+  "comparison": {
+    "panel": "窗口 D",
+    "default": {
+      "version": "rgb",
+      "experiment": "exp3_infinidepth_disparity_ssr_hypersim_full",
+      "stage": "stage1_best",
+      "step": 3
+    },
+    "switches": ["RGB-only / LiDAR", "stage", "K=0/1/3/5"],
+    "rgb_assets": "viewer/public/data/exp3_v2",
+    "lidar_assets": "viewer/public/data/exp4_best22500",
+    "matched_sample_ids": 15,
+    "reexported_point_clouds": false,
+    "metric_note": "each pane retains metrics from its source experiment; absolute values are not cross-version rankings"
+  },
+  "vercel": {
+    "project": "zichaozhus-projects/infinidepth-disparity-refiner-viewer",
+    "deployment_id": "dpl_hhmNtPbLoepxDXLZXibSfK1AdF1e",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-b8rfwnpkl.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app",
+    "status": "ready",
+    "publish_command": "npx vercel deploy --prod --yes --scope=zichaozhus-projects"
+  },
+  "verification": {
+    "local": [
+      "npm run typecheck",
+      "npm test: 15 passed",
+      "npm run build:next",
+      "npx playwright test: 4 passed"
+    ],
+    "production": {
+      "command": "PLAYWRIGHT_BASE_URL=https://infinidepth-disparity-refiner-viewe.vercel.app npx playwright test -g 'Exp4 LiDAR'",
+      "result": "passed",
+      "checks": [
+        "RGB-only default comparison pane",
+        "RGB/LiDAR switch",
+        "train/val/test switching",
+        "K selection",
+        "four non-background WebGL canvases"
+      ]
+    }
+  }
+}

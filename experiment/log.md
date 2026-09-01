@@ -599,3 +599,21 @@
 ### 其他
 
 - 本次仅发布既有 `exp4_best22500` 静态资产和测试稳定性修正，未重新导出点云、未修改模型或 checkpoint。
+
+## 2026-09-01 exp4 RGB/LiDAR 版本对照查看器
+
+### 实验简述
+
+目的：在 Exp4 点云查看器中直接比较 RGB-only SSR 与 LiDAR-conditioned SSR，避免在不同实验页面之间切换样本和相机视角。
+
+方法：确认 Exp3 `exp3_v2` 与 Exp4 `exp4_best22500` 的 train、val、test 各 5 张样本 ID 完全一致后，复用已有 PLY 资产新增第四个版本对照窗口。默认显示 Exp3 Stage1 best 的 RGB-only K3；窗口内提供 RGB/LiDAR、阶段和 K 值切换。中等桌面宽度使用 2×2 排版，大屏使用四列。
+
+结果：本地类型检查、15 个单元测试、生产构建、Exp1–Exp4 与移动端浏览器回归均通过；生产网站已发布，线上 Exp4 的 RGB/LiDAR 切换、train/val/test、K 值和四块 WebGL canvas 验收通过。
+
+### 实验结果
+
+- [RGB/LiDAR 对照发布与验收记录](./exp4_infinidepth_lidar_refiner_hypersim_full/deployment_20260901_rgb_lidar_compare.json)
+
+### 其他
+
+- 对照窗展示的是同图、同相机坐标下的既有资产；它用于定性几何比较。RGB-only 与 LiDAR-conditioned 的输入、Base 和评测口径不同，绝对指标不作为跨版本排名。

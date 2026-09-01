@@ -85,6 +85,8 @@ K3 相比同 checkpoint 的 K0：metric disparity MAE 改善 6.979%，Local Poin
 
 2026-09-01 已发布至生产查看器。线上清单、点云文件 SHA-256 和 train/test 的三块 WebGL canvas 验收均通过，见 [deployment_20260901_vercel.json](deployment_20260901_vercel.json)。此前的本地/S115 验收及待授权状态保留在 [deployment_20260831_eval1.json](deployment_20260831_eval1.json)。
 
+查看器的 Exp4 页面现为四窗口：GT、LiDAR K0、LiDAR SSR 和版本对照。版本对照默认复用同图的 Exp3 RGB-only Stage1 K3，并可切换为 Exp4 LiDAR；每个版本仍可独立选择阶段和 K 值。两种版本的 Base、输入条件和指标口径不同，页面明确提示不能直接横比绝对指标。线上发布与验收见 [deployment_20260901_rgb_lidar_compare.json](deployment_20260901_rgb_lidar_compare.json)。
+
 ## 最终验收状态
 
 - 训练：40,000/40,000 step，训练进程已退出；final report 为 `completed`，冻结的 DepthSensor base 参数未变化。
