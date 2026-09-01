@@ -34,6 +34,7 @@ test("switches experiments and renders the three point-cloud windows", async ({ 
   await expect(page.getByTestId("sample-1").locator(".sample-hover-preview")).toBeVisible();
 
   for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
     await expect.poll(
       () => canvasColorCount(page, panel),
       { timeout: 30_000 },
@@ -71,6 +72,7 @@ test("shows five configured samples for each Exp3 dataset split", async ({ page 
   await expect(page.getByTestId("sample-1")).toContainText("楼梯扶手与平行栏杆");
   await expect(page.getByTestId("raster-scope")).toContainText("细结构裁剪");
   for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
     await expect.poll(
       () => canvasColorCount(page, panel),
       { timeout: 30_000 },
@@ -109,6 +111,7 @@ test("shows the Exp4 LiDAR best checkpoint across all three dataset splits", asy
   await expect(page.getByTestId("viewer-right")).toContainText("SSR 最佳 22.5k · K=3");
 
   for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
     await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
   }
   const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
@@ -120,6 +123,10 @@ test("shows the Exp4 LiDAR best checkpoint across all three dataset splits", asy
   await expect(page.getByTestId("sample-11")).toContainText("Test 01");
   await page.getByTestId("right-k").getByRole("button", { name: "K=5" }).click();
   await expect(page.getByTestId("viewer-right")).toContainText("SSR 最佳 22.5k · K=5");
+  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
+    await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
+  }
   await expect(page.locator(".canvas-error")).toHaveCount(0);
 });
 
