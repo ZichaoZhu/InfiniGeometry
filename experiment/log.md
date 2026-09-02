@@ -617,3 +617,22 @@
 ### 其他
 
 - 对照窗展示的是同图、同相机坐标下的既有资产；它用于定性几何比较。RGB-only 与 LiDAR-conditioned 的输入、Base 和评测口径不同，绝对指标不作为跨版本排名。
+
+## 2026-09-02 exp4 资产完整备份
+
+### 实验简述
+
+目的：将 Exp4 的完整训练资产归档至 NAS，同时保留 S115 的全部原始资产供后续实验使用。
+
+方法：从 S115 主目录向既有 NAS 实验目录增量复制，不覆盖已有文件、不删除源文件。补齐全部 step 500 至 step 40,000 的 80 个 checkpoint、运行日志、指标、mask、provenance 和失败/烟雾运行记录；另行归档冻结的 `InfiniDepth_DepthSensor` 基础权重以及 Git 忽略的 `exp4_best22500` 查看器资产。
+
+结果：主资产增量复制补充 261 个文件、47,347,431,270 bytes，删除文件数为 0。Base 权重 SHA-256 与配置一致；查看器资产为 106 个文件、266,495,802 bytes，源与 NAS 的整体内容摘要一致。80 个 checkpoint 的 `SHA256SUMS` 全量复算仍在 NAS 后台执行，完成前不将该项标为通过。
+
+### 实验结果
+
+- [本次备份记录](./exp4_infinidepth_lidar_refiner_hypersim_full/backup_20260902.json)
+
+### 其他
+
+- S115 的 `/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner` 未删除、未移动或覆盖，仍保留全部 80 个 checkpoint。
+- Git 忽略的网站资产已独立备份；代码、配置、结果和实验日志已推送至 `feature/infinidepth-disparity-refiner`。

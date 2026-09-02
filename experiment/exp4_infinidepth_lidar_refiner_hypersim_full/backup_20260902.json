@@ -1,0 +1,47 @@
+{
+  "format": "infinidepth-exp4-full-backup-v1",
+  "date": "2026-09-02",
+  "status": "copy_complete_checkpoint_sha256_reverification_in_progress",
+  "source": {
+    "host": "ZJU3DV-S115",
+    "experiment_root": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner",
+    "file_count": 550,
+    "bytes": 53079131084
+  },
+  "backup": {
+    "experiment_root": "/nas1/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner",
+    "checkpoint_run": "runs/main_retry2_20260821",
+    "checkpoint_count": 80,
+    "checkpoint_steps": {
+      "first": 500,
+      "last": 40000,
+      "interval": 500,
+      "selected": 22500
+    },
+    "base_checkpoint": {
+      "path": "/nas1/home/zhuzichao/projects/InfiniGeometry/checkpoints/InfiniDepth/depth/infinidepth_depthsensor.ckpt",
+      "bytes": 1433096532,
+      "sha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267"
+    },
+    "viewer_assets": {
+      "path": "/nas1/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner/viewer/exp4_best22500",
+      "files": 106,
+      "bytes": 266495802,
+      "content_sha256": "6d16af72adda70a3b537f982e69a80bb68567b211f118103741d1ce327f1ec8d"
+    }
+  },
+  "transfer": {
+    "tool": "rsync --archive --ignore-existing --partial",
+    "main_transfer_files": 261,
+    "main_transfer_bytes": 47347431270,
+    "deleted_files": 0,
+    "source_files_deleted": 0
+  },
+  "verification": {
+    "base_checkpoint_sha256": "passed",
+    "viewer_content_sha256": "passed",
+    "checkpoint_sha256sums": "in_progress",
+    "checkpoint_verification_log": "/mnt/data/home/zhuzichao/tmp/infinidepth_disparity_ssr/exp4_backup_verify_20260902.log"
+  },
+  "git_revision": "ccd5b1db74616c975d46ba9fe293c65217c133f7"
+}
