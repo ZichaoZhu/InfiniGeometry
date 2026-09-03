@@ -1,0 +1,53 @@
+{
+  "assets": {
+    "bytes": 13820639,
+    "directory": "experiment/viewer/public/data/waymo_gallery_exp5_val202_side_20260903_r2",
+    "file_count": 406,
+    "gallery_json_sha256": "fa901b31fe7d1454b7f10c3c04fd3bcc50cd0fd56b7921403a8a9dc9c4ff1087",
+    "preview_count": 404,
+    "preview_resolution": {
+      "height": 384,
+      "width": 512
+    }
+  },
+  "base_commit_at_export": "6b8d73807942ebe2c5e550024c0b5174a4e33c76",
+  "cameras": ["SIDE_LEFT", "SIDE_RIGHT"],
+  "format": "infinidepth-exp5-waymo-side-gallery-release-v1",
+  "gallery_url": "https://infinidepth-disparity-refiner-viewe.vercel.app/data/waymo_gallery_exp5_val202_side_20260903_r2/index.html",
+  "published_on": "2026-09-03",
+  "provenance": {
+    "frame_index": "the exact frame_index recorded by the completed FRONT Val202 report",
+    "image_processing": "decoded camera JPEG resized with PIL LANCZOS to 384x512",
+    "report_sha256": "0e4c03e4658096f1eecceb55c7f4c610c67f2a3fdacdccf818ee70ca3fe1db16",
+    "sample_count": 202,
+    "split": "Waymo validation",
+    "side_camera_note": "Each sequence contributes one SIDE_LEFT and one SIDE_RIGHT image; side-specific calibration must be used for later point-cloud export."
+  },
+  "server": {
+    "deployment_id": "20260903_gallery4",
+    "deployment_path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp5_waymo_generalization/20260903_gallery4/InfiniDepth",
+    "tests": "1 passed"
+  },
+  "source_status": "Exp5 is ongoing; uncommitted source is retained in the immutable server deployment",
+  "ui": {
+    "filters": ["camera", "location", "time_of_day", "weather", "text search"],
+    "selection": "browser-local selection keyed by camera and TFRecord; copies camera plus filename",
+    "uses_model": false
+  },
+  "vercel": {
+    "deployment_id": "dpl_Dq2vkwjVDF6vvNnWhD1GTEzhvoBw",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-18bzi0qtl.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app",
+    "status": "ready"
+  },
+  "verification": {
+    "local": [
+      "python -m pytest tests/disparity_refiner/test_waymo_gallery.py -q: 1 passed",
+      "local Playwright side-camera test: passed"
+    ],
+    "production": [
+      "gallery JSON: 404 entries, SIDE_LEFT/SIDE_RIGHT each 202",
+      "Playwright camera filter and selection: passed"
+    ]
+  }
+}

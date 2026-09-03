@@ -1,0 +1,20 @@
+{
+  "evaluation": "Waymo validation Val202",
+  "gpu_index": 1,
+  "gpu_memory_free_mib_at_start": 48484,
+  "gpu_memory_used_mib_at_start": 25,
+  "launcher_log": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_waymo_generalization/formal_gpu1.log",
+  "output": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_waymo_generalization/runs/waymo_val202_front_step22500",
+  "duration_seconds_after_model_setup": 945.8565561771393,
+  "final_sample_count": 202,
+  "process_memory_used_mib_observed": 2730,
+  "progress_observed": "202/202",
+  "status": "completed",
+  "tmux_session": "exp5_waymo_gpu1_formal_20260903",
+  "watchdog": {
+    "action": "terminate_only_exp5_process",
+    "minimum_free_memory_mib": 4500,
+    "session": "exp5_waymo_gpu1_watchdog_20260903",
+    "status": "completed_without_trigger"
+  }
+}

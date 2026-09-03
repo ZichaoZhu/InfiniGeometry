@@ -1,0 +1,35 @@
+{
+  "format": "infinidepth-exp5-eth3d-deployment-v1",
+  "deployed_on": "2026-09-03",
+  "deployment_root": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp5_ETH3D/20260903_impl2/InfiniDepth",
+  "run_output": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/runs/eth3d_highres_train_step22500",
+  "input_manifest": {
+    "path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/inputs/eth3d_input_manifest.json",
+    "sha256": "4d40ad0edc6e94791a4681625ed87186c204f62f6bda51833b83bb2b1c619968"
+  },
+  "detail_mask_manifest": {
+    "path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/masks/moge3_v2_sam2_1_small_eth3d_density010_v1/manifest.json",
+    "sha256": "116d8f7ea4121d748b4311c599afbcb4c94500ff3ffcdf80d7fad243e344d9ab",
+    "retained_segment_count": 5447
+  },
+  "formal_report": {
+    "path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/runs/eth3d_highres_train_step22500/report.json",
+    "sha256": "a960a53dac65b1e29f0101332ffcd8b0e6858265836c5fae10cae2edb885e0f7"
+  },
+  "checkpoint": {
+    "step": 22500,
+    "sha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+    "base_checkpoint_sha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267"
+  },
+  "source_sha256": {
+    "config": "ef9fdcafd4d38087ec7a9a7ba702a33010bb62fd8d518703e7ccc2cdb2bfcde3",
+    "eth3d_geometry": "1b8dcdcb934f90f049e89a2a398b357152b0648a6bce71bd87892bbe9ff2cf89",
+    "evaluator": "e840aeb0a0765afb09052d7e9b42c4ff97ddc62720a8d6def69b0adc394a25b4"
+  },
+  "verification": [
+    "10 ETH3D and Waymo adapter unit tests passed in the final deployment",
+    "Python source compilation passed in the final deployment",
+    "454/454 formal evaluation completed",
+    "report, progress and detail-mask manifest SHA-256 values were read back after completion"
+  ]
+}

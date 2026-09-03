@@ -1,0 +1,55 @@
+{
+  "assets": {
+    "bytes": 73992600,
+    "directory": "experiment/viewer/public/data/exp5_waymo_val202_seed173",
+    "file_count": 32,
+    "manifest_sha256": "c06d591a733545be337eff21f883c2767910456b430faab7cad0656e72742b29",
+    "point_cloud_count": 25,
+    "selection_sha256": "52a2aac69dec3c79365f3548366cc136dd7463e3fe750f7c4b9e92030e5ad7a1",
+    "visual_max_radial_depth_m": 100.0
+  },
+  "checkpoint": {
+    "exp4_sha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+    "exp4_step": 22500
+  },
+  "base_commit_at_export": "6b8d73807942ebe2c5e550024c0b5174a4e33c76",
+  "format": "infinidepth-exp5-waymo-viewer-release-v1",
+  "metrics": "not computed for this visualization batch",
+  "published_on": "2026-09-03",
+  "selection": {
+    "algorithm": "python-random-sample-sorted-sources",
+    "count": 5,
+    "report_sha256": "0e4c03e4658096f1eecceb55c7f4c610c67f2a3fdacdccf818ee70ca3fe1db16",
+    "seed": 173,
+    "split": "Waymo validation"
+  },
+  "server": {
+    "deployment_id": "20260903_viewer1",
+    "deployment_path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp5_waymo_generalization/20260903_viewer1/InfiniDepth",
+    "tests": "4 passed"
+  },
+  "source_status": "Exp5 is ongoing; uncommitted source is retained in the immutable server deployment",
+  "vercel": {
+    "deployment_id": "dpl_E2pivGaQrd8RfL21Dorri4voMmjT",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-q9lmnofwy.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app",
+    "project": "zichaozhus-projects/infinidepth-disparity-refiner-viewer",
+    "status": "ready"
+  },
+  "verification": {
+    "local": [
+      "python -m pytest tests/disparity_refiner/test_waymo_exp5.py -q: 4 passed",
+      "npm run typecheck: passed",
+      "npm test: 16 passed",
+      "npm run build:next: passed",
+      "Waymo Playwright test: passed",
+      "mobile Playwright retry: passed"
+    ],
+    "production": {
+      "catalog_exp5": true,
+      "manifest_sample_count": 5,
+      "representative_k3_sha256": "f6b9fbeab8bb61dd6e5717cf53584f824b4b57cc43fa2b5586c5d6d6652a4056",
+      "webgl_test": "passed"
+    }
+  }
+}

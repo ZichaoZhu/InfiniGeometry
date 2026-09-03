@@ -1,0 +1,105 @@
+{
+  "format": "infinidepth-exp5-eth3d-summary-v1",
+  "evaluation": "ETH3D high-res multi-view training DSLR zero-shot generalization",
+  "checkpoint_step": 22500,
+  "sample_count": 454,
+  "scene_count": 13,
+  "primary_scope": "held-out valid ETH3D depth pixels excluding deterministic virtual LiDAR prompt pixels",
+  "aggregation": "image macro mean; local metrics are retained-segment macro means",
+  "aggregate_held_out": {
+    "k0": {
+      "metric_disparity_mae_1_per_m": 0.000906731130403727,
+      "radial_depth_abs_rel": 0.4930663678740225,
+      "radial_depth_rmse_m": 168.62062445383762,
+      "point_delta_0_01": 0.9349216191253998,
+      "local_point_rel": 0.01143407996107876,
+      "local_point_delta_0_01": 0.8001067977717924,
+      "local_segment_count": 5227
+    },
+    "k1": {
+      "metric_disparity_mae_1_per_m": 0.0008009968328124039,
+      "radial_depth_abs_rel": 0.3353947513509339,
+      "radial_depth_rmse_m": 100.04821082441462,
+      "point_delta_0_01": 0.9494844650119412,
+      "local_point_rel": 0.011215751305920202,
+      "local_point_delta_0_01": 0.8087193310843049,
+      "local_segment_count": 5227
+    },
+    "k3": {
+      "metric_disparity_mae_1_per_m": 0.0006903650927665594,
+      "radial_depth_abs_rel": 0.15165941377600145,
+      "radial_depth_rmse_m": 42.65627548510531,
+      "point_delta_0_01": 0.9592051582189384,
+      "local_point_rel": 0.011135208238215477,
+      "local_point_delta_0_01": 0.8080757278100907,
+      "local_segment_count": 5227
+    },
+    "k5": {
+      "metric_disparity_mae_1_per_m": 0.000736851948288414,
+      "radial_depth_abs_rel": 0.19145645930789235,
+      "radial_depth_rmse_m": 55.87674972007927,
+      "point_delta_0_01": 0.9564888632245001,
+      "local_point_rel": 0.011278513254018624,
+      "local_point_delta_0_01": 0.8048926263962811,
+      "local_segment_count": 5227
+    }
+  },
+  "aggregate_all_valid": {
+    "k0": {
+      "metric_disparity_mae_1_per_m": 0.0009100039629701582,
+      "radial_depth_abs_rel": 0.6504893679565921,
+      "radial_depth_rmse_m": 186.229041790961,
+      "point_delta_0_01": 0.935196122146388
+    },
+    "k1": {
+      "metric_disparity_mae_1_per_m": 0.000805612220045534,
+      "radial_depth_abs_rel": 0.36167346361290154,
+      "radial_depth_rmse_m": 103.81094708187723,
+      "point_delta_0_01": 0.9496874515180546
+    },
+    "k3": {
+      "metric_disparity_mae_1_per_m": 0.0006979339588948911,
+      "radial_depth_abs_rel": 0.2160787702144979,
+      "radial_depth_rmse_m": 62.404216051819155,
+      "point_delta_0_01": 0.9591906816423728
+    },
+    "k5": {
+      "metric_disparity_mae_1_per_m": 0.000746728933484515,
+      "radial_depth_abs_rel": 0.19947540831415184,
+      "radial_depth_rmse_m": 55.427973307205555,
+      "point_delta_0_01": 0.9562259968944583
+    }
+  },
+  "comparison_k3_vs_k0": {
+    "metric_disparity_mae_1_per_m": {
+      "k3_better_image_count": 446,
+      "paired_scene_macro_k3_minus_k0": -0.00023124838098545814,
+      "paired_scene_block_bootstrap_95_percent_ci": [-0.0002857253851968087, -0.00017714119102745648]
+    },
+    "radial_depth_abs_rel": {
+      "k3_better_image_count": 436,
+      "paired_scene_macro_k3_minus_k0": -0.29477107658255036,
+      "paired_scene_block_bootstrap_95_percent_ci": [-0.8566924003295896, -0.0012258355476255018]
+    },
+    "point_delta_0_01": {
+      "k3_better_image_count": 445,
+      "paired_scene_macro_k3_minus_k0": 0.02252792520088483,
+      "paired_scene_block_bootstrap_95_percent_ci": [0.017444542198205817, 0.02774632825305512]
+    },
+    "local_point_rel": {
+      "applicable_image_count": 444,
+      "k3_better_image_count": 351,
+      "paired_scene_macro_k3_minus_k0": -0.0005690438985528473,
+      "paired_scene_block_bootstrap_95_percent_ci": [-0.0010819662922958886, -0.00018318905387600283]
+    },
+    "local_point_delta_0_01": {
+      "applicable_image_count": 444,
+      "k3_better_image_count": 302,
+      "paired_scene_macro_k3_minus_k0": 0.01594829679234289,
+      "paired_scene_block_bootstrap_95_percent_ci": [0.007338021088713003, 0.027392431230932605]
+    }
+  },
+  "duration_seconds_after_model_setup": 1102.9775598049164,
+  "full_report": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/runs/eth3d_highres_train_step22500/report.json",
+  "full_report_sha256": "a960a53dac65b1e29f0101332ffcd8b0e6858265836c5fae10cae2edb885e0f7"
+}

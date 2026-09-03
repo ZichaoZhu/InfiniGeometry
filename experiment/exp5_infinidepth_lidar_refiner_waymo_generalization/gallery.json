@@ -1,0 +1,12 @@
+{
+  "asset_tag": "waymo_gallery_exp5_val202_side_20260903_r2",
+  "cameras": ["SIDE_LEFT", "SIDE_RIGHT"],
+  "format": "infinidepth-exp5-waymo-gallery-v1",
+  "preview": {
+    "height": 384,
+    "jpeg_quality": 85,
+    "width": 512
+  },
+  "report": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_waymo_generalization/runs/waymo_val202_front_step22500/report.json",
+  "seed": 173
+}

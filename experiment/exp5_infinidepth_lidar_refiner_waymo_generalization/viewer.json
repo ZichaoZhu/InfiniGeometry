@@ -1,0 +1,19 @@
+{
+  "asset_tag": "exp5_waymo_val202_seed173",
+  "checkpoint_stage": "best_step_22500",
+  "format": "infinidepth-exp5-waymo-viewer-v1",
+  "report": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_waymo_generalization/runs/waymo_val202_front_step22500/report.json",
+  "sample_policy": {
+    "algorithm": "python-random-sample-sorted-sources",
+    "count": 5,
+    "seed": 173
+  },
+  "sources": [
+    "segment-16979882728032305374_2719_000_2739_000_with_camera_labels.tfrecord",
+    "segment-30779396576054160_1880_000_1900_000_with_camera_labels.tfrecord",
+    "segment-7650923902987369309_2380_000_2400_000_with_camera_labels.tfrecord",
+    "segment-9472420603764812147_850_000_870_000_with_camera_labels.tfrecord",
+    "segment-8845277173853189216_3828_530_3848_530_with_camera_labels.tfrecord"
+  ],
+  "visual_max_radial_depth_m": 100.0
+}

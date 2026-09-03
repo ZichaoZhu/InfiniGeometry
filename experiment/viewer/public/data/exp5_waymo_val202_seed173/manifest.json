@@ -1,0 +1,824 @@
+{
+  "coordinateSpace": {
+    "aligned": "metric OpenCV camera XYZ",
+    "stored": "metric OpenCV camera XYZ",
+    "threeDisplay": "[x, -y, -z]"
+  },
+  "defaultStages": {
+    "left": "initial",
+    "right": "best_step_22500"
+  },
+  "displayNote": "Waymo FRONT 图像；预测使用 prompt disparity 的中位数恢复米制，点云仅显示 0–100 m。",
+  "experiment": "exp5_waymo_generalization",
+  "groundTruthDetail": "未作为 prompt 输入的 TOP LiDAR 第一回波投影；稀疏点云，不是稠密 GT",
+  "groundTruthTitle": "Waymo held-out TOP LiDAR",
+  "metricsNote": "本批 Waymo 资产只用于可视化，未新增计算 Local Point 等评测指标。",
+  "resolution": {
+    "height": 384,
+    "width": 512
+  },
+  "samplePolicy": {
+    "algorithm": "python-random-sample-sorted-sources",
+    "countPerSplit": 5,
+    "seed": 173,
+    "splitOrder": [
+      "val"
+    ],
+    "testUsage": "只用于定性可视化，不据此选择 checkpoint。"
+  },
+  "samples": [
+    {
+      "cropXYXY": [
+        0,
+        0,
+        512,
+        384
+      ],
+      "description": "location_phx · Day · sunny",
+      "groundTruth": {
+        "alignment": {
+          "scale": 1.0,
+          "zShift": 0.0
+        },
+        "bounds": {
+          "max": [
+            27.424333572387695,
+            2.1414825916290283,
+            71.89159393310547
+          ],
+          "min": [
+            -12.48892593383789,
+            -3.568293571472168,
+            6.662466049194336
+          ]
+        },
+        "bytes": 2949300,
+        "checkpointSha256": "waymo-held-out-top-lidar",
+        "pointCount": 196608,
+        "sha256": "3feddf7d5861a9d72d4f12ad64f7a971bbda9eff32bae93b206f59687f666f8b",
+        "url": "/data/exp5_waymo_val202_seed173/16979882728032305374_2719_000_2739_000_1518654205442088_FRONT/held_out_top_lidar.ply",
+        "validPointCount": 10562
+      },
+      "id": "16979882728032305374_2719_000_2739_000_1518654205442088_FRONT",
+      "label": "Waymo Val 01",
+      "order": 1,
+      "rgbUrl": "/data/exp5_waymo_val202_seed173/16979882728032305374_2719_000_2739_000_1518654205442088_FRONT/source_rgb.jpg",
+      "split": "val",
+      "stages": {
+        "best_step_22500": {
+          "k0": {
+            "alias": "initial.k0"
+          },
+          "k1": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                41.31917190551758,
+                2.1335346698760986,
+                99.83003997802734
+              ],
+              "min": [
+                -39.46902084350586,
+                -27.11429214477539,
+                6.618979454040527
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "1880c6655e9fbe0e58ae9889fc59e02561ff4b83948ae5615729e9adb4f68ae2",
+            "url": "/data/exp5_waymo_val202_seed173/16979882728032305374_2719_000_2739_000_1518654205442088_FRONT/best_step_22500_k1.ply",
+            "validPointCount": 114637
+          },
+          "k3": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                40.90065383911133,
+                2.1409759521484375,
+                99.85692596435547
+              ],
+              "min": [
+                -40.446285247802734,
+                -22.896482467651367,
+                6.6654744148254395
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "f6b9fbeab8bb61dd6e5717cf53584f824b4b57cc43fa2b5586c5d6d6652a4056",
+            "url": "/data/exp5_waymo_val202_seed173/16979882728032305374_2719_000_2739_000_1518654205442088_FRONT/best_step_22500_k3.ply",
+            "validPointCount": 114259
+          },
+          "k5": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                40.68213653564453,
+                2.153520107269287,
+                99.75066375732422
+              ],
+              "min": [
+                -40.56290817260742,
+                -24.01007652282715,
+                6.696690082550049
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "ecc8bde9979308e5910f587d06f021aebe8bfb71eff3c25f39e9a3b271cd75ea",
+            "url": "/data/exp5_waymo_val202_seed173/16979882728032305374_2719_000_2739_000_1518654205442088_FRONT/best_step_22500_k5.ply",
+            "validPointCount": 113992
+          }
+        },
+        "initial": {
+          "k0": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                40.83979797363281,
+                2.127218246459961,
+                99.72256469726562
+              ],
+              "min": [
+                -41.268917083740234,
+                -26.295215606689453,
+                6.546326637268066
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267",
+            "pointCount": 196608,
+            "sha256": "a22f355591334e7ab90df6c7a771396ad2fe5ab1790fbbda94f748ad0b54116c",
+            "url": "/data/exp5_waymo_val202_seed173/16979882728032305374_2719_000_2739_000_1518654205442088_FRONT/initial_k0.ply",
+            "validPointCount": 114801
+          },
+          "k1": {
+            "alias": "initial.k0"
+          },
+          "k3": {
+            "alias": "initial.k0"
+          },
+          "k5": {
+            "alias": "initial.k0"
+          }
+        }
+      },
+      "websiteEnabled": true
+    },
+    {
+      "cropXYXY": [
+        0,
+        0,
+        512,
+        384
+      ],
+      "description": "location_sf · Day · sunny",
+      "groundTruth": {
+        "alignment": {
+          "scale": 1.0,
+          "zShift": 0.0
+        },
+        "bounds": {
+          "max": [
+            14.82430648803711,
+            2.032417058944702,
+            71.5582504272461
+          ],
+          "min": [
+            -20.780668258666992,
+            -3.916698932647705,
+            4.316717624664307
+          ]
+        },
+        "bytes": 2949300,
+        "checkpointSha256": "waymo-held-out-top-lidar",
+        "pointCount": 196608,
+        "sha256": "a3fa81adcc1c017322b40153f40e8e31c0c385bc1d9194f35544f75914225766",
+        "url": "/data/exp5_waymo_val202_seed173/30779396576054160_1880_000_1900_000_1557845074664280_FRONT/held_out_top_lidar.ply",
+        "validPointCount": 16118
+      },
+      "id": "30779396576054160_1880_000_1900_000_1557845074664280_FRONT",
+      "label": "Waymo Val 02",
+      "order": 2,
+      "rgbUrl": "/data/exp5_waymo_val202_seed173/30779396576054160_1880_000_1900_000_1557845074664280_FRONT/source_rgb.jpg",
+      "split": "val",
+      "stages": {
+        "best_step_22500": {
+          "k0": {
+            "alias": "initial.k0"
+          },
+          "k1": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                15.109142303466797,
+                2.025453567504883,
+                99.32421112060547
+              ],
+              "min": [
+                -24.413692474365234,
+                -29.295021057128906,
+                4.288675785064697
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "5358dfdab9bef1ebc24d6dc01e8456eb10062c1324b7c7893dea9a8f9ad747ea",
+            "url": "/data/exp5_waymo_val202_seed173/30779396576054160_1880_000_1900_000_1557845074664280_FRONT/best_step_22500_k1.ply",
+            "validPointCount": 179434
+          },
+          "k3": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                15.085189819335938,
+                2.0339441299438477,
+                99.31805419921875
+              ],
+              "min": [
+                -24.097394943237305,
+                -29.465362548828125,
+                4.29890775680542
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "f498c88ffdcec1ac40fda07bc0f8a162bf1a20b07ae8151ee88251e10124c1f5",
+            "url": "/data/exp5_waymo_val202_seed173/30779396576054160_1880_000_1900_000_1557845074664280_FRONT/best_step_22500_k3.ply",
+            "validPointCount": 179426
+          },
+          "k5": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                15.109418869018555,
+                2.0419821739196777,
+                99.37450408935547
+              ],
+              "min": [
+                -24.294130325317383,
+                -29.186182022094727,
+                4.308099269866943
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "73aa90c9ffb22b2eca9c657dc86e14b5cc846e74d6965769c2ee03a0a750678c",
+            "url": "/data/exp5_waymo_val202_seed173/30779396576054160_1880_000_1900_000_1557845074664280_FRONT/best_step_22500_k5.ply",
+            "validPointCount": 179426
+          }
+        },
+        "initial": {
+          "k0": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                15.230785369873047,
+                2.022350549697876,
+                99.46808624267578
+              ],
+              "min": [
+                -24.747631072998047,
+                -29.520973205566406,
+                4.275556564331055
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267",
+            "pointCount": 196608,
+            "sha256": "38462bdaee44aa9e1bf52c0cfd84da3eba2031b4a185333f98466ec8675812aa",
+            "url": "/data/exp5_waymo_val202_seed173/30779396576054160_1880_000_1900_000_1557845074664280_FRONT/initial_k0.ply",
+            "validPointCount": 179446
+          },
+          "k1": {
+            "alias": "initial.k0"
+          },
+          "k3": {
+            "alias": "initial.k0"
+          },
+          "k5": {
+            "alias": "initial.k0"
+          }
+        }
+      },
+      "websiteEnabled": true
+    },
+    {
+      "cropXYXY": [
+        0,
+        0,
+        512,
+        384
+      ],
+      "description": "location_sf · Day · sunny",
+      "groundTruth": {
+        "alignment": {
+          "scale": 1.0,
+          "zShift": 0.0
+        },
+        "bounds": {
+          "max": [
+            8.352279663085938,
+            3.4282238483428955,
+            74.66558074951172
+          ],
+          "min": [
+            -22.51980972290039,
+            -3.320720672607422,
+            5.5413818359375
+          ]
+        },
+        "bytes": 2949300,
+        "checkpointSha256": "waymo-held-out-top-lidar",
+        "pointCount": 196608,
+        "sha256": "225a683c430ad115ceb601a26a8dcc1ad97db8801458219b49358cc27746c469",
+        "url": "/data/exp5_waymo_val202_seed173/7650923902987369309_2380_000_2400_000_1554164217745826_FRONT/held_out_top_lidar.ply",
+        "validPointCount": 13872
+      },
+      "id": "7650923902987369309_2380_000_2400_000_1554164217745826_FRONT",
+      "label": "Waymo Val 03",
+      "order": 3,
+      "rgbUrl": "/data/exp5_waymo_val202_seed173/7650923902987369309_2380_000_2400_000_1554164217745826_FRONT/source_rgb.jpg",
+      "split": "val",
+      "stages": {
+        "best_step_22500": {
+          "k0": {
+            "alias": "initial.k0"
+          },
+          "k1": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                37.320228576660156,
+                3.24114990234375,
+                99.78721618652344
+              ],
+              "min": [
+                -40.43869400024414,
+                -19.01198959350586,
+                5.504215717315674
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "2d6750b6599bf601514cc94465a7401cf718d37fae5afdf2dd0f2acd7a8832b1",
+            "url": "/data/exp5_waymo_val202_seed173/7650923902987369309_2380_000_2400_000_1554164217745826_FRONT/best_step_22500_k1.ply",
+            "validPointCount": 127574
+          },
+          "k3": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                41.73944854736328,
+                3.254751443862915,
+                99.79288482666016
+              ],
+              "min": [
+                -40.6917724609375,
+                -20.0236759185791,
+                5.53098201751709
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "e0a65dee761b14efb66e6fe2b3d773450042893f406027fc840e4276813d3eab",
+            "url": "/data/exp5_waymo_val202_seed173/7650923902987369309_2380_000_2400_000_1554164217745826_FRONT/best_step_22500_k3.ply",
+            "validPointCount": 127427
+          },
+          "k5": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                41.77311706542969,
+                3.2886455059051514,
+                99.79943084716797
+              ],
+              "min": [
+                -40.86082077026367,
+                -21.691030502319336,
+                5.542279243469238
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "6cb32f759094232079f9a095b932c31b3d5fb8db4856c65ea522a4a01deb9069",
+            "url": "/data/exp5_waymo_val202_seed173/7650923902987369309_2380_000_2400_000_1554164217745826_FRONT/best_step_22500_k5.ply",
+            "validPointCount": 127329
+          }
+        },
+        "initial": {
+          "k0": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                40.58359909057617,
+                3.243547201156616,
+                99.77943420410156
+              ],
+              "min": [
+                -40.53451919555664,
+                -18.710407257080078,
+                5.472871780395508
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267",
+            "pointCount": 196608,
+            "sha256": "da9135b183316a91e944ae3c7fa5e3cc161c70fefcfc86260c74771dac7f5541",
+            "url": "/data/exp5_waymo_val202_seed173/7650923902987369309_2380_000_2400_000_1554164217745826_FRONT/initial_k0.ply",
+            "validPointCount": 127647
+          },
+          "k1": {
+            "alias": "initial.k0"
+          },
+          "k3": {
+            "alias": "initial.k0"
+          },
+          "k5": {
+            "alias": "initial.k0"
+          }
+        }
+      },
+      "websiteEnabled": true
+    },
+    {
+      "cropXYXY": [
+        0,
+        0,
+        512,
+        384
+      ],
+      "description": "location_other · Day · sunny",
+      "groundTruth": {
+        "alignment": {
+          "scale": 1.0,
+          "zShift": 0.0
+        },
+        "bounds": {
+          "max": [
+            17.646442413330078,
+            4.502565860748291,
+            71.25133514404297
+          ],
+          "min": [
+            -28.56148910522461,
+            -2.969892978668213,
+            5.794490814208984
+          ]
+        },
+        "bytes": 2949300,
+        "checkpointSha256": "waymo-held-out-top-lidar",
+        "pointCount": 196608,
+        "sha256": "20b85cce635b4a47d2e5872d05cc3993f35d6841da97335c24816e0836361a6a",
+        "url": "/data/exp5_waymo_val202_seed173/9472420603764812147_850_000_870_000_1519925648869775_FRONT/held_out_top_lidar.ply",
+        "validPointCount": 14653
+      },
+      "id": "9472420603764812147_850_000_870_000_1519925648869775_FRONT",
+      "label": "Waymo Val 04",
+      "order": 4,
+      "rgbUrl": "/data/exp5_waymo_val202_seed173/9472420603764812147_850_000_870_000_1519925648869775_FRONT/source_rgb.jpg",
+      "split": "val",
+      "stages": {
+        "best_step_22500": {
+          "k0": {
+            "alias": "initial.k0"
+          },
+          "k1": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                40.797218322753906,
+                2.6742031574249268,
+                98.86495208740234
+              ],
+              "min": [
+                -40.43498992919922,
+                -27.3466854095459,
+                5.737129211425781
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "24e7ab4dffa19f8c361df49b5603c446e1681fc840c712f987a6afe8ae91dd11",
+            "url": "/data/exp5_waymo_val202_seed173/9472420603764812147_850_000_870_000_1519925648869775_FRONT/best_step_22500_k1.ply",
+            "validPointCount": 166183
+          },
+          "k3": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                38.98490524291992,
+                2.592848777770996,
+                99.13191223144531
+              ],
+              "min": [
+                -38.919097900390625,
+                -26.780908584594727,
+                5.7621259689331055
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "990bab49dc908100ea531d42c2b539b63d7f09a670f937e47cd7824b2418dfb9",
+            "url": "/data/exp5_waymo_val202_seed173/9472420603764812147_850_000_870_000_1519925648869775_FRONT/best_step_22500_k3.ply",
+            "validPointCount": 166369
+          },
+          "k5": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                39.06682586669922,
+                2.582393169403076,
+                99.36675262451172
+              ],
+              "min": [
+                -38.12240219116211,
+                -28.247228622436523,
+                5.780813694000244
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "1ba6c6c524a8b60b05754b68575e6fbf8946b7d1f1bfa353b45e04898e8597c1",
+            "url": "/data/exp5_waymo_val202_seed173/9472420603764812147_850_000_870_000_1519925648869775_FRONT/best_step_22500_k5.ply",
+            "validPointCount": 166457
+          }
+        },
+        "initial": {
+          "k0": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                39.05620574951172,
+                2.7992594242095947,
+                99.12376403808594
+              ],
+              "min": [
+                -41.677181243896484,
+                -27.727746963500977,
+                5.686613082885742
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267",
+            "pointCount": 196608,
+            "sha256": "e459add57908a7685abb359f912305f6fd8f9b85bb2008234103d19656463edd",
+            "url": "/data/exp5_waymo_val202_seed173/9472420603764812147_850_000_870_000_1519925648869775_FRONT/initial_k0.ply",
+            "validPointCount": 166259
+          },
+          "k1": {
+            "alias": "initial.k0"
+          },
+          "k3": {
+            "alias": "initial.k0"
+          },
+          "k5": {
+            "alias": "initial.k0"
+          }
+        }
+      },
+      "websiteEnabled": true
+    },
+    {
+      "cropXYXY": [
+        0,
+        0,
+        512,
+        384
+      ],
+      "description": "location_phx · Dawn/Dusk · sunny",
+      "groundTruth": {
+        "alignment": {
+          "scale": 1.0,
+          "zShift": 0.0
+        },
+        "bounds": {
+          "max": [
+            30.999788284301758,
+            3.2439634799957275,
+            73.65006256103516
+          ],
+          "min": [
+            -10.507878303527832,
+            -2.3495867252349854,
+            7.3478474617004395
+          ]
+        },
+        "bytes": 2949300,
+        "checkpointSha256": "waymo-held-out-top-lidar",
+        "pointCount": 196608,
+        "sha256": "ffbe9ca42c3f28b3bdff83e523423e382f7d18ffeb767c2e89eee98c1e60106d",
+        "url": "/data/exp5_waymo_val202_seed173/8845277173853189216_3828_530_3848_530_1508976765981324_FRONT/held_out_top_lidar.ply",
+        "validPointCount": 14522
+      },
+      "id": "8845277173853189216_3828_530_3848_530_1508976765981324_FRONT",
+      "label": "Waymo Val 05",
+      "order": 5,
+      "rgbUrl": "/data/exp5_waymo_val202_seed173/8845277173853189216_3828_530_3848_530_1508976765981324_FRONT/source_rgb.jpg",
+      "split": "val",
+      "stages": {
+        "best_step_22500": {
+          "k0": {
+            "alias": "initial.k0"
+          },
+          "k1": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                41.07463836669922,
+                3.3479504585266113,
+                97.62928771972656
+              ],
+              "min": [
+                -26.660385131835938,
+                -20.473608016967773,
+                7.308830738067627
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "37e95a83556f264a73c93c15b6dea5a5a2a3abe7746228595ec70b9e2f9de0b1",
+            "url": "/data/exp5_waymo_val202_seed173/8845277173853189216_3828_530_3848_530_1508976765981324_FRONT/best_step_22500_k1.ply",
+            "validPointCount": 137395
+          },
+          "k3": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                41.36610794067383,
+                3.3859002590179443,
+                98.91377258300781
+              ],
+              "min": [
+                -26.595436096191406,
+                -20.579025268554688,
+                7.347001552581787
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "e4383e889ce9338c9842fefc3cc2ead53a481351650bc19d46944f70f18031f0",
+            "url": "/data/exp5_waymo_val202_seed173/8845277173853189216_3828_530_3848_530_1508976765981324_FRONT/best_step_22500_k3.ply",
+            "validPointCount": 137426
+          },
+          "k5": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                41.742523193359375,
+                3.426213264465332,
+                97.37504577636719
+              ],
+              "min": [
+                -27.168190002441406,
+                -16.69880485534668,
+                7.387509346008301
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+            "pointCount": 196608,
+            "sha256": "8091b2fd59dcd7e5e495ae49c39ccbe09557481511b3f22ee91b34361e336ec7",
+            "url": "/data/exp5_waymo_val202_seed173/8845277173853189216_3828_530_3848_530_1508976765981324_FRONT/best_step_22500_k5.ply",
+            "validPointCount": 137404
+          }
+        },
+        "initial": {
+          "k0": {
+            "alignment": {
+              "scale": 1.0,
+              "zShift": 0.0
+            },
+            "bounds": {
+              "max": [
+                41.440467834472656,
+                3.3476641178131104,
+                98.64595031738281
+              ],
+              "min": [
+                -26.761852264404297,
+                -18.93784523010254,
+                7.248297214508057
+              ]
+            },
+            "bytes": 2949300,
+            "checkpointSha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267",
+            "pointCount": 196608,
+            "sha256": "1f2c3f901c4b3d878c25246faa421a8f6640bf6b4d0c079d814f18344c41d769",
+            "url": "/data/exp5_waymo_val202_seed173/8845277173853189216_3828_530_3848_530_1508976765981324_FRONT/initial_k0.ply",
+            "validPointCount": 137371
+          },
+          "k1": {
+            "alias": "initial.k0"
+          },
+          "k3": {
+            "alias": "initial.k0"
+          },
+          "k5": {
+            "alias": "initial.k0"
+          }
+        }
+      },
+      "websiteEnabled": true
+    }
+  ],
+  "stages": [
+    "initial",
+    "best_step_22500"
+  ],
+  "steps": [
+    0,
+    1,
+    3,
+    5
+  ],
+  "version": 1,
+  "voxelization": {
+    "depthCoordinate": "round(200 * normalized prompt disparity)",
+    "depthScale": 200.0,
+    "spconvOrder": [
+      "batch",
+      "disparity_bin",
+      "row",
+      "column"
+    ]
+  },
+  "websiteSampleOrder": [
+    "16979882728032305374_2719_000_2739_000_1518654205442088_FRONT",
+    "30779396576054160_1880_000_1900_000_1557845074664280_FRONT",
+    "7650923902987369309_2380_000_2400_000_1554164217745826_FRONT",
+    "9472420603764812147_850_000_870_000_1519925648869775_FRONT",
+    "8845277173853189216_3828_530_3848_530_1508976765981324_FRONT"
+  ]
+}

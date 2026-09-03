@@ -636,3 +636,201 @@
 
 - S115 的 `/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp4_lidar_refiner` 未删除、未移动或覆盖，仍保留全部 80 个 checkpoint。
 - Git 忽略的网站资产已独立备份；代码、配置、结果和实验日志已推送至 `feature/infinidepth-disparity-refiner`。
+
+## 2026-09-02 exp5
+
+### 实验简述
+
+目的：使用 Exp4 step 22,500 checkpoint 在 Waymo validation 上进行零样本泛化评测。
+
+方法：保留 Val5 smoke 后再运行 Val202 的顺序；将原 GPU0 等待会话改为 GPU2 安全门控会话。只当 GPU2 已用显存不超过 16,000 MiB、利用率不超过 5%，且连续三次检查满足时才启动。
+
+结果：切换时 GPU2 已用 35,858 MiB，因此评测未启动，会话正在等待安全容量。
+
+### 实验结果
+
+- [Waymo 评测说明](./exp5_infinidepth_lidar_refiner_waymo_generalization/README.md)
+- [GPU2 运行门控记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/runtime_20260902_gpu2_guard.json)
+
+### 其他
+
+- 本次只停止了自己的 GPU0 等待会话，未停止、修改或占用其他用户的进程。
+- Exp4 同类任务历史显存占用约 12.5–16.2 GiB；当前 12.9 GiB 空闲显存不足以安全共卡，因此不直接启动。
+- Exp5 尚未结束，当前不提交 Git。
+
+## 2026-09-03 exp5
+
+### 实验简述
+
+目的：在可用 GPU 上启动 Waymo Val202 正式零样本评测。
+
+方法：先确认 S115 GPU1 无计算进程、仅占用 25 MiB，再使用 Exp4 step 22,500 checkpoint 启动 batch=1 评测。设置显存看门狗：GPU1 空闲显存低于 4,500 MiB 时只终止本实验进程。
+
+结果：Val5 smoke 已通过；Val202 运行至 15/202 时，本进程显存约 2,730 MiB，GPU1 仍有 45,749 MiB 空闲，未发现 OOM 或异常。
+
+### 实验结果
+
+- [Waymo 评测说明](./exp5_infinidepth_lidar_refiner_waymo_generalization/README.md)
+- [GPU1 正式评测运行记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/runtime_20260903_gpu1_formal.json)
+
+### 其他
+
+- Val202 的 `progress.json` 每完成一张即原子更新；若进程中断，可跳过已完成样本继续。
+- Exp5 尚未结束，当前不提交 Git。
+
+## 2026-09-03 exp5 Waymo 评测完成
+
+### 实验简述
+
+目的：检验 Hypersim 训练的 Exp4 LiDAR Refiner 在真实 Waymo RGB 和 LiDAR 上的零样本泛化能力。
+
+方法：固定 Exp4 step 22,500 checkpoint，对 Waymo validation 的 202 个序列各取一帧，使用分离的 TOP LiDAR prompt 点和 held-out 评测点比较 K0/K1/K3/K5，不训练、不微调、不重选 checkpoint。
+
+结果：202/202 完成。K3 相比 K0 的 metric disparity MAE 下降 6.729%，point \(\delta_{0.01}\) 增加 5.665 个百分点；radial AbsRel 均值下降 5.976%，但其配对 bootstrap 95% 置信区间跨过 0。radial RMSE 从 18.515 m 增加到 26.075 m，表明仍有大误差样本需要排查。
+
+### 实验结果
+
+- [Waymo 评测说明](./exp5_infinidepth_lidar_refiner_waymo_generalization/README.md)
+- [Val202 汇总指标](./exp5_infinidepth_lidar_refiner_waymo_generalization/metrics/waymo_val202_step22500_summary.json)
+- [GPU1 运行记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/runtime_20260903_gpu1_formal.json)
+
+### 其他
+
+- 正式评测在 GPU1 完成，显存保护未触发，没有 OOM 或异常；结束后 GPU1 回到 25 MiB 占用。
+- K3 在 disparity MAE 上改善 201/202 张，在 point \(\delta_{0.01}\) 上改善 202/202 张；K5 在主要指标上比 K3 略有回退。
+- Waymo 子任务已完成；Exp5 还包含 ETH3D 子任务，因此当前不提交 Git。
+
+## 2026-09-03 exp5 Waymo 可视化发布
+
+### 实验简述
+
+目的：在不补充新评测指标的前提下，定性检查 Exp4 step 22,500 模型在 Waymo 真实场景上的 zero-shot 点云输出。
+
+方法：对 Val202 已完成序列按 seed 173 固定随机抽取 5 张，导出 held-out TOP LiDAR 参考点云和同一 checkpoint 的 K0/K1/K3/K5 预测。使用 Waymo 相机内参生成米制相机射线，统一显示 0–100 m；复用现有三窗口查看器并将指标栏标记为暂未评测。
+
+结果：5/5 样本完成，共导出 25 个 PLY，资产大小 73,992,600 bytes，所有 PLY SHA-256 校验通过。线上 Exp5 入口、图像切换、K 切换和三块 WebGL canvas 验收通过。
+
+### 实验结果
+
+- [Waymo 可视化说明](./exp5_infinidepth_lidar_refiner_waymo_generalization/README.md)
+- [可视化样本与导出配置](./exp5_infinidepth_lidar_refiner_waymo_generalization/viewer.json)
+- [生产发布与验收记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/deployment_20260903_viewer.json)
+- [在线点云查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+
+### 其他
+
+- 本批资产只用于可视化，未重跑 Val202，未新增计算 Local Point Rel、Local Point \(\delta_{0.01}\) 或其他指标。
+- held-out TOP LiDAR 是稀疏参考点云，不是稠密 GT；页面已明确标注，不与 Hypersim 稠密 GT 混用。
+- Exp5 还包含 ETH3D 子任务，当前不提交 Git。
+
+## 2026-09-03 exp5 Waymo 侧视选图图库发布
+
+### 实验简述
+
+目的：针对前视图中细杆结构不易观察的问题，为用户提供 Waymo 侧视相机选图。
+
+方法：使用与 Exp5 Val202 相同的 202 个序列和报告记录的实际帧索引，分别解码 `SIDE_LEFT` 和 `SIDE_RIGHT` 图像。每个相机使用自己的图像和标定信息进行预览，不运行模型。
+
+结果：侧视图库共 404 张，左右各 202 张，包含相机、地点、时段、天气筛选，并可复制“相机 + TFRecord 文件名”。本地与线上清单一致，线上筛选和选择验收通过。
+
+### 实验结果
+
+- [Waymo Val202 SIDE 选图页](https://infinidepth-disparity-refiner-viewe.vercel.app/data/waymo_gallery_exp5_val202_side_20260903_r2/index.html)
+- [侧视选图页发布与验收记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/deployment_20260903_side_gallery.json)
+- [图库导出配置](./exp5_infinidepth_lidar_refiner_waymo_generalization/gallery.json)
+
+### 其他
+
+- 侧视图更可能看到路边护栏、电线杆、路牌杆和建筑边缘，但是否更适合需以实际图像为准。
+- 用户选定后需同时保留相机方向；后续点云导出不能直接复用 FRONT 的标定。
+- Exp5 还包含 ETH3D 子任务，当前不提交 Git。
+
+## 2026-09-03 exp5 Waymo 选图图库发布
+
+### 实验简述
+
+目的：使用者可在不重跑模型的情况下，从 Waymo Val202 中主动挑选最适合点云定性对比的场景。
+
+方法：仅解析 Val202 已完成报告记录的 FRONT JPEG，按报告中的实际 `frame_index` 取出同一帧，以模型输入一致的 384×512 尺寸生成静态图库。页面提供地点、时段、天气、文本筛选和 TFRecord 选中复制。
+
+结果：202/202 张图像已导出，共 204 个静态文件、6,635,218 bytes。本地和线上的图库 JSON 的 SHA-256 一致；线上加载 202 张卡片、选中和 Night 筛选验收通过。
+
+### 实验结果
+
+- [Waymo Val202 FRONT 选图页](https://infinidepth-disparity-refiner-viewe.vercel.app/data/waymo_gallery_exp5_val202_front_20260903_r2/index.html)
+- [选图页发布与验收记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/deployment_20260903_gallery.json)
+- [图库导出配置](./exp5_infinidepth_lidar_refiner_waymo_generalization/gallery.json)
+
+### 其他
+
+- 图库仅用于选图，不运行 Base 或 SSR，不新增指标，也不更改已完成的 Val202 结果。
+- 用户选定后将页面复制的 TFRecord 文件名发回，再单独导出对应 5 张点云资产。
+- Exp5 还包含 ETH3D 子任务，当前不提交 Git。
+
+## 2026-09-03 exp5 Waymo 手选 SIDE 点云可视化发布
+
+### 实验简述
+
+目的：针对用户从 SIDE_LEFT/SIDE_RIGHT 图库中手选的五个 Waymo 场景，定性检查 Exp4 LiDAR Refiner 在侧视细杆和场景边缘的 zero-shot 输出。
+
+方法：固定 Exp4 step 22,500 checkpoint 与既有 Val202 报告的帧索引。每张图按指定 SIDE 相机重新解码 RGB、使用该相机标定将 TOP LiDAR 分为 prompt 与 held-out 点，并导出 K0/K1/K3/K5 点云。仅导出可视化，不重跑 Val202、不计算新指标、不选择 checkpoint。
+
+结果：5/5 手选样本完成，SIDE_RIGHT 3 张、SIDE_LEFT 2 张；共导出 25 个 PLY，32 个文件共 74,050,932 bytes。25 个 PLY 的 SHA-256 均与 manifest 一致；本地桌面/移动端及生产站点的五样本、K=3、三窗口 WebGL 验收均通过。
+
+### 实验结果
+
+- [Waymo 手选 SIDE 配置](./exp5_infinidepth_lidar_refiner_waymo_generalization/viewer_side.json)
+- [手选 SIDE 发布与验收记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/deployment_20260903_side_viewer.json)
+- [在线点云查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+
+### 其他
+
+- SIDE 相机不是 FRONT 的复用标定；每张图均使用各自相机的图像、内参与 TOP LiDAR 投影。
+- held-out TOP LiDAR 为稀疏参考点云，不是稠密 GT；页面明确标注该批资产仅用于定性观察。
+- S115 使用新的不可变部署目录 `20260903_side_viewer1`；后续重试检测到已完成资产后停止，未覆盖任何文件。
+- Exp5 仍包含 ETH3D 子任务，当前不提交 Git。
+
+## 2026-09-03 exp5_waymo 十样例查看器合并
+
+### 实验简述
+
+目的：将固定随机选择的 5 张 Waymo FRONT 样例和用户手选的 5 张 SIDE 样例归入同一 `exp5_waymo` 查看器入口，便于按同一 K 值和阶段进行定性对比。
+
+方法：不重新推理、不复制或覆盖既有 PLY。新增组合 manifest 与 provenance，逐项校验两个来源 manifest 中的既有 PLY SHA-256；查看器移除旧的两个独立入口，改为固定顺序的 10 张样例。
+
+结果：10/10 样例可在生产站点切换，FRONT/SIDE、K0/K1/K3/K5 与三窗口 WebGL 均通过生产 Playwright 验收。
+
+### 实验结果
+
+- [Waymo 说明](./exp5_infinidepth_lidar_refiner_waymo_generalization/README.md)
+- [组合样例来源](./viewer/public/data/exp5_waymo/selection.json)
+- [生产发布与验收记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/deployment_20260903_waymo_combined_viewer.json)
+- [在线点云查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+
+### 其他
+
+- FRONT 五张仍是 Val202 完成结果按 seed 173 的固定随机选择；SIDE 五张仍为用户手选，二者都不用于 checkpoint 选择。
+- 旧的两个来源资产目录保留为不可变 provenance，不删除、不重写。
+- Exp5_ETH3D 仍在运行，因此当前不提交 Git。
+
+## 2026-09-03 exp5_ETH3D
+
+### 实验简述
+
+目的：检验固定 Exp4 LiDAR Refiner 在 ETH3D DSLR 多视图数据上的 zero-shot 泛化，不在 ETH3D 上训练、微调或选择 checkpoint。
+
+方法：使用 ETH3D high-res training 的 13 个场景、454 张带 `THIN_PRISM_FISHEYE` 标定的图像。将原始相机 z-depth 依标定转换为 radial range，生成确定性的 64 线、stride 4 虚拟 LiDAR prompt；在排除 prompt 像素的 held-out 深度点上评测 K0/K1/K3/K5。细节区域使用独立的 SAM2 mask，并按 MoGe-3 的 Local Point Rel 与 Local Point \(\delta_{0.01}\) 诊断。
+
+结果：K3 相比同 checkpoint K0 的 metric disparity MAE 下降 23.86%（0.0009067 至 0.0006904，446/454 图改善），Local Point Rel 下降 2.61%（0.01143 至 0.01114，351/444 图改善）。K5 的主指标与局部指标均略回退，K3 是该数据集上的最佳迭代次数。
+
+### 实验结果
+
+- [配置与运行脚本](./exp5_infinidepth_lidar_refiner_eth3d_generalization/)
+- [454 图汇总指标](./exp5_infinidepth_lidar_refiner_eth3d_generalization/metrics/eth3d_highres_train_step22500_summary.json)
+- [部署与数据 provenance](./exp5_infinidepth_lidar_refiner_eth3d_generalization/deployment_20260903_impl2.json)
+
+### 其他
+
+- 主聚合为图像宏平均；K3-K0 置信区间以 13 个场景 block bootstrap 计算，避免把同一场景的相关视角当作独立样本。
+- ETH3D 测试标签不公开，本实验使用公开 training split，不属于官方 leaderboard 提交。
+- 5,447 个细节 segment 来自 444 张有可用 segment 的图像；评测结束无 OOM、异常或显存保护触发。

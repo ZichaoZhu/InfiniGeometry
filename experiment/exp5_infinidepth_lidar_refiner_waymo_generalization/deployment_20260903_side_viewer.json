@@ -1,0 +1,51 @@
+{
+  "assets": {
+    "bytes": 74050932,
+    "directory": "experiment/viewer/public/data/exp5_waymo_side_selected_20260903",
+    "file_count": 32,
+    "manifest_sha256": "78e30b78f5622c272788935b20e389406b6a5f3cbf65c59724bb89bf9af377c0",
+    "point_cloud_count": 25,
+    "visual_max_radial_depth_m": 100.0
+  },
+  "base_commit_at_export": "6b8d73807942ebe2c5e550024c0b5174a4e33c76",
+  "checkpoint": {
+    "exp4_sha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+    "exp4_step": 22500
+  },
+  "format": "infinidepth-exp5-waymo-side-viewer-release-v1",
+  "metrics": "not computed; user-selected qualitative visualization only",
+  "published_on": "2026-09-03",
+  "selection": {
+    "cameras": ["SIDE_RIGHT", "SIDE_LEFT", "SIDE_LEFT", "SIDE_RIGHT", "SIDE_RIGHT"],
+    "config": "experiment/exp5_infinidepth_lidar_refiner_waymo_generalization/viewer_side.json",
+    "count": 5,
+    "report_sha256": "0e4c03e4658096f1eecceb55c7f4c610c67f2a3fdacdccf818ee70ca3fe1db16",
+    "split": "Waymo validation"
+  },
+  "server": {
+    "deployment_id": "20260903_side_viewer1",
+    "deployment_path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp5_waymo_generalization/20260903_side_viewer1/InfiniDepth",
+    "gpu": "GPU3",
+    "incomplete_retry": "A later retry found the completed asset directory and stopped without overwriting it."
+  },
+  "source_status": "Exp5 is ongoing; source remains uncommitted until the ETH3D subtask is complete.",
+  "vercel": {
+    "deployment_id": "dpl_4JuzaUs4Frmg2yifGvJzPZdPqUcy",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-d9ax0b4mp.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app",
+    "status": "ready"
+  },
+  "verification": {
+    "local": [
+      "python -m py_compile training/disparity_refiner/export_waymo_assets.py: passed",
+      "npm run typecheck: passed",
+      "npm run test: 16 passed",
+      "npm run build: passed",
+      "Playwright desktop and mobile SIDE test: passed"
+    ],
+    "production": [
+      "SIDE manifest SHA-256 equals local export",
+      "Playwright five-sample, K=3, and three-canvas test: passed"
+    ]
+  }
+}

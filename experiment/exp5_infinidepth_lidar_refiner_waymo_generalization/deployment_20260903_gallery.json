@@ -1,0 +1,56 @@
+{
+  "assets": {
+    "bytes": 6635218,
+    "directory": "experiment/viewer/public/data/waymo_gallery_exp5_val202_front_20260903_r2",
+    "file_count": 204,
+    "gallery_json_sha256": "4e63f88d00a2a11ba1f6ea5364fd5f5c0b05740d4052f0323040330e4bc95b5e",
+    "preview_count": 202,
+    "preview_resolution": {
+      "height": 384,
+      "width": 512
+    }
+  },
+  "base_commit_at_export": "6b8d73807942ebe2c5e550024c0b5174a4e33c76",
+  "format": "infinidepth-exp5-waymo-gallery-release-v1",
+  "gallery_url": "https://infinidepth-disparity-refiner-viewe.vercel.app/data/waymo_gallery_exp5_val202_front_20260903_r2/index.html",
+  "published_on": "2026-09-03",
+  "provenance": {
+    "camera": "FRONT",
+    "frames": "the exact frame_index recorded by the completed Val202 report",
+    "image_processing": "decoded JPEG resized with PIL LANCZOS to the Exp5 model input resolution",
+    "report_sha256": "0e4c03e4658096f1eecceb55c7f4c610c67f2a3fdacdccf818ee70ca3fe1db16",
+    "sample_count": 202,
+    "split": "Waymo validation"
+  },
+  "server": {
+    "deployment_id": "20260903_gallery2",
+    "deployment_path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp5_waymo_generalization/20260903_gallery2/InfiniDepth",
+    "tests": "5 passed"
+  },
+  "source_status": "Exp5 is ongoing; uncommitted source is retained in the immutable server deployment",
+  "ui": {
+    "filters": ["location", "time_of_day", "weather", "text search"],
+    "selection": "browser-local selection; copies selected TFRecord names",
+    "uses_model": false
+  },
+  "vercel": {
+    "deployment_id": "dpl_481j5uPpTDbvPer4jQxfPrh4Y3f6",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-77klbe9k3.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app",
+    "status": "ready"
+  },
+  "verification": {
+    "local": [
+      "python -m pytest tests/disparity_refiner/test_waymo_exp5.py tests/disparity_refiner/test_waymo_gallery.py -q: 5 passed",
+      "npm run typecheck: passed",
+      "npm test: 16 passed",
+      "npm run build:next: passed",
+      "local Playwright gallery test: passed"
+    ],
+    "production": [
+      "gallery JSON: 202 unique sources",
+      "gallery JSON SHA-256 matches local",
+      "Playwright selection and Night filter: passed"
+    ]
+  }
+}

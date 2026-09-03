@@ -1,0 +1,19 @@
+{
+  "format": "infinidepth-exp5-eth3d-runtime-v1",
+  "evaluation": "ETH3D high-res multi-view training DSLR",
+  "status": "completed",
+  "gpu_index": 1,
+  "tmux_session": "exp5_eth3d_formal_gpu1_impl2_20260903",
+  "watchdog": {
+    "session": "exp5_eth3d_formal_gpu1_impl2_watchdog_20260903",
+    "minimum_free_memory_mib": 7000,
+    "action": "terminate_only_exp5_process",
+    "status": "completed_without_trigger"
+  },
+  "output": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/runs/eth3d_highres_train_step22500",
+  "launcher_log": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/formal_gpu1_impl2.log",
+  "duration_seconds_after_model_setup": 1102.9775598049164,
+  "progress_observed": "454/454",
+  "final_sample_count": 454,
+  "final_scene_count": 13
+}

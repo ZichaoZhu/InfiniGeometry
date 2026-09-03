@@ -1,0 +1,87 @@
+{
+  "defaultExperiment": "exp1_infinidepth_disparity_ssr_single_image_overfit",
+  "experiments": [
+    {
+      "id": "exp1_infinidepth_disparity_ssr_single_image_overfit",
+      "label": "Exp1",
+      "manifestUrl": "/data/exp1/manifest.json",
+      "shortLabel": "Exp1",
+      "stageDetails": {
+        "initial": "官方 InfiniDepth 初始预测",
+        "joint_best": "联合训练的最佳检查点",
+        "stage1_best": "仅训练 Detach Refiner 的最佳检查点"
+      },
+      "stageLabels": {
+        "initial": "官方初始",
+        "joint_best": "联合最佳",
+        "stage1_best": "Detach 最佳"
+      },
+      "summary": "固定网格 disparity 稀疏三维 Refiner 能否在五张单图上完成稳定过拟合？"
+    },
+    {
+      "id": "exp2_infinidepth_disparity_ssr_hypersim100_overfit",
+      "label": "Exp2",
+      "manifestUrl": "/data/exp2/manifest.json",
+      "shortLabel": "Exp2",
+      "stageDetails": {
+        "initial": "官方 InfiniDepth 初始预测",
+        "joint_best": "联合训练的最佳检查点",
+        "stage1_best": "Detach 阶段最佳检查点"
+      },
+      "stageLabels": {
+        "initial": "官方初始",
+        "joint_best": "联合最佳",
+        "stage1_best": "Detach 最佳"
+      },
+      "summary": "单图验证通过后，固定网格 disparity Refiner 能否扩展到 100 张 Hypersim 训练图？"
+    },
+    {
+      "id": "exp3_infinidepth_disparity_ssr_hypersim_full",
+      "label": "Exp3",
+      "manifestUrl": "/data/exp3_v2/manifest.json",
+      "shortLabel": "Exp3",
+      "stageDetails": {
+        "initial": "官方 InfiniDepth 初始预测",
+        "joint_best": "联合训练的最佳检查点",
+        "stage1_best": "Detach 阶段最佳检查点"
+      },
+      "stageLabels": {
+        "initial": "官方初始",
+        "joint_best": "联合最佳",
+        "stage1_best": "Detach 最佳"
+      },
+      "summary": "使用官方 Hypersim train 中可生成有效 disparity 监督的全部样本训练更久后，disparity SSR 能否改善未参与训练的 Hypersim validation 图？"
+    },
+    {
+      "id": "exp4_infinidepth_lidar_refiner_hypersim_full",
+      "label": "Exp4",
+      "manifestUrl": "/data/exp4_best22500/manifest.json",
+      "shortLabel": "Exp4",
+      "stageDetails": {
+        "best_step_22500": "Val100 K3 metric disparity MAE 最优的 SSR checkpoint（step 22,500）",
+        "initial": "冻结 LiDAR-conditioned DepthSensor 的原始输出"
+      },
+      "stageLabels": {
+        "best_step_22500": "SSR 最佳 22.5k",
+        "initial": "LiDAR 初始"
+      },
+      "summary": "冻结 LiDAR-conditioned InfiniDepth DepthSensor 基座后，SSR 能否同时改善 metric disparity 误差与 MoGe-3 局部点云细节？"
+    },
+    {
+      "id": "exp5_waymo",
+      "label": "Exp5 Waymo",
+      "manifestUrl": "/data/exp5_waymo/manifest.json",
+      "shortLabel": "Exp5 Waymo",
+      "stageDetails": {
+        "best_step_22500": "Exp4 step 22,500 在 Waymo FRONT 与手选 SIDE 图像上的 zero-shot 推理",
+        "initial": "冻结 LiDAR-conditioned DepthSensor 的 K=0 输出"
+      },
+      "stageLabels": {
+        "best_step_22500": "Waymo Zero-shot",
+        "initial": "LiDAR 初始"
+      },
+      "summary": "Exp4 LiDAR Refiner 在 Waymo 的 zero-shot 点云可视化：5 张 FRONT 加 5 张手选 SIDE。"
+    }
+  ],
+  "version": 1
+}

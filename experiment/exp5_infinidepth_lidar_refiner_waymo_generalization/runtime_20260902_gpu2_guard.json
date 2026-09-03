@@ -1,0 +1,17 @@
+{
+  "base_deployment": "deployment_20260902_impl5.json",
+  "gpu_guard": {
+    "gpu_index": 2,
+    "max_used_mib": 16000,
+    "max_utilization_percent": 5,
+    "poll_seconds": 60,
+    "required_consecutive_checks": 3,
+    "tmux_session": "exp5_waymo_gpu2_20260902"
+  },
+  "initial_observation": {
+    "gpu_memory_used_mib": 35858,
+    "gpu_utilization_percent": 0
+  },
+  "launcher_log": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_waymo_generalization/launcher_gpu2.log",
+  "status": "waiting_for_gpu2_safe_capacity"
+}

@@ -1,0 +1,48 @@
+{
+  "assets": {
+    "combined_manifest": "experiment/viewer/public/data/exp5_waymo/manifest.json",
+    "combined_manifest_sha256": "f3309da0d1072d7074a73be77e1bef6379f708d6d5e03400f5e8a54b83954399",
+    "combined_selection_sha256": "3d0f7be29056b00f2024d108bc2ddc1d0886cf49de0e5de87043194976e05c56",
+    "source_asset_file_count": 64,
+    "source_asset_kib": 144792,
+    "source_manifests": [
+      "experiment/viewer/public/data/exp5_waymo_val202_seed173/manifest.json",
+      "experiment/viewer/public/data/exp5_waymo_side_selected_20260903/manifest.json"
+    ]
+  },
+  "base_commit_at_merge": "6b8d73807942ebe2c5e550024c0b5174a4e33c76",
+  "format": "infinidepth-exp5-waymo-combined-viewer-release-v1",
+  "published_on": "2026-09-03",
+  "selection": {
+    "experiment_id": "exp5_waymo",
+    "front": {
+      "count": 5,
+      "policy": "fixed random selection from completed Val202, seed 173"
+    },
+    "side": {
+      "count": 5,
+      "policy": "user-selected SIDE_LEFT/SIDE_RIGHT samples"
+    },
+    "total_count": 10
+  },
+  "source_status": "Exp5_ETH3D is still running; no Git commit is made for Exp5 yet.",
+  "vercel": {
+    "deployment_id": "dpl_FSDRQM8MwVYSjZFiD7ctoi7WWFoZ",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-5vgu2nt5j.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app/",
+    "status": "ready"
+  },
+  "verification": {
+    "asset_sha256": "all pre-existing PLY references were verified before the combined manifest was written",
+    "local": [
+      "npm run typecheck: passed",
+      "npm run test: 16 passed",
+      "npm run build: passed",
+      "Playwright ten-sample FRONT/SIDE test: passed"
+    ],
+    "production": [
+      "Vercel production build: ready",
+      "Playwright ten-sample FRONT/SIDE test: passed"
+    ]
+  }
+}

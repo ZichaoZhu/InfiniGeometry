@@ -1,0 +1,51 @@
+{
+  "asset_tag": "exp5_waymo_side_selected_20260903",
+  "catalog": {
+    "checkpoint_stage_detail": "Exp4 step 22,500 在用户选定的 Waymo SIDE 图像上 zero-shot 推理",
+    "checkpoint_stage_label": "Waymo SIDE Zero-shot",
+    "id": "exp5_waymo_side_visualization",
+    "initial_stage_detail": "冻结 LiDAR-conditioned DepthSensor 的 K=0 输出",
+    "initial_stage_label": "LiDAR 初始",
+    "label": "Exp5 SIDE",
+    "short_label": "Exp5 SIDE",
+    "summary": "Exp4 LiDAR Refiner 在用户选定的 Waymo 侧视图上的 zero-shot 点云可视化"
+  },
+  "checkpoint_stage": "best_step_22500",
+  "display": {
+    "ground_truth_detail": "未作为 prompt 输入的 TOP LiDAR 第一回波投影到对应 SIDE 相机；稀疏点云，不是稠密 GT",
+    "ground_truth_title": "Waymo held-out TOP LiDAR",
+    "label_prefix": "Waymo SIDE",
+    "metrics_note": "这五张手选 SIDE 图仅用于定性可视化，未据此重跑或选择 checkpoint。",
+    "note": "Waymo SIDE 图像；每张图使用对应相机标定及 64 线虚拟 LiDAR prompt，预测点云仅显示 0–100 m。"
+  },
+  "format": "infinidepth-exp5-waymo-viewer-v1",
+  "report": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_waymo_generalization/runs/waymo_val202_front_step22500/report.json",
+  "sample_policy": {
+    "algorithm": "user-selected-side-camera-samples",
+    "count": 5,
+    "seed": 0
+  },
+  "sources": [
+    {
+      "camera": "SIDE_RIGHT",
+      "source": "segment-10247954040621004675_2180_000_2200_000_with_camera_labels.tfrecord"
+    },
+    {
+      "camera": "SIDE_LEFT",
+      "source": "segment-10359308928573410754_720_000_740_000_with_camera_labels.tfrecord"
+    },
+    {
+      "camera": "SIDE_LEFT",
+      "source": "segment-18333922070582247333_320_280_340_280_with_camera_labels.tfrecord"
+    },
+    {
+      "camera": "SIDE_RIGHT",
+      "source": "segment-3077229433993844199_1080_000_1100_000_with_camera_labels.tfrecord"
+    },
+    {
+      "camera": "SIDE_RIGHT",
+      "source": "segment-8331804655557290264_4351_740_4371_740_with_camera_labels.tfrecord"
+    }
+  ],
+  "visual_max_radial_depth_m": 100.0
+}

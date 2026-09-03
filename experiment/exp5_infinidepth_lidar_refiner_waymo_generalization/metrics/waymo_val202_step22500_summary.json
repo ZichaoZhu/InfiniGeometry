@@ -1,0 +1,63 @@
+{
+  "aggregate": {
+    "k0": {
+      "metric_disparity_mae_1_per_m": 0.0010322151671908334,
+      "point_delta_0_01": 0.6934779990132492,
+      "radial_depth_abs_rel": 0.05178614657851729,
+      "radial_depth_rmse_m": 18.514990570374053
+    },
+    "k1": {
+      "metric_disparity_mae_1_per_m": 0.0009929279107796396,
+      "point_delta_0_01": 0.7233425849440074,
+      "radial_depth_abs_rel": 0.05021137053995292,
+      "radial_depth_rmse_m": 20.63194272836836
+    },
+    "k3": {
+      "metric_disparity_mae_1_per_m": 0.0009627623299406472,
+      "point_delta_0_01": 0.7501246672455627,
+      "radial_depth_abs_rel": 0.048691459030078925,
+      "radial_depth_rmse_m": 26.07473220536024
+    },
+    "k5": {
+      "metric_disparity_mae_1_per_m": 0.000978219000845087,
+      "point_delta_0_01": 0.7443515975581537,
+      "radial_depth_abs_rel": 0.049146758583789266,
+      "radial_depth_rmse_m": 23.601756987890393
+    }
+  },
+  "checkpoint_step": 22500,
+  "comparison_k3_vs_k0": {
+    "metric_disparity_mae_1_per_m": {
+      "better_count": 201,
+      "difference": -0.00006945283725018619,
+      "fraction": -0.06728523224397255,
+      "paired_difference_95_percent_ci": [
+        -0.00007257443005325719,
+        -0.00006628980953981156
+      ]
+    },
+    "point_delta_0_01": {
+      "better_count": 202,
+      "difference": 0.05664666823231346,
+      "fraction": 0.0816848815866056,
+      "paired_difference_95_percent_ci": [
+        0.05363973882602583,
+        0.05967956481888742
+      ]
+    },
+    "radial_depth_abs_rel": {
+      "better_count": 176,
+      "difference": -0.003094687548438363,
+      "fraction": -0.059758984842524426,
+      "paired_difference_95_percent_ci": [
+        -0.007629468705157039,
+        0.0011653607745774751
+      ]
+    }
+  },
+  "duration_seconds_after_model_setup": 945.8565561771393,
+  "format": "infinidepth-exp5-waymo-summary-v1",
+  "full_report": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_waymo_generalization/runs/waymo_val202_front_step22500/report.json",
+  "sample_count": 202,
+  "split": "Waymo validation"
+}

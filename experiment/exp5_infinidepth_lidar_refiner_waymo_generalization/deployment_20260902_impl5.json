@@ -1,0 +1,34 @@
+{
+  "base_commit": "6b8d73807942ebe2c5e550024c0b5174a4e33c76",
+  "checkpoint": {
+    "base_sha256": "53230af7c46e987acc993f250e76f99914e7321ee8a13966136fdb0619f98267",
+    "exp4_sha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+    "exp4_step": 22500
+  },
+  "data": {
+    "file_count": 202,
+    "reader_commit": "d488196b3ded6574c32fad391467863b948dfd8e",
+    "split": "validation"
+  },
+  "deployment_id": "20260902_impl5",
+  "deployment_path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp5_waymo_generalization/20260902_impl5/InfiniDepth",
+  "experiment": "exp5_waymo_generalization",
+  "gpu_guard": {
+    "gpu_index": 0,
+    "max_used_mib": 22000,
+    "max_utilization_percent": 5,
+    "poll_seconds": 60,
+    "required_consecutive_checks": 3,
+    "tmux_session": "exp5_waymo_20260902"
+  },
+  "outputs": {
+    "launcher_log": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_waymo_generalization/launcher.log",
+    "root": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_waymo_generalization"
+  },
+  "status": "waiting_for_gpu",
+  "tests": {
+    "real_tfrecord_held_out_points": 10168,
+    "real_tfrecord_prompt_points": 3404,
+    "server_pytest": "3 passed"
+  }
+}
