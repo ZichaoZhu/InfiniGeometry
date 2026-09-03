@@ -854,3 +854,23 @@
 
 - 选择后请复制页面显示的样本 ID 并发回；后续点云导出将严格使用同一输入与 checkpoint。
 - 静态预览资产保存在 S115 的 `deployments/exp5_ETH3D/20260903_gallery1`，生产别名保持 `infinidepth-disparity-refiner-viewe.vercel.app`。
+
+## 2026-09-03 exp5_ETH3D 十张点云可视化
+
+### 实验简述
+
+目的：根据用户从 ETH3D 选图页挑选的十个样本，导出与 Exp5 正式评测一致的 K0/K1/K3/K5 点云并部署到查看器。
+
+方法：固定 Exp4 step 22,500 checkpoint、ETH3D 输入 manifest 和 512×384 几何。每张导出 ETH3D dense ground truth、K0、K1、K3、K5 五个 PLY，点云显示范围为 0–100 m；不新增指标、不重新选择 checkpoint。
+
+结果：10/10 样本、50 个 PLY 和 10 个 RGB 已发布。生产查看器可切换 `Exp5 ETH3D`、十张样本和 K0/K1/K3/K5，三窗口 WebGL 验收通过。
+
+### 实验结果
+
+- [在线十张点云查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+- [选定样本与发布记录](./exp5_infinidepth_lidar_refiner_eth3d_generalization/deployment_20260903_selected_viewer.json)
+
+### 其他
+
+- 样本顺序严格按用户提供的十个 `scene/DSC_xxxx` ID；旧 r2 失败目录保留为诊断痕迹，生产使用新的不可变 r3 asset tag。
+- 生产部署 ID 为 `2iE7HnoXLXuXgVcNqUssDotCaCn6`，别名保持不变。

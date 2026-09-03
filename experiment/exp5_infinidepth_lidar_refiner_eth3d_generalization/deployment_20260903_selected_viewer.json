@@ -1,0 +1,49 @@
+{
+  "format": "infinidepth-exp5-eth3d-selected-viewer-release-v1",
+  "published_on": "2026-09-03",
+  "experiment_id": "exp5_eth3d",
+  "asset_tag": "exp5_eth3d_selected_20260903_r3",
+  "selected_sources": [
+    "kicker/DSC_6504",
+    "kicker/DSC_6508",
+    "meadow/DSC_6559",
+    "office/DSC_0220",
+    "pipes/DSC_0635",
+    "playground/DSC_0567",
+    "playground/DSC_0576",
+    "relief/DSC_0452",
+    "terrace/DSC_0285",
+    "terrains/DSC_0663"
+  ],
+  "assets": {
+    "sample_count": 10,
+    "ply_count": 50,
+    "rgb_count": 10,
+    "manifest_sha256": "fb23cc9e0578cdf0dcac34cb346f113f9a40efe8c45f5491202eeace4100ce31",
+    "selection_sha256": "9b3fe88684c4d2338e23ed1e1389000b25bd1ddbdc212415652a595b2a2bda2b"
+  },
+  "provenance": {
+    "checkpoint_step": 22500,
+    "checkpoint_sha256": "eec2b698753bc4ab2059d89c153a5caf818bc21fa8655d8d728d1c1f0ef5c54a",
+    "input_manifest_sha256": "4d40ad0edc6e94791a4681625ed87186c204f62f6bda51833b83bb2b1c619968",
+    "resolution": {"height": 384, "width": 512},
+    "point_cloud_range_m": [0, 100],
+    "export_script_sha256": "c60bd82c7e2e9db4f71f5bc47f3d3ca5081387cb6ca10dd08d793aeb303bdf4e"
+  },
+  "server": {
+    "deployment_id": "20260903_selected3",
+    "deployment_path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp5_ETH3D/20260903_selected3/InfiniDepth",
+    "python_tests": "ETH3D geometry and export tests passed; export completed 10/10"
+  },
+  "vercel": {
+    "deployment_id": "2iE7HnoXLXuXgVcNqUssDotCaCn6",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-qf7n4wb34.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app",
+    "status": "ready"
+  },
+  "verification": {
+    "production_playwright": "selected ETH3D point-cloud samples test passed",
+    "manifest_urls": "all assets use final exp5_eth3d_selected_20260903_r3 URL; no temporary paths",
+    "model_inference": "same Exp4 step 22,500 checkpoint; K0/K1/K3/K5 exported"
+  }
+}

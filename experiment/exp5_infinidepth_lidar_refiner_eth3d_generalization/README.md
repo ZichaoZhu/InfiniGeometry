@@ -49,4 +49,6 @@ K5 的 metric disparity MAE、point \(\delta_{0.01}\) 和局部指标都略逊�
 - [部署与数据 provenance](./deployment_20260903_impl2.json)
 - [ETH3D 十张选图页发布记录](./deployment_20260903_gallery.json)
 - [在线 ETH3D 选图页](https://infinidepth-disparity-refiner-viewe.vercel.app/data/eth3d_gallery_exp5_highres_train_20260903_r1/index.html)
+- [十张点云查看器发布记录](./deployment_20260903_selected_viewer.json)
+- [在线 ETH3D 十张点云查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
 - 服务器完整报告：`/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/runs/eth3d_highres_train_step22500/report.json`
