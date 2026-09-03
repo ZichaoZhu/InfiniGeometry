@@ -1,0 +1,11 @@
+{
+  "asset_tag": "eth3d_gallery_exp5_highres_train_20260903_r1",
+  "format": "infinidepth-exp5-eth3d-gallery-v1",
+  "preview": {
+    "height": 384,
+    "jpeg_quality": 85,
+    "width": 512
+  },
+  "report": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/runs/eth3d_highres_train_step22500/report.json",
+  "selection_limit": 10
+}

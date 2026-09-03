@@ -1,0 +1,35 @@
+{
+  "format": "infinidepth-exp5-eth3d-gallery-release-v1",
+  "published_on": "2026-09-03",
+  "directory": "experiment/viewer/public/data/eth3d_gallery_exp5_highres_train_20260903_r1",
+  "gallery_url": "https://infinidepth-disparity-refiner-viewe.vercel.app/data/eth3d_gallery_exp5_highres_train_20260903_r1/index.html",
+  "assets": {
+    "preview_count": 454,
+    "preview_resolution": {"height": 384, "width": 512},
+    "scene_count": 13,
+    "selection_limit": 10,
+    "gallery_json_sha256": "3eae3150ac18a0cb40d3915502a697c0baad44b0d35318f9e610fe95435b8e7c",
+    "index_html_sha256": "b7dedca7ada0663c11c681223e4160731ff1a75eec9ca65c724174c47146d26a"
+  },
+  "provenance": {
+    "input_manifest_sha256": "4d40ad0edc6e94791a4681625ed87186c204f62f6bda51833b83bb2b1c619968",
+    "report_sha256": "a960a53dac65b1e29f0101332ffcd8b0e6858265836c5fae10cae2edb885e0f7",
+    "image_processing": "the exact ETH3D RGB inputs used by formal evaluation, center-cropped and resized with PIL LANCZOS to 512x384",
+    "selection_output": "scene/DSC_xxxx sample IDs, at most ten"
+  },
+  "server": {
+    "deployment_id": "20260903_gallery1",
+    "deployment_path": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/deployments/exp5_ETH3D/20260903_gallery1/InfiniDepth",
+    "python_tests": "7 passed"
+  },
+  "vercel": {
+    "deployment_id": "36egnAuygTpMaFW1br4tB5ubFE5r",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-oloav08vi.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app",
+    "status": "ready"
+  },
+  "verification": {
+    "production_playwright": "ETH3D selection/filter/ten-item-limit test passed",
+    "no_model_inference": true
+  }
+}

@@ -834,3 +834,23 @@
 - 主聚合为图像宏平均；K3-K0 置信区间以 13 个场景 block bootstrap 计算，避免把同一场景的相关视角当作独立样本。
 - ETH3D 测试标签不公开，本实验使用公开 training split，不属于官方 leaderboard 提交。
 - 5,447 个细节 segment 来自 444 张有可用 segment 的图像；评测结束无 OOM、异常或显存保护触发。
+
+## 2026-09-03 exp5_ETH3D 选图图库
+
+### 实验简述
+
+目的：让用户从已完成 ETH3D 正式评测的 454 张输入中挑选 10 张，后续导出对应 K0/K1/K3/K5 点云进行定性比较。
+
+方法：复用正式评测的输入 manifest 和 RGB，按相同中心裁剪、LANCZOS 缩放到 512×384，生成 13 个场景的静态预览。页面支持场景/样本 ID 筛选、浏览器本地选择，最多选择 10 张并复制 `scene/DSC_xxxx`。
+
+结果：454 张预览和选图页面已发布到生产查看器；S115 图库部署测试 7 passed，生产 Playwright 验收通过。该页面不运行模型、不新增指标、不修改正式评测结果。
+
+### 实验结果
+
+- [选图页](https://infinidepth-disparity-refiner-viewe.vercel.app/data/eth3d_gallery_exp5_highres_train_20260903_r1/index.html)
+- [发布与校验记录](./exp5_infinidepth_lidar_refiner_eth3d_generalization/deployment_20260903_gallery.json)
+
+### 其他
+
+- 选择后请复制页面显示的样本 ID 并发回；后续点云导出将严格使用同一输入与 checkpoint。
+- 静态预览资产保存在 S115 的 `deployments/exp5_ETH3D/20260903_gallery1`，生产别名保持 `infinidepth-disparity-refiner-viewe.vercel.app`。
