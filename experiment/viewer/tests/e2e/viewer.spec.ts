@@ -197,6 +197,20 @@ test("lists and selects the Waymo side-camera previews", async ({ page }) => {
   await page.screenshot({ path: path.join(screenshotDirectory, "waymo-gallery-night.png"), fullPage: true });
 });
 
+test("lists and limits ETH3D selection to ten completed evaluation inputs", async ({ page }) => {
+  await page.goto("/data/eth3d_gallery_exp5_highres_train_20260903_r1/index.html");
+  await expect(page.getByRole("heading", { name: "ETH3D Exp5 · 选图" })).toBeVisible();
+  await expect(page.locator(".card")).toHaveCount(454, { timeout: 30_000 });
+  await page.getByRole("combobox").selectOption("courtyard");
+  await expect(page.locator(".card:not(.hidden)")).toHaveCount(38);
+  await page.getByPlaceholder("搜索序号、场景或样本 ID").fill("DSC_0286");
+  await expect(page.locator(".card:not(.hidden)")).toHaveCount(1);
+  await page.getByPlaceholder("搜索序号、场景或样本 ID").fill("");
+  for (let index = 0; index < 11; index += 1) await page.locator(".card:not(.hidden) .thumb").nth(index).click();
+  await expect(page.locator("#summary")).toContainText("已选择 10/10 张");
+  await expect(page.locator("#warning")).toContainText("最多选择 10 张");
+});
+
 test("keeps controls and canvases separated on a mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");

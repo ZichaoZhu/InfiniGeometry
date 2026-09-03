@@ -17,6 +17,10 @@ case "${MODE}" in
       --expected-scenes 13 \
       --expected-samples 454
     ;;
+  gallery)
+    exec "${PYTHON}" -m training.disparity_refiner.export_eth3d_gallery \
+      --experiment "${PROJECT_ROOT}/experiment/exp5_infinidepth_lidar_refiner_eth3d_generalization"
+    ;;
   smoke)
     OUTPUT="${OUTPUT_ROOT}/smoke/eth3d_train5_step22500"
     MIN_FREE_MIB=8000
@@ -33,7 +37,7 @@ case "${MODE}" in
     ARGS=()
     ;;
   *)
-    echo "usage: $0 [preprocess|smoke|masks|formal]" >&2
+    echo "usage: $0 [preprocess|gallery|smoke|masks|formal]" >&2
     exit 2
     ;;
 esac
