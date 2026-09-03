@@ -99,6 +99,9 @@ function Segment<T extends string | number>({
 }
 
 function AssetMetrics({ asset, scope }: { asset: PointCloudAsset; scope: MetricScope }) {
+  if (!asset.metrics) {
+    return <div className="identity-note">本批资产仅用于可视化，评测指标稍后补充。</div>;
+  }
   const metrics = asset.metrics[scope];
   return (
     <dl className="metrics-grid">
@@ -395,7 +398,7 @@ export function PointCloudComparison() {
   return (
     <main className="app-shell">
       <header className="hero">
-        <div><span className="eyebrow">INFINIDEPTH / INTERACTIVE GEOMETRY LAB</span><h1>Disparity Refiner<br />多实验点云对比器</h1><p>在统一相机与渲染设置下，对照 GT、训练阶段和 K 次精修的稠密点云。全部指标遵循 MoGe3 3D 点云评测口径。</p></div>
+        <div><span className="eyebrow">INFINIDEPTH / INTERACTIVE GEOMETRY LAB</span><h1>Disparity Refiner<br />多实验点云对比器</h1><p>在统一相机与渲染设置下，对照参考点云、训练阶段和 K 次精修输出；具体数据与指标口径以当前实验说明为准。</p></div>
         <div className="hero-badge"><span>{experiment.shortLabel ?? experiment.label} · 当前样本</span><strong>{sample.label ?? `样本 ${(samples.indexOf(sample) + 1).toString().padStart(2, "0")}`}</strong><small>{sample.description}</small></div>
       </header>
 
@@ -408,12 +411,12 @@ export function PointCloudComparison() {
       <section className="global-toolbar"><Segment label="范围" value={scope} values={scopeValues} format={(value) => value === "crop" ? "细结构裁剪" : "完整场景"} onChange={(value) => { setScope(value); setCameraSnapshot(null); }} testId="raster-scope" /><label className={`sync-toggle ${syncEnabled ? "active" : ""}`}><input type="checkbox" checked={syncEnabled} onChange={(event) => setSyncEnabled(event.target.checked)} /><span className="toggle-track" />相机同步</label></section>
 
       <div className="comparison-grid">
-        <ScenePanel id="ground-truth" kicker="窗口 A · 真实点云" title="Hypersim Ground Truth" detail="由真实深度与相机内参反投影，不经过 Base 或 Refiner" asset={sample.groundTruth} sample={sample} manifest={manifest} fitNonce={groundFit} onFit={() => setGroundFit((value) => value + 1)} interaction={groundInteraction} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} controls={<Segment label="鼠标左键" value={groundInteraction} values={["rotate", "pan"] as const} format={(value) => value === "rotate" ? "旋转" : "平移"} onChange={setGroundInteraction} testId="ground-truth-interaction" />} />
+        <ScenePanel id="ground-truth" kicker="窗口 A · 真实点云" title={manifest.groundTruthTitle ?? "Hypersim Ground Truth"} detail={manifest.groundTruthDetail ?? "由真实深度与相机内参反投影，不经过 Base 或 Refiner"} asset={sample.groundTruth} sample={sample} manifest={manifest} fitNonce={groundFit} onFit={() => setGroundFit((value) => value + 1)} interaction={groundInteraction} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} controls={<Segment label="鼠标左键" value={groundInteraction} values={["rotate", "pan"] as const} format={(value) => value === "rotate" ? "旋转" : "平移"} onChange={setGroundInteraction} testId="ground-truth-interaction" />} />
         <PredictionPanel id="left" pane={left} setPane={setLeft} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
         <PredictionPanel id="right" pane={right} setPane={setRight} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
         {isExp4 && comparisonManifest && comparisonExperiment && comparisonSample ? <PredictionPanel id="reference" pane={comparison} setPane={setComparison} sample={comparisonSample} manifest={comparisonManifest} experiment={comparisonExperiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} titlePrefix={comparisonSource === "rgb" ? "RGB-only" : "LiDAR"} extraControls={<Segment label="版本" value={comparisonSource} values={["rgb", "lidar"] as const} format={(value) => value === "rgb" ? "RGB" : "LiDAR"} onChange={setComparisonVersion} testId="reference-version" />} note={<div className="identity-note">{comparisonSource === "rgb" ? "RGB-only 资产复用 Exp3 Stage1；可与右侧 LiDAR 输出并排查看。" : "LiDAR 资产复用当前 Exp4；可用于对照不同阶段或 K 值。"} 指标属于各自实验，绝对数值不可跨版本直接比较。</div>} /> : isExp4 ? <section className="viewer-pane reference-loading" data-testid="viewer-reference"><span className="pane-kicker">窗口 D · 版本对照</span><p>{rgbManifestError ?? "正在读取 RGB-only 对照点云…"}</p></section> : null}
       </div>
-      <footer className="page-footer"><div><strong>指标口径</strong><span>Point Rel、Depth Rel、δ1.01 与 depth-boundary F1 均按 MoGe3 的点云评测定义导出。</span></div><div><strong>归档范围</strong><span>{experiment.label} 已开放 {allSamples.length} 张样本；后续 ExpN 只需加入 `experiments.json` 即可切换。</span></div></footer>
+      <footer className="page-footer"><div><strong>指标口径</strong><span>{manifest.metricsNote ?? "Point Rel、Depth Rel、δ1.01 与 depth-boundary F1 均按 MoGe3 的点云评测定义导出。"}</span></div><div><strong>归档范围</strong><span>{experiment.label} 已开放 {allSamples.length} 张样本；后续 ExpN 只需加入 `experiments.json` 即可切换。</span></div></footer>
     </main>
   );
 }

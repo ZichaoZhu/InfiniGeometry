@@ -73,6 +73,12 @@ describe("Exp1 viewer manifest", () => {
     expect(resolveAsset(selected, "initial", 5)).toBe(selected.stages.initial.k0);
   });
 
+  it("accepts visualization-only assets without metrics", () => {
+    const value = manifest();
+    delete value.samples[0].groundTruth.metrics;
+    expect(() => validateManifest(value)).not.toThrow();
+  });
+
   it("rejects a wrong fixed-grid point count", () => {
     const value = manifest();
     value.samples[0].groundTruth.pointCount -= 1;

@@ -26,7 +26,7 @@ export type PointCloudAsset = {
   checkpointSha256: string;
   alignment: { scale: number; zShift: number };
   bounds: { min: [number, number, number]; max: [number, number, number] };
-  metrics: PointCloudMetrics;
+  metrics?: PointCloudMetrics;
   pointRelReductionFromK0?: number;
 };
 
@@ -39,7 +39,7 @@ export type PointCloudSample = {
   order?: number;
   description: string;
   cropXYXY: [number, number, number, number];
-  disparityQuantiles: [number, number];
+  disparityQuantiles?: [number, number];
   rgbUrl: string;
   split?: DatasetSplit;
   websiteEnabled?: boolean;
@@ -51,6 +51,9 @@ export type PointCloudManifest = {
   version: 1;
   experiment: string;
   displayNote: string;
+  groundTruthTitle?: string;
+  groundTruthDetail?: string;
+  metricsNote?: string;
   resolution: { width: number; height: number };
   steps: RefinementStep[];
   stages: StageName[];
@@ -168,7 +171,7 @@ export function validateManifest(manifest: PointCloudManifest): void {
     for (const asset of assets) {
       if (asset.pointCount !== expectedPoints) throw new Error(`${sample.id} 点数与固定网格不一致`);
       if (!asset.url.match(/^\/data\/exp[0-9]+(?:_[a-z0-9_]+)?\//)) throw new Error(`${sample.id} 资产 URL 越界`);
-      validateMetrics(asset.metrics, sample.id);
+      if (asset.metrics) validateMetrics(asset.metrics, sample.id);
     }
   }
   if (manifest.samplePolicy) {

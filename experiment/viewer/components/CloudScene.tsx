@@ -433,6 +433,7 @@ export function CloudScene(props: CloudSceneProps) {
       camera={{ fov: 45, near: 0.001, far: 1000 }}
       gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
       frameloop="demand"
+      data-scene-source={props.asset.url}
       data-testid={`canvas-${props.panelId}`}
       onContextMenu={(event) => event.preventDefault()}
     >
