@@ -1,0 +1,26 @@
+{
+  "asset_tag": "exp5_eth3d_selected_20260903_r3",
+  "checkpoint_stage": "best_step_22500",
+  "format": "infinidepth-exp5-eth3d-viewer-v1",
+  "report": "/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp5_ETH3D/runs/eth3d_highres_train_step22500/report.json",
+  "sources": [
+    "kicker/DSC_6504",
+    "kicker/DSC_6508",
+    "meadow/DSC_6559",
+    "office/DSC_0220",
+    "pipes/DSC_0635",
+    "playground/DSC_0567",
+    "playground/DSC_0576",
+    "relief/DSC_0452",
+    "terrace/DSC_0285",
+    "terrains/DSC_0663"
+  ],
+  "display": {
+    "ground_truth_detail": "ETH3D 原始 dense depth 反投影；不作为模型输入",
+    "ground_truth_title": "ETH3D Ground Truth",
+    "metrics_note": "十张样例仅用于定性可视化；指标来自全量 ETH3D 评测，不在此页按样本重新计算。",
+    "note": "ETH3D 选定十张图像；预测使用 Exp5 的 64 线虚拟 LiDAR prompt，点云仅显示 0–100 m。"
+  },
+  "format_version": 1,
+  "visual_max_radial_depth_m": 100.0
+}

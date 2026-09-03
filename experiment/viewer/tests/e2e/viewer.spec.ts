@@ -182,6 +182,28 @@ test("shows ten Waymo FRONT and SIDE visualization samples", async ({ page }) =>
   await page.screenshot({ path: path.join(screenshotDirectory, "exp5-waymo-side-mobile.png"), fullPage: true });
 });
 
+test("shows ten selected ETH3D point-cloud samples", async ({ page }) => {
+  await page.goto("/");
+  const exp5 = page.getByTestId("experiment-exp5_eth3d");
+  await exp5.click();
+  await expect(exp5).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".sample-switcher button")).toHaveCount(10, { timeout: 30_000 });
+  await expect(page.getByTestId("sample-1")).toContainText("ETH3D 01");
+  await expect(page.getByTestId("viewer-ground-truth")).toContainText("ETH3D Ground Truth");
+  await page.getByTestId("right-k").getByRole("button", { name: "K=3" }).click();
+  await expect(page.getByTestId("viewer-right")).toContainText("ETH3D Zero-shot · K=3");
+  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
+    await expect(page.getByTestId(panel).locator("canvas")).toHaveAttribute(
+      "data-scene-source",
+      /exp5_eth3d_selected_20260903_r3/,
+      { timeout: 30_000 },
+    );
+    await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
+  }
+  await expect(page.locator(".canvas-error")).toHaveCount(0);
+});
+
 test("lists and selects the Waymo side-camera previews", async ({ page }) => {
   await page.goto("/data/waymo_gallery_exp5_val202_side_20260903_r2/index.html");
   await expect(page.getByRole("heading", { name: "Waymo Val202 · SIDE 选图" })).toBeVisible();

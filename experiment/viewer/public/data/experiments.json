@@ -81,6 +81,21 @@
         "initial": "LiDAR 初始"
       },
       "summary": "Exp4 LiDAR Refiner 在 Waymo 的 zero-shot 点云可视化：5 张 FRONT 加 5 张手选 SIDE。"
+    },
+    {
+      "id": "exp5_eth3d",
+      "label": "Exp5 ETH3D",
+      "manifestUrl": "/data/exp5_eth3d_selected_20260903_r3/manifest.json",
+      "shortLabel": "Exp5 ETH3D",
+      "stageDetails": {
+        "best_step_22500": "Exp4 step 22,500 在 ETH3D 上 zero-shot 推理",
+        "initial": "冻结 DepthSensor 的 K=0 输出"
+      },
+      "stageLabels": {
+        "best_step_22500": "ETH3D Zero-shot",
+        "initial": "LiDAR 初始"
+      },
+      "summary": "Exp5 ETH3D 选定十张图像的 LiDAR Refiner 点云可视化。"
     }
   ],
   "version": 1
