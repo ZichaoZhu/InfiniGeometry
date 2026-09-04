@@ -39,8 +39,9 @@ radial RMSE 从 18.515 m 增加到 26.075 m，需要继续检查大误差样本�
 2026-09-03 完成 Waymo 定性可视化。从 Val202 已完成样本按 seed 173
 固定随机抽取 5 张，导出 held-out TOP LiDAR、K0、K1、K3 和 K5 点云；
 预测和 LiDAR 均使用 Waymo 相机内参反投影，可视化范围固定为
-0–100 m。本批资产不新增计算 Local Point 等指标，页面明确显示
-“评测指标稍后补充”。
+0–100 m。本批资产不新增计算 Local Point 等指标；2026-09-04 起，页面复用正式
+Val202 逐图报告显示 FRONT 的 Inverse-depth MAE、Radial AbsRel、Radial RMSE
+和 Point \(\delta_{0.01}\)。SIDE 样例没有对应正式逐图报告，仍仅作定性可视化。
 
 同日另外导出 Val202 的全部 202 张 FRONT 图像预览，为实际送入模型的
 384×512 版本。图库可按地点、时段和天气筛选，点选后可复制 TFRecord

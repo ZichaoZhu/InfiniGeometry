@@ -874,3 +874,23 @@
 
 - 样本顺序严格按用户提供的十个 `scene/DSC_xxxx` ID；旧 r2 失败目录保留为诊断痕迹，生产使用新的不可变 r3 asset tag。
 - 生产部署 ID 为 `2iE7HnoXLXuXgVcNqUssDotCaCn6`，别名保持不变。
+
+## 2026-09-04 Exp5 查看器指标补充
+
+### 实验简述
+
+目的：为 Exp5 的定性点云查看器补充已有正式报告中的展示诊断指标，不改变 checkpoint 选择或正式实验结论。
+
+方法：新增版本化 metadata-only manifest，复用既有 Waymo/ETH3D PLY 与 RGB 资产。ETH3D 显示 held-out Inverse-depth MAE、Radial AbsRel、Radial RMSE、Point \(\delta_{0.01}\) 及 MoGe-3 Local Point Rel/\(\delta_{0.01}\)；Waymo FRONT 显示前四项，SIDE 因没有对应正式逐图报告保留为无数值的定性样例。
+
+### 实验结果
+
+- [Exp5 ETH3D 指标清单](./viewer/public/data/exp5_eth3d_metrics_20260904_r1/manifest.json)
+- [Exp5 Waymo 指标清单](./viewer/public/data/exp5_waymo_metrics_20260904_r1/manifest.json)
+- [指标附加脚本](../training/disparity_refiner/attach_exp5_display_metrics.py)
+
+### 其他
+
+- 指标来源：ETH3D 报告 SHA-256 `a960a53d…85e0f7`；Waymo 报告 SHA-256 `0e4c03e4…e1db16`。
+- `npm run typecheck`、`npm run build`、`npm test`（16 passed）和 Exp5 相关 Playwright（2 passed）通过；生产部署 `dpl_maRTD8bqBWBWxGkCdGwNdT3QxBDf` 已就绪，线上 Exp5 Waymo/ETH3D Playwright 2 passed。
+- [生产发布与验收记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/deployment_20260904_metrics_viewer.json)

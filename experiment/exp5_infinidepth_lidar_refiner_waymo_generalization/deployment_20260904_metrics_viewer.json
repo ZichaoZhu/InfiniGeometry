@@ -1,0 +1,38 @@
+{
+  "format": "infinidepth-exp5-display-metrics-viewer-release-v1",
+  "published_on": "2026-09-04",
+  "assets": {
+    "catalog_sha256": "75d62982135a36531d732f105dbb800684d2afa5c85441598e5098ae77bb3626",
+    "waymo_manifest": {
+      "path": "experiment/viewer/public/data/exp5_waymo_metrics_20260904_r1/manifest.json",
+      "sha256": "8b33e7117ff8dbf7c2bf38ced13e28f5454d99479c124e7d9a1fe8dcac626dd7"
+    },
+    "eth3d_manifest": {
+      "path": "experiment/viewer/public/data/exp5_eth3d_metrics_20260904_r1/manifest.json",
+      "sha256": "00322b35205fa320d65b737ae31f4209c4382d68d20594e437e31c1814c7e680"
+    },
+    "source_reports": {
+      "waymo_sha256": "0e4c03e4658096f1eecceb55c7f4c610c67f2a3fdacdccf818ee70ca3fe1db16",
+      "eth3d_sha256": "a960a53dac65b1e29f0101332ffcd8b0e6858265836c5fae10cae2edb885e0f7"
+    }
+  },
+  "vercel": {
+    "deployment_id": "dpl_maRTD8bqBWBWxGkCdGwNdT3QxBDf",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-j542cnhe3.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app/",
+    "status": "ready"
+  },
+  "verification": {
+    "local": [
+      "npm run typecheck: passed",
+      "npm run build: passed",
+      "npm test: 16 passed",
+      "Exp5 Playwright: 2 passed"
+    ],
+    "production": [
+      "catalog and both versioned manifests returned HTTP 200",
+      "Exp5 Waymo/ETH3D Playwright: 2 passed"
+    ]
+  },
+  "note": "Metadata-only manifests reuse existing PLY/RGB assets. Waymo SIDE samples have no formal per-image report and remain qualitative-only."
+}
