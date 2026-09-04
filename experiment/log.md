@@ -892,5 +892,5 @@
 ### 其他
 
 - 指标来源：ETH3D 报告 SHA-256 `a960a53d…85e0f7`；Waymo 报告 SHA-256 `0e4c03e4…e1db16`。
-- `npm run typecheck`、`npm run build`、`npm test`（16 passed）和 Exp5 相关 Playwright（2 passed）通过；生产部署 `dpl_maRTD8bqBWBWxGkCdGwNdT3QxBDf` 已就绪，线上 Exp5 Waymo/ETH3D Playwright 2 passed。
+- `npm run typecheck`、`npm run build`、`npm test`（17 passed）和 Exp5 相关 Playwright（2 passed）通过；生产部署 `dpl_maRTD8bqBWBWxGkCdGwNdT3QxBDf` 已就绪，线上 Exp5 Waymo/ETH3D Playwright 2 passed。
 - [生产发布与验收记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/deployment_20260904_metrics_viewer.json)
