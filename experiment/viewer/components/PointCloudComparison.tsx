@@ -99,6 +99,23 @@ function Segment<T extends string | number>({
 }
 
 function AssetMetrics({ asset, scope }: { asset: PointCloudAsset; scope: MetricScope }) {
+  if (asset.displayMetrics) {
+    const metrics = asset.displayMetrics;
+    return (
+      <>
+        <div className="metrics-caption">{metrics.dataset} · {metrics.scopeLabel} · 展示诊断</div>
+        <dl className="metrics-grid display-metrics-grid">
+          <div><dt>Inverse-depth MAE</dt><dd>{metrics.metricDisparityMae1PerM.toFixed(6)} m⁻¹</dd></div>
+          <div><dt>Radial AbsRel</dt><dd>{percent(metrics.radialDepthAbsRel, 3)}</dd></div>
+          {metrics.radialDepthRmseM !== undefined && <div><dt>Radial RMSE</dt><dd>{metrics.radialDepthRmseM.toFixed(3)} m</dd></div>}
+          {metrics.pointDelta001 !== undefined && <div><dt>Point δ0.01</dt><dd>{percent(metrics.pointDelta001, 2)}</dd></div>}
+          {metrics.localPointRel !== undefined && <div><dt>Local Point Rel</dt><dd>{percent(metrics.localPointRel, 3)}</dd></div>}
+          {metrics.localPointDelta001 !== undefined && <div><dt>Local Point δ0.01</dt><dd>{percent(metrics.localPointDelta001, 2)}</dd></div>}
+          {metrics.localSegmentCount !== undefined && <div><dt>Local segments</dt><dd>{metrics.localSegmentCount.toFixed(0)}</dd></div>}
+        </dl>
+      </>
+    );
+  }
   if (!asset.metrics) {
     return <div className="identity-note">本批资产仅用于可视化，评测指标稍后补充。</div>;
   }

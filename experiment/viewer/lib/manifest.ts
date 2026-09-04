@@ -17,6 +17,19 @@ export type ScopeMetrics = {
 
 export type PointCloudMetrics = Record<MetricScope, ScopeMetrics>;
 
+export type DisplayMetrics = {
+  dataset: "Waymo" | "ETH3D";
+  scopeLabel: string;
+  evaluationPointCount?: number;
+  metricDisparityMae1PerM: number;
+  radialDepthAbsRel: number;
+  radialDepthRmseM?: number;
+  pointDelta001?: number;
+  localPointRel?: number;
+  localPointDelta001?: number;
+  localSegmentCount?: number;
+};
+
 export type PointCloudAsset = {
   url: string;
   pointCount: number;
@@ -27,6 +40,7 @@ export type PointCloudAsset = {
   alignment: { scale: number; zShift: number };
   bounds: { min: [number, number, number]; max: [number, number, number] };
   metrics?: PointCloudMetrics;
+  displayMetrics?: DisplayMetrics;
   pointRelReductionFromK0?: number;
 };
 
@@ -149,6 +163,14 @@ function validateMetrics(metrics: PointCloudMetrics, sampleId: string): void {
   }
 }
 
+function validateDisplayMetrics(metrics: DisplayMetrics, sampleId: string): void {
+  const required = [metrics.metricDisparityMae1PerM, metrics.radialDepthAbsRel];
+  const optional = [metrics.radialDepthRmseM, metrics.pointDelta001, metrics.localPointRel, metrics.localPointDelta001, metrics.localSegmentCount];
+  if (!(["Waymo", "ETH3D"] as const).includes(metrics.dataset) || !metrics.scopeLabel || required.some((value) => !Number.isFinite(value)) || optional.some((value) => value !== undefined && !Number.isFinite(value))) {
+    throw new Error(`${sampleId} 展示指标无效`);
+  }
+}
+
 export function validateManifest(manifest: PointCloudManifest): void {
   if (manifest.version !== 1 || !manifest.samples.length || !manifest.stages.length || !manifest.steps.length) {
     throw new Error("查看器 manifest 缺少样本、阶段或 K 登记");
@@ -172,6 +194,7 @@ export function validateManifest(manifest: PointCloudManifest): void {
       if (asset.pointCount !== expectedPoints) throw new Error(`${sample.id} 点数与固定网格不一致`);
       if (!asset.url.match(/^\/data\/exp[0-9]+(?:_[a-z0-9_]+)?\//)) throw new Error(`${sample.id} 资产 URL 越界`);
       if (asset.metrics) validateMetrics(asset.metrics, sample.id);
+      if (asset.displayMetrics) validateDisplayMetrics(asset.displayMetrics, sample.id);
     }
   }
   if (manifest.samplePolicy) {

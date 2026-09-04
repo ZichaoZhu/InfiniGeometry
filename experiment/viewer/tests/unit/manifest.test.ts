@@ -79,6 +79,22 @@ describe("Exp1 viewer manifest", () => {
     expect(() => validateManifest(value)).not.toThrow();
   });
 
+  it("validates Exp5 display metrics", () => {
+    const value = manifest();
+    value.samples[0].stages.initial.k0 = {
+      ...asset,
+      displayMetrics: {
+        dataset: "Waymo",
+        scopeLabel: "held-out TOP LiDAR",
+        metricDisparityMae1PerM: 0.001,
+        radialDepthAbsRel: 0.05,
+      },
+    };
+    expect(() => validateManifest(value)).not.toThrow();
+    (value.samples[0].stages.initial.k0 as PointCloudAsset).displayMetrics!.radialDepthAbsRel = Number.NaN;
+    expect(() => validateManifest(value)).toThrow(/展示指标/);
+  });
+
   it("rejects a wrong fixed-grid point count", () => {
     const value = manifest();
     value.samples[0].groundTruth.pointCount -= 1;

@@ -70,7 +70,7 @@
     {
       "id": "exp5_waymo",
       "label": "Exp5 Waymo",
-      "manifestUrl": "/data/exp5_waymo/manifest.json",
+      "manifestUrl": "/data/exp5_waymo_metrics_20260904_r1/manifest.json",
       "shortLabel": "Exp5 Waymo",
       "stageDetails": {
         "best_step_22500": "Exp4 step 22,500 在 Waymo FRONT 与手选 SIDE 图像上的 zero-shot 推理",
@@ -85,7 +85,7 @@
     {
       "id": "exp5_eth3d",
       "label": "Exp5 ETH3D",
-      "manifestUrl": "/data/exp5_eth3d_selected_20260903_r3/manifest.json",
+      "manifestUrl": "/data/exp5_eth3d_metrics_20260904_r1/manifest.json",
       "shortLabel": "Exp5 ETH3D",
       "stageDetails": {
         "best_step_22500": "Exp4 step 22,500 在 ETH3D 上 zero-shot 推理",

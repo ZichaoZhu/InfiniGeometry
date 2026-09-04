@@ -99,6 +99,8 @@ button { color: inherit; }
 .metrics-grid div:last-child { border-right: 0; }
 .metrics-grid dt { color: var(--muted); font-size: .62rem; }
 .metrics-grid dd { margin: .22rem 0 0; overflow: hidden; text-overflow: ellipsis; color: var(--cyan); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; }
+.metrics-caption { margin-top: .8rem; color: var(--muted); font-size: .67rem; letter-spacing: .02em; }
+.display-metrics-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .asset-meta { display: flex; flex-wrap: wrap; gap: .45rem .8rem; margin-top: .65rem; color: var(--muted); font-size: .68rem; }
 .identity-note, .gain-note { margin-top: .72rem; padding: .56rem .68rem; border-radius: .62rem; font-size: .74rem; line-height: 1.45; }
 .identity-note { border: 1px solid rgba(120, 227, 220, .22); color: #b8e8e4; background: rgba(32, 184, 181, .08); }

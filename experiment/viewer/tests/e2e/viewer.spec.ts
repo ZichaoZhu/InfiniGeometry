@@ -142,7 +142,8 @@ test("shows ten Waymo FRONT and SIDE visualization samples", async ({ page }) =>
   await expect(page.locator(".sample-switcher button")).toHaveCount(10, { timeout: 30_000 });
   await expect(page.getByTestId("sample-1")).toContainText("Waymo FRONT 01");
   await expect(page.getByTestId("viewer-ground-truth")).toContainText("Waymo held-out TOP LiDAR");
-  await expect(page.getByText("十张样例仅用于定性可视化；FRONT 五张来自固定随机选择，SIDE 五张由用户选定，均未用于选择 checkpoint。")).toHaveCount(1);
+  await expect(page.getByText("展示 FRONT 五张样例的 held-out TOP LiDAR 指标；SIDE 五张仅有定性可视化，暂无对应正式逐图报告。指标不用于 checkpoint 选择。")).toHaveCount(1);
+  await expect(page.getByText("Inverse-depth MAE").first()).toBeVisible();
   await page.getByTestId("right-k").getByRole("button", { name: "K=5" }).click();
   await expect(page.getByTestId("viewer-right")).toContainText("Waymo Zero-shot · K=5");
   for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
@@ -190,6 +191,7 @@ test("shows ten selected ETH3D point-cloud samples", async ({ page }) => {
   await expect(page.locator(".sample-switcher button")).toHaveCount(10, { timeout: 30_000 });
   await expect(page.getByTestId("sample-1")).toContainText("ETH3D 01");
   await expect(page.getByTestId("viewer-ground-truth")).toContainText("ETH3D Ground Truth");
+  await expect(page.getByText("Local Point Rel").first()).toBeVisible();
   await page.getByTestId("right-k").getByRole("button", { name: "K=3" }).click();
   await expect(page.getByTestId("viewer-right")).toContainText("ETH3D Zero-shot · K=3");
   for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
