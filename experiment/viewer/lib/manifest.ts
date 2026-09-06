@@ -17,7 +17,8 @@ export type ScopeMetrics = {
 
 export type PointCloudMetrics = Record<MetricScope, ScopeMetrics>;
 
-export type DisplayMetrics = {
+export type InfiniDepthDisplayMetrics = {
+  protocol?: "infinidepth";
   dataset: "Waymo" | "ETH3D";
   scopeLabel: string;
   evaluationPointCount?: number;
@@ -29,6 +30,19 @@ export type DisplayMetrics = {
   localPointDelta001?: number;
   localSegmentCount?: number;
 };
+
+export type Moge3DisplayMetrics = {
+  protocol: "moge3";
+  dataset: string;
+  scopeLabel: string;
+  affineDepthRel: number;
+  affinePointRel: number;
+  metricDepthRel?: number;
+  metricPointRel?: number;
+  boundaryF1?: number;
+};
+
+export type DisplayMetrics = InfiniDepthDisplayMetrics | Moge3DisplayMetrics;
 
 export type PointCloudAsset = {
   url: string;
@@ -164,6 +178,14 @@ function validateMetrics(metrics: PointCloudMetrics, sampleId: string): void {
 }
 
 function validateDisplayMetrics(metrics: DisplayMetrics, sampleId: string): void {
+  if (metrics.protocol === "moge3") {
+    const required = [metrics.affineDepthRel, metrics.affinePointRel];
+    const optional = [metrics.metricDepthRel, metrics.metricPointRel, metrics.boundaryF1];
+    if (!metrics.dataset || !metrics.scopeLabel || required.some((value) => !Number.isFinite(value)) || optional.some((value) => value !== undefined && !Number.isFinite(value))) {
+      throw new Error(`${sampleId} 的 MoGe-3 展示指标无效`);
+    }
+    return;
+  }
   const required = [metrics.metricDisparityMae1PerM, metrics.radialDepthAbsRel];
   const optional = [metrics.radialDepthRmseM, metrics.pointDelta001, metrics.localPointRel, metrics.localPointDelta001, metrics.localSegmentCount];
   if (!(["Waymo", "ETH3D"] as const).includes(metrics.dataset) || !metrics.scopeLabel || required.some((value) => !Number.isFinite(value)) || optional.some((value) => value !== undefined && !Number.isFinite(value))) {

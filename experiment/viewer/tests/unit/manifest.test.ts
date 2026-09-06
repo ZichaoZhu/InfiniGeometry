@@ -91,8 +91,30 @@ describe("Exp1 viewer manifest", () => {
       },
     };
     expect(() => validateManifest(value)).not.toThrow();
-    (value.samples[0].stages.initial.k0 as PointCloudAsset).displayMetrics!.radialDepthAbsRel = Number.NaN;
+    const metrics = (value.samples[0].stages.initial.k0 as PointCloudAsset).displayMetrics!;
+    if (metrics.protocol === "moge3") throw new Error("unexpected MoGe-3 metrics");
+    metrics.radialDepthAbsRel = Number.NaN;
     expect(() => validateManifest(value)).toThrow(/展示指标/);
+  });
+
+  it("validates official MoGe-3 display metrics", () => {
+    const value = manifest();
+    value.samples[0].stages.initial.k0 = {
+      ...asset,
+      displayMetrics: {
+        protocol: "moge3",
+        dataset: "NYUv2",
+        scopeLabel: "official valid pixels",
+        affineDepthRel: 0.03,
+        affinePointRel: 0.04,
+        metricDepthRel: 0.07,
+      },
+    };
+    expect(() => validateManifest(value)).not.toThrow();
+    const metrics = (value.samples[0].stages.initial.k0 as PointCloudAsset).displayMetrics!;
+    if (metrics.protocol !== "moge3") throw new Error("expected MoGe-3 metrics");
+    metrics.affineDepthRel = Number.NaN;
+    expect(() => validateManifest(value)).toThrow(/MoGe-3/);
   });
 
   it("rejects a wrong fixed-grid point count", () => {

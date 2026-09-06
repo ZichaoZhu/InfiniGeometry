@@ -36,6 +36,7 @@ type ComparisonSource = "rgb" | "lidar";
 
 const EXP3_ID = "exp3_infinidepth_disparity_ssr_hypersim_full";
 const EXP4_ID = "exp4_infinidepth_lidar_refiner_hypersim_full";
+const EXP6_ID = "exp6_1_moge3_official_reproduction";
 
 const FALLBACK_STAGE_LABELS: Record<string, string> = {
   initial: "官方初始",
@@ -101,6 +102,20 @@ function Segment<T extends string | number>({
 function AssetMetrics({ asset, scope }: { asset: PointCloudAsset; scope: MetricScope }) {
   if (asset.displayMetrics) {
     const metrics = asset.displayMetrics;
+    if (metrics.protocol === "moge3") {
+      return (
+        <>
+          <div className="metrics-caption">{metrics.dataset} · {metrics.scopeLabel} · 官方单图评测</div>
+          <dl className="metrics-grid display-metrics-grid">
+            <div><dt>Affine Depth Rel</dt><dd>{percent(metrics.affineDepthRel, 3)}</dd></div>
+            <div><dt>Affine Point Rel</dt><dd>{percent(metrics.affinePointRel, 3)}</dd></div>
+            {metrics.metricDepthRel !== undefined && <div><dt>Metric Depth Rel</dt><dd>{percent(metrics.metricDepthRel, 3)}</dd></div>}
+            {metrics.metricPointRel !== undefined && <div><dt>Metric Point Rel</dt><dd>{percent(metrics.metricPointRel, 3)}</dd></div>}
+            {metrics.boundaryF1 !== undefined && <div><dt>Boundary F1</dt><dd>{percent(metrics.boundaryF1, 2)}</dd></div>}
+          </dl>
+        </>
+      );
+    }
     return (
       <>
         <div className="metrics-caption">{metrics.dataset} · {metrics.scopeLabel} · 展示诊断</div>
@@ -395,6 +410,7 @@ export function PointCloudComparison() {
     ? ["crop", "full"]
     : ["full"];
   const isExp4 = experiment.id === EXP4_ID;
+  const isExp6 = experiment.id === EXP6_ID;
   const comparisonManifest = comparisonSource === "rgb" ? rgbManifest : manifest;
   const comparisonExperiment = comparisonSource === "rgb" ? rgbExperiment : experiment;
   const comparisonSample = comparisonManifest && orderedSamples(comparisonManifest).find((item) => item.id === sample.id);
@@ -415,7 +431,7 @@ export function PointCloudComparison() {
   return (
     <main className="app-shell">
       <header className="hero">
-        <div><span className="eyebrow">INFINIDEPTH / INTERACTIVE GEOMETRY LAB</span><h1>Disparity Refiner<br />多实验点云对比器</h1><p>在统一相机与渲染设置下，对照参考点云、训练阶段和 K 次精修输出；具体数据与指标口径以当前实验说明为准。</p></div>
+        <div><span className="eyebrow">{isExp6 ? "MOGE-3 / OFFICIAL CHECKPOINT REPRODUCTION" : "INFINIDEPTH / INTERACTIVE GEOMETRY LAB"}</span><h1>{isExp6 ? <>MoGe-3<br />官方权重点云对比</> : <>Disparity Refiner<br />多实验点云对比器</>}</h1><p>{isExp6 ? "在十个官方评测数据集的固定样本上，对照 GT 与 K 次稀疏三维精修输出。" : "在统一相机与渲染设置下，对照参考点云、训练阶段和 K 次精修输出；具体数据与指标口径以当前实验说明为准。"}</p></div>
         <div className="hero-badge"><span>{experiment.shortLabel ?? experiment.label} · 当前样本</span><strong>{sample.label ?? `样本 ${(samples.indexOf(sample) + 1).toString().padStart(2, "0")}`}</strong><small>{sample.description}</small></div>
       </header>
 

@@ -96,6 +96,19 @@
         "initial": "LiDAR 初始"
       },
       "summary": "Exp5 ETH3D 选定十张图像的 LiDAR Refiner 点云可视化。"
+    },
+    {
+      "id": "exp6_1_moge3_official_reproduction",
+      "label": "Exp6-1 MoGe-3 官方复现",
+      "manifestUrl": "/data/exp6_1_moge3_official_reproduction_r2/manifest.json",
+      "shortLabel": "Exp6-1 MoGe-3",
+      "stageDetails": {
+        "official_checkpoint": "官方 Ruicheng/moge-3-vitl · revision a96e58ba"
+      },
+      "stageLabels": {
+        "official_checkpoint": "官方 ViT-L"
+      },
+      "summary": "使用官方 checkpoint，在十个评测数据集各固定一张图，对照 GT 与 K=0/1/3/5 输出。"
     }
   ],
   "version": 1
