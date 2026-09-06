@@ -206,26 +206,23 @@ test("shows ten selected ETH3D point-cloud samples", async ({ page }) => {
   await expect(page.locator(".canvas-error")).toHaveCount(0);
 });
 
-test("shows ten fixed Exp6-1 official MoGe-3 samples", async ({ page }) => {
+test("shows five fixed Exp6-1 official MoGe-3 samples", async ({ page }) => {
   await page.goto("/");
   const exp6 = page.getByTestId("experiment-exp6_1_moge3_official_reproduction");
   await exp6.click();
   await expect(exp6).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("heading", { name: /MoGe-3/ })).toBeVisible();
-  await expect(page.locator(".sample-switcher button")).toHaveCount(10, { timeout: 30_000 });
+  await expect(page.locator(".sample-switcher button")).toHaveCount(5, { timeout: 30_000 });
   await expect(page.getByTestId("sample-1")).toContainText("NYUv2");
   await expect(page.getByTestId("sample-3")).toContainText("DSC_6487");
   await expect(page.getByTestId("sample-4")).toContainText("office_02");
-  await expect(page.getByTestId("sample-6")).toContainText("00022_00193_outdoor_320_020");
-  await expect(page.getByTestId("sample-8")).toContainText("000290");
-  await expect(page.getByTestId("sample-10")).toContainText("DDAD");
-  await expect(page.getByTestId("sample-10")).toContainText("CAMERA_06");
+  await expect(page.getByTestId("sample-5")).toContainText("Sintel");
   await expect(page.getByTestId("viewer-left")).toContainText("官方 ViT-L · K=0");
   await expect(page.getByTestId("viewer-right")).toContainText("官方 ViT-L · K=3");
   await expect(page.getByText("Affine Depth Rel").first()).toBeVisible();
   await page.getByTestId("right-k").getByRole("button", { name: "K=5" }).click();
   await expect(page.getByTestId("viewer-right")).toContainText("官方 ViT-L · K=5");
-  for (const sample of [3, 4, 6, 8, 10]) {
+  for (const sample of [1, 2, 3, 4, 5]) {
     await page.getByTestId(`sample-${sample}`).click();
     for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
       await page.getByTestId(panel).scrollIntoViewIfNeeded();
