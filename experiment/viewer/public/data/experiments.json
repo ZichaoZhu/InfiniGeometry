@@ -100,7 +100,7 @@
     {
       "id": "exp6_1_moge3_official_reproduction",
       "label": "Exp6-1 MoGe-3 官方复现",
-      "manifestUrl": "/data/exp6_1_moge3_official_reproduction_r2/manifest.json",
+      "manifestUrl": "/data/exp6_1_moge3_official_reproduction_r3/manifest.json",
       "shortLabel": "Exp6-1 MoGe-3",
       "stageDetails": {
         "official_checkpoint": "官方 Ruicheng/moge-3-vitl · revision a96e58ba"

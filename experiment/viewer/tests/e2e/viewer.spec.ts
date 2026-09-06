@@ -214,22 +214,33 @@ test("shows ten fixed Exp6-1 official MoGe-3 samples", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /MoGe-3/ })).toBeVisible();
   await expect(page.locator(".sample-switcher button")).toHaveCount(10, { timeout: 30_000 });
   await expect(page.getByTestId("sample-1")).toContainText("NYUv2");
+  await expect(page.getByTestId("sample-3")).toContainText("DSC_6487");
+  await expect(page.getByTestId("sample-4")).toContainText("office_02");
+  await expect(page.getByTestId("sample-6")).toContainText("00022_00193_outdoor_320_020");
+  await expect(page.getByTestId("sample-8")).toContainText("000290");
   await expect(page.getByTestId("sample-10")).toContainText("DDAD");
+  await expect(page.getByTestId("sample-10")).toContainText("CAMERA_06");
   await expect(page.getByTestId("viewer-left")).toContainText("官方 ViT-L · K=0");
   await expect(page.getByTestId("viewer-right")).toContainText("官方 ViT-L · K=3");
   await expect(page.getByText("Affine Depth Rel").first()).toBeVisible();
   await page.getByTestId("right-k").getByRole("button", { name: "K=5" }).click();
   await expect(page.getByTestId("viewer-right")).toContainText("官方 ViT-L · K=5");
-  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
-    await page.getByTestId(panel).scrollIntoViewIfNeeded();
-    await expect(page.getByTestId(panel).locator("canvas")).toHaveAttribute(
-      "data-scene-source",
-      /exp6_1_moge3_official_reproduction/,
-      { timeout: 30_000 },
-    );
-    await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
+  for (const sample of [3, 4, 6, 8, 10]) {
+    await page.getByTestId(`sample-${sample}`).click();
+    for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+      await page.getByTestId(panel).scrollIntoViewIfNeeded();
+      await expect(page.getByTestId(panel).locator("canvas")).toHaveAttribute(
+        "data-scene-source",
+        /exp6_1_moge3_official_reproduction_r3/,
+        { timeout: 30_000 },
+      );
+      await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
+    }
   }
   await expect(page.locator(".canvas-error")).toHaveCount(0);
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  await page.mouse.move(1, 1);
+  await expect(page.locator(".sample-hover-preview").last()).toBeHidden();
   const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
   await page.screenshot({ path: path.join(screenshotDirectory, "exp6-1-desktop.png"), fullPage: true });
