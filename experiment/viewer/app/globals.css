@@ -79,6 +79,7 @@ button { color: inherit; }
 
 .comparison-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; }
 .comparison-grid:has([data-testid="viewer-reference"]) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.comparison-grid:has([data-testid="viewer-moge3"]) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .viewer-pane { min-width: 0; padding: 1rem; border: 1px solid var(--line); border-radius: 1.1rem; background: var(--panel); box-shadow: var(--shadow); backdrop-filter: blur(18px); }
 .ground-truth-pane { border-color: rgba(255, 196, 107, .28); }
 .reference-loading { min-height: 16rem; color: var(--muted); }

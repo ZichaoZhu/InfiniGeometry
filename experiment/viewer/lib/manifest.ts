@@ -39,6 +39,7 @@ export type Moge3DisplayMetrics = {
   affinePointRel: number;
   metricDepthRel?: number;
   metricPointRel?: number;
+  delta101?: number;
   boundaryF1?: number;
 };
 
@@ -51,7 +52,11 @@ export type PointCloudAsset = {
   bytes: number;
   sha256: string;
   checkpointSha256: string;
-  alignment: { scale: number; zShift: number };
+  alignment: {
+    scale: number;
+    zShift: number;
+    translation?: [number, number, number];
+  };
   bounds: { min: [number, number, number]; max: [number, number, number] };
   metrics?: PointCloudMetrics;
   displayMetrics?: DisplayMetrics;
@@ -180,7 +185,7 @@ function validateMetrics(metrics: PointCloudMetrics, sampleId: string): void {
 function validateDisplayMetrics(metrics: DisplayMetrics, sampleId: string): void {
   if (metrics.protocol === "moge3") {
     const required = [metrics.affineDepthRel, metrics.affinePointRel];
-    const optional = [metrics.metricDepthRel, metrics.metricPointRel, metrics.boundaryF1];
+    const optional = [metrics.metricDepthRel, metrics.metricPointRel, metrics.delta101, metrics.boundaryF1];
     if (!metrics.dataset || !metrics.scopeLabel || required.some((value) => !Number.isFinite(value)) || optional.some((value) => value !== undefined && !Number.isFinite(value))) {
       throw new Error(`${sampleId} 的 MoGe-3 展示指标无效`);
     }
@@ -215,6 +220,10 @@ export function validateManifest(manifest: PointCloudManifest): void {
     for (const asset of assets) {
       if (asset.pointCount !== expectedPoints) throw new Error(`${sample.id} 点数与固定网格不一致`);
       if (!asset.url.match(/^\/data\/exp[0-9]+(?:_[a-z0-9_]+)?\//)) throw new Error(`${sample.id} 资产 URL 越界`);
+      const translation = asset.alignment?.translation;
+      if (!asset.alignment || !Number.isFinite(asset.alignment.scale) || !Number.isFinite(asset.alignment.zShift) || (translation !== undefined && (translation.length !== 3 || translation.some((value) => !Number.isFinite(value))))) {
+        throw new Error(`${sample.id} 点云对齐参数无效`);
+      }
       if (asset.metrics) validateMetrics(asset.metrics, sample.id);
       if (asset.displayMetrics) validateDisplayMetrics(asset.displayMetrics, sample.id);
     }

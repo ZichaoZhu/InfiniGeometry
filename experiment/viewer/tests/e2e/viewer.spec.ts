@@ -245,6 +245,46 @@ test("shows five fixed Exp6-1 official MoGe-3 samples", async ({ page }) => {
   await page.screenshot({ path: path.join(screenshotDirectory, "exp6-1-mobile.png"), fullPage: true });
 });
 
+test("shows Exp6-3 GT, MoGe-3, Stage1, and Joint on fixed Val/Test samples", async ({ page }) => {
+  await page.goto("/");
+  const exp6 = page.getByTestId("experiment-exp6_3_moge3_vs_infinidepth_exp3");
+  await exp6.click();
+  await expect(exp6).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("heading", { name: /四路点云对照/ })).toBeVisible();
+  await expect(page.locator(".sample-switcher button")).toHaveCount(5, { timeout: 30_000 });
+  await expect(page.getByTestId("sample-1")).toContainText("Val 01");
+  await expect(page.getByTestId("viewer-moge3")).toContainText("MoGe-3 · K=3");
+  await expect(page.getByTestId("viewer-exp3-stage1")).toContainText("Exp3 Stage1 · K=3");
+  await expect(page.getByTestId("viewer-exp3-joint")).toContainText("Exp3 Joint · K=3");
+
+  const panels = ["viewer-ground-truth", "viewer-moge3", "viewer-exp3-stage1", "viewer-exp3-joint"];
+  await expect(page.locator("canvas")).toHaveCount(4);
+  for (const panel of panels) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
+    await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
+  }
+  await page.getByTestId("moge3-k").getByRole("button", { name: "K=0" }).click();
+  await expect(page.getByTestId("viewer-moge3")).toContainText("MoGe-3 · K=0");
+  await page.getByTestId("exp3-stage1-k").getByRole("button", { name: "K=1" }).click();
+  await expect(page.getByTestId("viewer-exp3-stage1")).toContainText("Exp3 Stage1 · K=1");
+
+  await page.getByTestId("sample-split").getByRole("button", { name: "TEST" }).click();
+  await expect(page.locator(".sample-switcher button")).toHaveCount(5);
+  await expect(page.getByTestId("sample-6")).toContainText("Test 01");
+  for (const panel of panels) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
+    await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
+  }
+  await expect(page.locator(".canvas-error")).toHaveCount(0);
+  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  await mkdir(screenshotDirectory, { recursive: true });
+  await page.screenshot({ path: path.join(screenshotDirectory, "exp6-3-four-pane-desktop.png"), fullPage: true });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator(".viewer-pane")).toHaveCount(4);
+  await page.screenshot({ path: path.join(screenshotDirectory, "exp6-3-four-pane-mobile.png"), fullPage: true });
+});
+
 test("lists and selects the Waymo side-camera previews", async ({ page }) => {
   await page.goto("/data/waymo_gallery_exp5_val202_side_20260903_r2/index.html");
   await expect(page.getByRole("heading", { name: "Waymo Val202 · SIDE 选图" })).toBeVisible();

@@ -33,6 +33,12 @@ describe("InfiniDepth point-cloud geometry", () => {
     expect(Array.from(pointPositions(new Float32Array([1, 2, 3]), new Uint32Array([0]), asset, "raw"))).toEqual([1, -2, -3]);
   });
 
+  it("applies optional affine display translation only in aligned mode", () => {
+    const aligned = { ...asset, alignment: { scale: 2, zShift: 0.5, translation: [3, 4, 5] as [number, number, number] } };
+    expect(transformPoint(1, 2, 3, aligned, "aligned")).toEqual([5, -8, -11.5]);
+    expect(transformPoint(1, 2, 3, aligned, "raw")).toEqual([1, -2, -3]);
+  });
+
   it("drops non-finite and non-positive-Z points without reordering", () => {
     const raw = new Float32Array([0, 0, 1, Number.NaN, 0, 2, 1, 0, 2, 0, 0, 0]);
     expect(Array.from(finiteRasterIndices(raw, new Uint32Array([0, 1, 2, 3])))).toEqual([0, 2]);

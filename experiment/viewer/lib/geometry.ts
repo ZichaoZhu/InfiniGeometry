@@ -36,7 +36,10 @@ export function transformPoint(
   const scale = coordinateMode === "aligned" ? asset.alignment.scale : 1;
   const zShift =
     coordinateMode === "aligned" ? asset.alignment.zShift : 0;
-  return [scale * x, -scale * y, -(scale * z + zShift)];
+  const [tx, ty, tz] = coordinateMode === "aligned"
+    ? (asset.alignment.translation ?? [0, 0, 0])
+    : [0, 0, 0];
+  return [scale * x + tx, -(scale * y + ty), -(scale * z + tz + zShift)];
 }
 
 export function pointPositions(
