@@ -894,3 +894,23 @@
 - 指标来源：ETH3D 报告 SHA-256 `a960a53d…85e0f7`；Waymo 报告 SHA-256 `0e4c03e4…e1db16`。
 - `npm run typecheck`、`npm run build`、`npm test`（17 passed）和 Exp5 相关 Playwright（2 passed）通过；生产部署 `dpl_maRTD8bqBWBWxGkCdGwNdT3QxBDf` 已就绪，线上 Exp5 Waymo/ETH3D Playwright 2 passed。
 - [生产发布与验收记录](./exp5_infinidepth_lidar_refiner_waymo_generalization/deployment_20260904_metrics_viewer.json)
+
+## 2026-09-10 exp6-3 查看器切换修复
+
+### 实验简述
+
+目的：修复切换到 Exp6-3 时查看器偶发整页加载失败的问题。
+
+方法：加载新实验 manifest 期间，禁止以新实验 ID 渲染上一个实验的 manifest 和样本；不重新推理或修改任何点云资产。
+
+结果：生产站点的 Exp3 到 Exp6-3 切换可显示四路点云，随后切回 Exp3 可显示三路点云，均无页面异常或失败请求。
+
+### 实验结果
+
+- [生产发布与验收记录](./viewer/deployment_20260910_exp6_3_switch_fix.json)
+- [在线点云查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+
+### 其他
+
+- 根因是新实验 ID 与旧 manifest 的短暂状态不一致，不是 Exp6-3 PLY 或 manifest 缺失。
+- v8 的 10 个样本、100 个 PLY 和 10 个 RGB 引用均已核对存在；PLY 的大小和 SHA-256 与 manifest 一致。

@@ -1,0 +1,27 @@
+{
+  "format": "infinidepth-exp6-3-viewer-switch-fix-v1",
+  "published_on": "2026-09-10",
+  "change": "Prevent rendering a stale manifest while the selected experiment manifest is loading.",
+  "assets": {
+    "manifest": "public/data/exp6_3_moge3_vs_infinidepth_exp3_v8/manifest.json",
+    "remote_verification": "10 samples, 100 PLY assets, and 10 RGB assets existed with matching PLY byte sizes and SHA-256 values."
+  },
+  "vercel": {
+    "deployment_id": "dpl_9sVbfop6EnfVWp4tdEQsyn7U7hKf",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-lhmd1nh03.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app/",
+    "status": "ready"
+  },
+  "verification": {
+    "local": [
+      "npm run typecheck: passed",
+      "npm test: 19 passed",
+      "npm run build: passed",
+      "Exp6-3 Playwright: passed"
+    ],
+    "production": [
+      "Exp3 to Exp6-3 displayed four canvases without page errors or failed requests",
+      "Exp6-3 back to Exp3 displayed three canvases without page errors or failed requests"
+    ]
+  }
+}
