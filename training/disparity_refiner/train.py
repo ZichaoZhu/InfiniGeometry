@@ -30,6 +30,7 @@ from training.disparity_refiner.data import (
     select_manifest_entries,
 )
 from training.disparity_refiner.losses import disparity_metrics, supervised_iteration_loss
+from training.disparity_refiner.frozen_base import base_sha256, preserve_training_mode, set_training_mode, verify_frozen_base
 
 
 EVALUATION_STEPS = (0, 1, 3, 5)
@@ -287,14 +288,17 @@ def _append_jsonl(path: Path, value: object) -> None:
 
 
 def _git_value(project_root: Path, *args: str) -> str:
-    completed = subprocess.run(
-        ["git", *args],
-        cwd=project_root,
-        check=True,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    try:
+        completed = subprocess.run(
+            ["git", *args],
+            cwd=project_root,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return "unavailable"
     return completed.stdout.strip()
 
 
@@ -459,7 +463,7 @@ def _load_samples(
     )
 
 
-def _parameter_groups(model: InfiniDepth) -> Dict[str, List[torch.nn.Parameter]]:
+def _parameter_groups(model: InfiniDepth, refiner_only: bool = False) -> Dict[str, List[torch.nn.Parameter]]:
     if model.disparity_refiner is None:
         raise RuntimeError("Disparity refiner is not attached")
     for parameter in model.parameters():
@@ -470,6 +474,9 @@ def _parameter_groups(model: InfiniDepth) -> Dict[str, List[torch.nn.Parameter]]
         + list(model.depth_implicit_head.parameters()),
         "dino": list(model.pretrained.parameters()),
     }
+    if refiner_only:
+        groups["head"] = []
+        groups["dino"] = []
     for parameters in groups.values():
         for parameter in parameters:
             parameter.requires_grad_(True)
@@ -486,7 +493,7 @@ def _build_optimizer(
     return torch.optim.AdamW(
         [
             {"name": name, "params": list(parameters), "lr": 0.0}
-            for name, parameters in groups.items()
+            for name, parameters in groups.items() if parameters
         ],
         weight_decay=float(weight_decay),
     )
@@ -576,12 +583,14 @@ def _refinement_monitor(
         monitor[f"k{iteration}_bounded_residual_min"] = float(bounded.detach().amin().item())
         monitor[f"k{iteration}_bounded_residual_max"] = float(bounded.detach().amax().item())
         monitor[f"k{iteration}_bounded_residual_mean"] = float(bounded.detach().mean().item())
+        monitor[f"k{iteration}_bounded_residual_near_limit_fraction"] = float((bounded.detach().abs() >= 0.095).float().mean().item())
         for level, count in enumerate(statistics["active_voxels_per_level"]):
             monitor[f"k{iteration}_level{level}_active_voxels"] = float(count)
     return monitor
 
 
 @torch.no_grad()
+@preserve_training_mode
 def evaluate(
     model: InfiniDepth,
     samples: Sequence[HypersimDisparitySample],
@@ -592,7 +601,6 @@ def evaluate(
     chunk_size: int,
     residual_scale: float = 1.0,
 ) -> Dict[str, object]:
-    was_training = model.training
     model.eval()
     per_image: Dict[str, object] = {}
     for index in indices:
@@ -605,6 +613,7 @@ def evaluate(
             detach_base_from_refiner=False,
             chunk_size=chunk_size,
         )
+        _refinement_monitor(output)
         target = sample.target_disparity.to(device)
         valid = sample.valid_mask.to(device)
         structure = (
@@ -615,6 +624,11 @@ def evaluate(
             per_k[f"k{iteration}"] = disparity_metrics(
                 output.disparity_sequence[iteration][0], target, valid, structure
             )
+            if any(value is not None and not math.isfinite(value) for value in per_k[f"k{iteration}"].values()):
+                raise FloatingPointError(f"Evaluation K{iteration} is non-finite")
+        frozen = getattr(model, "frozen_k0_metrics", {}).get(sample.sample_id)
+        if frozen is not None and abs(per_k["k0"]["full_mae"] - frozen["k0"]["full_mae"]) > 1e-7:
+            raise RuntimeError("Frozen Base K0 prediction changed")
         per_image[sample.sample_id] = per_k
     aggregate = {}
     for iteration in EVALUATION_STEPS:
@@ -634,8 +648,6 @@ def evaluate(
         float(value["k3"]["full_mae"]) < float(value["k0"]["full_mae"])
         for value in per_image.values()
     )
-    if was_training:
-        model.train()
     return {
         "sample_count": len(indices),
         "aggregate": aggregate,
@@ -668,6 +680,7 @@ def _save_checkpoint(
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
+    verify_frozen_base(model)
     checkpoint = {
         "format": "infinidepth-disparity-refiner-v1",
         "model": model.state_dict(),
@@ -677,6 +690,9 @@ def _save_checkpoint(
         "total_step": int(total_step),
         "config_sha256": config_sha256,
         "evaluation": evaluation,
+        "refiner_config": getattr(model, "disparity_refiner_config", {"backend": "spconv"}),
+        "refiner_only": bool(getattr(model, "refiner_only", False)),
+        "frozen_base_sha256": getattr(model, "frozen_base_sha256", None),
     }
     if distributed_state is not None:
         checkpoint["distributed"] = dict(distributed_state)
@@ -710,6 +726,13 @@ def _restore_checkpoint(
         raise ValueError("Unsupported checkpoint format")
     if checkpoint.get("config_sha256") != config_sha256:
         raise ValueError("Resume checkpoint was produced by another config")
+    current_backend = getattr(model, "disparity_refiner_config", {}).get("backend", "spconv")
+    if checkpoint.get("refiner_config", {}).get("backend", "spconv") != current_backend:
+        raise ValueError("Resume checkpoint uses another refiner backend")
+    if "refiner_config" in checkpoint and hasattr(model, "disparity_refiner_config") and checkpoint["refiner_config"] != model.disparity_refiner_config:
+        raise ValueError("Resume checkpoint uses another refiner configuration")
+    if bool(checkpoint.get("refiner_only", False)) != bool(getattr(model, "refiner_only", False)):
+        raise ValueError("Resume checkpoint uses another training mode")
     distributed_state = checkpoint.get("distributed")
     if isinstance(distributed_state, Mapping):
         saved_world_size = int(distributed_state.get("world_size", 1))
@@ -903,6 +926,14 @@ def _provenance(
         project_root / "InfiniDepth/model/disparity_refiner.py",
         project_root / "experiment/schedule_exp3.py",
     ]
+    if config["training"].get("refiner_only", False):
+        source_paths.extend([
+            project_root / "InfiniDepth/model/model.py",
+            project_root / "InfiniDepth/model/official_disparity_adapter.py",
+            project_root / "training/disparity_refiner/frozen_base.py",
+            project_root / "training/disparity_refiner/losses.py",
+            *sorted((project_root / "InfiniDepth/model/official_moge_ssr").glob("*.py")),
+        ])
     launcher_command = os.environ.get("INFINIDEPTH_LAUNCH_COMMAND")
     return {
         "format": "infinidepth-disparity-refiner-provenance-v1",
@@ -967,8 +998,8 @@ def train_stage(
     eval_every = int(stage_config["eval_every"])
     full_eval_every = int(stage_config["full_eval_every"])
     checkpoint_every = int(stage_config["checkpoint_every"])
-    if checkpoint_every <= 0 or checkpoint_every % full_eval_every:
-        raise ValueError("checkpoint_every must be a positive multiple of full_eval_every")
+    if min(checkpoint_every, eval_every, full_eval_every) <= 0:
+        raise ValueError("Checkpoint and evaluation intervals must be positive")
     plateau_patience = int(stage_config.get("plateau_patience_evals", 0))
     plateau_threshold = float(stage_config.get("plateau_relative_improvement", 0.0))
     detach = stage == "stage1"
@@ -1003,7 +1034,7 @@ def train_stage(
     checkpoint_dir = output / "checkpoints"
     history_path = output / "metrics" / "history.jsonl"
     stage_start_time = time.time()
-    model.train()
+    set_training_mode(model)
     next_step = initial_stage_step + 1
     _configure_stage_learning_rates(
         optimizer, parameter_groups["dino"], stage_config, next_step
@@ -1117,6 +1148,14 @@ def train_stage(
         optimizer.step()
         total_step += 1
         optimizer_step_seconds = time.time() - optimizer_step_started
+        if distributed.is_main and bool(training.get("record_step_progress", False)):
+            _append_jsonl(output / "metrics" / "steps.jsonl", {
+                "stage": stage, "stage_step": stage_step, "total_step": total_step,
+                "global_sample_indices": global_step_indices,
+                "optimizer_step_seconds": optimizer_step_seconds,
+                "loss": accumulated_metrics["loss"], "gradient_norms": gradient_norms,
+                "recorded_at_unix": time.time(),
+            })
 
         pause_after_step = _pause_requested(
             output, distributed, stage=stage, stage_step=stage_step
@@ -1125,6 +1164,7 @@ def train_stage(
         should_full_eval = not pause_after_step and (
             stage_step % full_eval_every == 0 or stage_step == maximum_steps
         )
+        should_stop = False
         if should_sample_eval or should_full_eval:
             accumulated_metrics = _reduce_metrics(accumulated_metrics, distributed)
             full_eval_ids = set(
@@ -1224,49 +1264,7 @@ def train_stage(
                     and stage_step >= minimum_steps
                     and stale_evaluations >= plateau_patience
                 )
-                if (
-                    stage_step % checkpoint_every == 0
-                    or stage_step == maximum_steps
-                    or should_stop
-                ):
-                    stage_state = {
-                        "best_evaluation": best_evaluation,
-                        "best_score": best_score,
-                        "best_step": best_step,
-                        "elapsed_seconds": elapsed_before + time.time() - stage_start_time,
-                        "final_evaluation": final_evaluation,
-                        "previous_full_score": previous_full_score,
-                        "stale_evaluations": stale_evaluations,
-                        "last_evaluation": last_evaluation,
-                        "expected_next_global_indices": _peek_global_sample_indices(
-                            generator,
-                            len(samples),
-                            microbatch * distributed.world_size,
-                            accumulation,
-                        ),
-                        "resume_sample_sequence_verified": resume_sample_sequence_verified,
-                    }
-                    gathered_rng = _gather_rng_states(generator, distributed)
-                    if distributed.is_main:
-                        _save_checkpoint(
-                            checkpoint_dir / "last.pt",
-                            model=model,
-                            optimizer=optimizer,
-                            stage=stage,
-                            stage_step=stage_step,
-                            total_step=total_step,
-                            config_sha256=config_sha256,
-                            evaluation=evaluation,
-                            include_optimizer=True,
-                            generator=generator,
-                            stage_state=stage_state,
-                            completed_stage_reports=completed_stage_reports,
-                            distributed_state=_distributed_metadata(config, distributed),
-                            gathered_rng=gathered_rng,
-                        )
-                if should_stop:
-                    break
-        if pause_after_step:
+        if pause_after_step or stage_step % checkpoint_every == 0 or stage_step == maximum_steps or should_stop:
             stage_state = {
                 "best_evaluation": best_evaluation,
                 "best_score": best_score,
@@ -1302,9 +1300,13 @@ def train_stage(
                     distributed_state=_distributed_metadata(config, distributed),
                     gathered_rng=gathered_rng,
                 )
+        if pause_after_step:
+            if distributed.is_main:
                 (output / "control" / "pause.request").unlink(missing_ok=True)
             _barrier(distributed)
             raise TrainingPaused(stage, stage_step, total_step)
+        if should_stop:
+            break
     if final_evaluation is None:
         raise RuntimeError("Stage completed without a full evaluation")
     if best_evaluation is None:
@@ -1318,6 +1320,22 @@ def train_stage(
         "resume_sample_sequence_verified": resume_sample_sequence_verified,
     }
     return _stage_report(stage, stage_step, state), total_step
+
+
+def _refresh_final_evaluation(model, samples, device, model_config, state):
+    """A pause on the final optimizer step can precede its full evaluation."""
+    started = time.time()
+    state = dict(state or {})
+    value = evaluate(model, samples, list(range(len(samples))), device=device,
+                     query_hw=(int(model_config["height"]), int(model_config["width"])),
+                     chunk_size=int(model_config["query_chunk_size"]))
+    score = _selection_score(value)
+    improved = score < float(state.get("best_score", float("inf")))
+    state.update(final_evaluation=value, last_evaluation=value, previous_full_score=score,
+                 elapsed_seconds=float(state.get("elapsed_seconds", 0.0)) + time.time() - started)
+    if improved:
+        state.update(best_evaluation=value, best_score=score)
+    return state, improved
 
 
 def main() -> None:
@@ -1366,11 +1384,17 @@ def main() -> None:
         raise FileNotFoundError(checkpoint_path)
     model = InfiniDepth(model_path=str(checkpoint_path)).to(device)
     model.attach_disparity_refiner(
-        backend="spconv",
+        backend=str(config["model"].get("refiner_backend", "spconv")),
         voxel_resolution=float(config["model"]["voxel_resolution"]),
         max_disparity_span=config["model"].get("max_disparity_span"),
     )
-    groups = _parameter_groups(model)
+    model.refiner_only = bool(config["training"].get("refiner_only", False))
+    if model.refiner_only:
+        if distributed.world_size != 1:
+            raise ValueError("Exp6-4 refiner-only mode is validated for one GPU only")
+        model.frozen_base_sha256 = base_sha256(model)
+    groups = _parameter_groups(model, refiner_only=model.refiner_only)
+    set_training_mode(model)
     optimizer = _build_optimizer(groups, float(config["training"]["weight_decay"]))
     total_step = 0
     initial_stage = None
@@ -1402,6 +1426,7 @@ def main() -> None:
             reports = [dict(value) for value in resume_state.get("completed_stage_reports", [])]
         if not _restore_rng_state(state, generator, distributed.rank):
             generator.seed(seed + total_step + 1)  # type: ignore[attr-defined]
+        verify_frozen_base(model)
 
     if distributed.is_main:
         provenance = _provenance(
@@ -1413,6 +1438,9 @@ def main() -> None:
             distributed,
         )
         provenance["seed"] = seed
+        provenance["refiner_config"] = model.disparity_refiner_config
+        provenance["refiner_only"] = model.refiner_only
+        provenance["frozen_base_sha256"] = getattr(model, "frozen_base_sha256", None)
         provenance["sample_ids"] = (
             list(samples.sample_ids)
             if isinstance(samples, HypersimDisparityDataset)
@@ -1441,8 +1469,24 @@ def main() -> None:
             },
         )
 
+    if model.refiner_only:
+        baseline_path = output / "metrics" / "initial_evaluation.json"
+        if args.resume is None:
+            baseline = evaluate(model, evaluation_samples, list(range(min(5, len(evaluation_samples)))),
+                                device=device, query_hw=(int(config["model"]["height"]), int(config["model"]["width"])),
+                                chunk_size=int(config["model"]["query_chunk_size"]))
+            for item in baseline["per_image"].values():
+                if any(item[key] != item["k0"] for key in ("k1", "k3", "k5")):
+                    raise RuntimeError("SSR zero-initialization identity check failed")
+            _atomic_json(baseline_path, baseline)
+            _save_checkpoint(output / "checkpoints" / "initial.pt", model=model, optimizer=optimizer,
+                             stage="stage1", stage_step=0, total_step=0, config_sha256=config_sha256,
+                             evaluation=baseline, include_optimizer=False)
+        model.frozen_k0_metrics = json.loads(baseline_path.read_text())["per_image"]
+
     stages = config["training"]["stages"]
-    for stage in ("stage1", "joint"):
+    stage_names = ("stage1",) if model.refiner_only else ("stage1", "joint")
+    for stage in stage_names:
         if initial_stage == "joint" and stage == "stage1":
             if not any(report.get("stage") == "stage1" for report in reports):
                 stage1_path = output / "metrics" / "stage1_report.json"
@@ -1452,6 +1496,20 @@ def main() -> None:
             continue
         stage_start = initial_stage_step if initial_stage == stage else 0
         if initial_stage == stage and stage_start >= int(stages[stage]["max_steps"]):
+            if model.refiner_only:
+                initial_stage_state, improved = _refresh_final_evaluation(
+                    model, evaluation_samples, device, config["model"], initial_stage_state)
+                if improved:
+                    initial_stage_state["best_step"] = stage_start
+                    _save_checkpoint(output / "checkpoints" / f"{stage}_best.pt",
+                        model=model, optimizer=optimizer, stage=stage, stage_step=stage_start,
+                        total_step=total_step, config_sha256=config_sha256,
+                        evaluation=initial_stage_state["final_evaluation"], include_optimizer=False)
+                _save_checkpoint(output / "checkpoints/last.pt", model=model, optimizer=optimizer,
+                    stage=stage, stage_step=stage_start, total_step=total_step,
+                    config_sha256=config_sha256, evaluation=initial_stage_state["final_evaluation"],
+                    include_optimizer=True, generator=generator, stage_state=initial_stage_state,
+                    completed_stage_reports=reports, distributed_state=_distributed_metadata(config, distributed))
             report = _stage_report(stage, stage_start, initial_stage_state or {})
         else:
             report, total_step = train_stage(
@@ -1483,6 +1541,7 @@ def main() -> None:
         initial_stage_state = None
 
     peak_memory = _peak_cuda_memory(distributed)
+    verify_frozen_base(model)
     checksums, parameters_consistent = _parameter_checksums(model, distributed)
     if not parameters_consistent:
         raise RuntimeError("Model parameters diverged across DDP ranks")
@@ -1502,6 +1561,7 @@ def main() -> None:
         "parameter_checksums": checksums,
         "parameters_consistent": parameters_consistent,
         "completed_at_unix": time.time(),
+        "frozen_base_sha256": getattr(model, "frozen_base_sha256", None),
     }
     _atomic_json(output / "metrics" / "report.json", final_report)
 

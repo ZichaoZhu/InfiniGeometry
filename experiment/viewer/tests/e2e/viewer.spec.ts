@@ -285,6 +285,38 @@ test("shows Exp6-3 GT, MoGe-3, Stage1, and Joint on fixed Val/Test samples", asy
   await page.screenshot({ path: path.join(screenshotDirectory, "exp6-3-four-pane-mobile.png"), fullPage: true });
 });
 
+test("shows Exp6-4 GT, spconv, and official flex in fixed windows", async ({ page }) => {
+  await page.goto("/");
+  const exp6 = page.getByTestId("experiment-exp6_4_official_ssr_disparity_adapter");
+  await exp6.click();
+  await expect(exp6).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("heading", { name: /三路点云对照/ })).toBeVisible();
+  await expect(page.getByTestId("sample-split").getByRole("button")).toHaveCount(3);
+  await expect(page.locator(".sample-switcher button")).toHaveCount(5, { timeout: 30_000 });
+  await expect(page.getByTestId("sample-1")).toContainText("ai_019_004_cam_00_frame.0000");
+  await expect(page.getByTestId("viewer-spconv")).toContainText("现有 spconv SSR · K=3");
+  await expect(page.getByTestId("viewer-official-flex")).toContainText("official_flex SSR · K=3");
+
+  const panels = ["viewer-ground-truth", "viewer-spconv", "viewer-official-flex"];
+  await expect(page.locator("canvas")).toHaveCount(3);
+  for (const panel of panels) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
+    await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
+  }
+  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  await mkdir(screenshotDirectory, { recursive: true });
+  await page.screenshot({ path: path.join(screenshotDirectory, "exp6-4-three-pane-desktop.png"), fullPage: true });
+  await page.getByTestId("spconv-k").getByRole("button", { name: "K=1" }).click();
+  await page.getByTestId("official-flex-k").getByRole("button", { name: "K=5" }).click();
+  await expect(page.getByTestId("viewer-spconv")).toContainText("现有 spconv SSR · K=1");
+  await expect(page.getByTestId("viewer-official-flex")).toContainText("official_flex SSR · K=5");
+  await page.getByTestId("sample-split").getByRole("button", { name: "VAL" }).click();
+  await expect(page.getByTestId("sample-6")).toContainText("ai_052_001_cam_01_frame.0081");
+  await page.getByTestId("sample-split").getByRole("button", { name: "TEST" }).click();
+  await expect(page.getByTestId("sample-11")).toContainText("ai_024_005_cam_00_frame.0021");
+  await expect(page.locator(".canvas-error")).toHaveCount(0);
+});
+
 test("lists and selects the Waymo side-camera previews", async ({ page }) => {
   await page.goto("/data/waymo_gallery_exp5_val202_side_20260903_r2/index.html");
   await expect(page.getByRole("heading", { name: "Waymo Val202 · SIDE 选图" })).toBeVisible();

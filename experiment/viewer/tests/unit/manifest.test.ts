@@ -113,6 +113,11 @@ describe("Exp1 viewer manifest", () => {
     expect(() => validateManifest(value)).not.toThrow();
     const metrics = (value.samples[0].stages.initial.k0 as PointCloudAsset).displayMetrics!;
     if (metrics.protocol !== "moge3") throw new Error("expected MoGe-3 metrics");
+    metrics.invalidPredictionRate = 0.02;
+    expect(() => validateManifest(value)).not.toThrow();
+    metrics.invalidPredictionRate = 1.1;
+    expect(() => validateManifest(value)).toThrow(/无效预测比例/);
+    metrics.invalidPredictionRate = 0;
     metrics.affineDepthRel = Number.NaN;
     expect(() => validateManifest(value)).toThrow(/MoGe-3/);
   });

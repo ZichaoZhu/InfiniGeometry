@@ -41,6 +41,7 @@ export type Moge3DisplayMetrics = {
   metricPointRel?: number;
   delta101?: number;
   boundaryF1?: number;
+  invalidPredictionRate?: number;
 };
 
 export type DisplayMetrics = InfiniDepthDisplayMetrics | Moge3DisplayMetrics;
@@ -185,9 +186,12 @@ function validateMetrics(metrics: PointCloudMetrics, sampleId: string): void {
 function validateDisplayMetrics(metrics: DisplayMetrics, sampleId: string): void {
   if (metrics.protocol === "moge3") {
     const required = [metrics.affineDepthRel, metrics.affinePointRel];
-    const optional = [metrics.metricDepthRel, metrics.metricPointRel, metrics.delta101, metrics.boundaryF1];
+    const optional = [metrics.metricDepthRel, metrics.metricPointRel, metrics.delta101, metrics.boundaryF1, metrics.invalidPredictionRate];
     if (!metrics.dataset || !metrics.scopeLabel || required.some((value) => !Number.isFinite(value)) || optional.some((value) => value !== undefined && !Number.isFinite(value))) {
       throw new Error(`${sampleId} 的 MoGe-3 展示指标无效`);
+    }
+    if (metrics.invalidPredictionRate !== undefined && (metrics.invalidPredictionRate < 0 || metrics.invalidPredictionRate > 1)) {
+      throw new Error(`${sampleId} 的无效预测比例越界`);
     }
     return;
   }

@@ -126,6 +126,21 @@
         "exp3_joint": "Exp3 Joint"
       },
       "summary": "在相同 Exp3 Hypersim Val/Test 图片上，对照 GT、MoGe-3、Exp3 Stage1 和 Exp3 Joint 四路点云。"
+    },
+    {
+      "id": "exp6_4_official_ssr_disparity_adapter",
+      "label": "Exp6-4 官方 SSR 对照",
+      "manifestUrl": "/data/exp6_4_official_ssr_comparison/manifest.json",
+      "shortLabel": "Exp6-4 SSR",
+      "stageDetails": {
+        "joint_best": "移植官方 Sparse3DUNet 主体、冻结同一 InfiniDepth Base 的 step 20,000 输出",
+        "stage1_best": "现有 spconv SSR、冻结同一 InfiniDepth Base 的 step 20,000 输出"
+      },
+      "stageLabels": {
+        "joint_best": "official_flex SSR",
+        "stage1_best": "现有 spconv SSR"
+      },
+      "summary": "同一冻结 InfiniDepth Base 上，对照现有 spconv SSR 与移植的 official_flex SSR。"
     }
   ],
   "version": 1

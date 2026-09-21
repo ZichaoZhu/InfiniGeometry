@@ -9,6 +9,13 @@ tmp*
 temp*
 
 # Byte-compiled / optimized / DLL files
+# Exp6-4 external artifacts remain on disk; see the experiment ARCHIVE.md.
+/test-results/
+/experiment/exp6_4_official_ssr_disparity_adapter/analysis_*/**/selected_arrays/
+/experiment/exp6_4_official_ssr_disparity_adapter/analysis_*/figures/ai_*.png
+/experiment/exp6_4_official_ssr_disparity_adapter/analysis_*/figures/curves.png
+/experiment/exp6_4_official_ssr_disparity_adapter/analysis_*/**/flex_gemm_autotune_cache.json
+
 __pycache__/
 *.py[cod]
 *$py.class

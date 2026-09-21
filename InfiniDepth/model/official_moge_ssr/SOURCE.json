@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/microsoft/MoGe.git",
+  "commit": "74fbce054ebed49800de42d0ad0e83495065719a",
+  "flex_gemm_commit": "b2fadb29d41846c7981ade6801ffc689fae119cf",
+  "changes": "sparse_unet.py: relative utils import only; no network arithmetic changes",
+  "upstream_sha256": {
+    "moge/model/modules/sparse_unet.py": "556d52d3f3a4e64063fde540713bc36b8fec042bce8a178bd1a57d845c74aa83",
+    "moge/model/modules/flex_sparse_blocks.py": "55f284ee207ad57f39c6d16a3d37dc7242da3332107fa4e69c64ef6bb2dc554e",
+    "moge/model/utils.py": "efa9338c20543d3b0a736c5d42b846bdcaf3bc5912ffbc594fda71431daf22dd"
+  }
+}

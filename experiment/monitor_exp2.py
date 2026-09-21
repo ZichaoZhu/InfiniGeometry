@@ -62,7 +62,7 @@ def process_is_alive(pid: int) -> bool:
     return True
 
 
-def process_identity_error(pid: int, experiment: Path) -> Optional[str]:
+def process_identity_error(pid: int, experiment: Path, *, config_path=None, run_path=None) -> Optional[str]:
     proc = Path("/proc") / str(pid)
     try:
         command = (proc / "cmdline").read_bytes().replace(b"\0", b" ").decode(
@@ -74,8 +74,8 @@ def process_identity_error(pid: int, experiment: Path) -> Optional[str]:
     project_root = experiment.parent.parent
     required = (
         "training.disparity_refiner.train",
-        str(experiment / "config.json"),
-        str(experiment / "runs" / "main"),
+        str(config_path or experiment / "config.json"),
+        str(run_path or experiment / "runs" / "main"),
     )
     if cwd != project_root:
         return f"训练进程工作目录不匹配: {cwd}"
@@ -126,21 +126,24 @@ def check_once(
     stale_seconds: int,
     *,
     now: Optional[float] = None,
+    config_path: Optional[Path] = None,
+    run_path: Optional[Path] = None,
 ) -> Mapping[str, object]:
     checked_at = time.time() if now is None else now
-    run = experiment / "runs" / "main"
+    run = run_path or experiment / "runs" / "main"
     monitor = run / "monitor"
     history_path = run / "metrics" / "history.jsonl"
     report_path = run / "metrics" / "report.json"
     previous_path = monitor / "status.json"
     previous = load_json(previous_path) if previous_path.is_file() else {}
-    config = load_json(experiment / "config.json")
+    config = load_json(config_path or experiment / "config.json")
     records = read_history(history_path)
     latest = records[-1] if records else None
     report = load_json(report_path) if report_path.is_file() else {}
     report_status = str(report.get("status", "running"))
     alive = process_is_alive(training_pid)
-    identity_error = process_identity_error(training_pid, experiment) if alive else None
+    identity_options = dict(config_path=config_path, run_path=run_path) if config_path or run_path else {}
+    identity_error = process_identity_error(training_pid, experiment, **identity_options) if alive else None
     alerts: list[tuple[str, str]] = []
 
     if report_status == "failed":
@@ -179,7 +182,7 @@ def check_once(
         alerts.append(("ssr_no_gain_two_full_evals", "连续两次完整评估中 K3 均未优于 K0"))
 
     stages = config["training"]["stages"]
-    total_max = sum(int(stages[name]["max_steps"]) for name in ("stage1", "joint"))
+    total_max = sum(int(stage["max_steps"]) for stage in stages.values())
     stage = str(latest["stage"]) if latest else "stage1"
     stage_step = int(latest["stage_step"]) if latest else 0
     total_step = int(latest["total_step"]) if latest else 0

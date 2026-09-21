@@ -319,6 +319,10 @@ def load_refiner_checkpoint(
     checkpoint = torch.load(path, map_location=next(model.parameters()).device, weights_only=False)
     if checkpoint.get("format") != "infinidepth-disparity-refiner-v1":
         raise ValueError(f"Unsupported checkpoint: {path}")
+    saved_config = checkpoint.get("refiner_config")
+    if saved_config is not None and saved_config != getattr(model, "disparity_refiner_config", None):
+        model.attach_disparity_refiner(**saved_config)
+        model.eval()
     model.load_state_dict(checkpoint["model"], strict=True)
     return sha256(path)
 
@@ -523,7 +527,7 @@ def main() -> None:
     )
     model = InfiniDepth(model_path=str(checkpoint_path)).to(device)
     model.attach_disparity_refiner(
-        backend="spconv",
+        backend=str(config["model"].get("refiner_backend", "spconv")),
         voxel_resolution=float(config["model"]["voxel_resolution"]),
         max_disparity_span=config["model"].get("max_disparity_span"),
     )

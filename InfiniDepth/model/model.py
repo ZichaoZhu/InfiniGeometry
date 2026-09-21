@@ -243,6 +243,10 @@ class _BaseInfiniDepthModel(nn.Module):
             backend=backend,
             max_disparity_span=max_disparity_span,
         ).to(next(self.parameters()).device)
+        self.disparity_refiner_config = dict(
+            backend=backend, voxel_resolution=voxel_resolution,
+            max_disparity_span=max_disparity_span,
+        )
         return self.disparity_refiner
 
     def forward_dense_refined(
@@ -271,13 +275,14 @@ class _BaseInfiniDepthModel(nn.Module):
             prompt_depth=prompt_disparity,
             prompt_mask=prompt_mask,
         )
-        if prompt_disparity is not None or prompt_mask is not None:
-            state = self._prepare_inference(state)
-            encoding = self._encode_image_with_state(image, state)
-        else:
-            encoding = self.encode_image(image)
-        query = _make_dense_query_coord(image.shape[0], height, width, image.device)
-        decoded = self.decode_disparity(encoding, query, chunk_size=chunk_size)
+        with torch.set_grad_enabled(torch.is_grad_enabled() and not getattr(self, "refiner_only", False)):
+            if prompt_disparity is not None or prompt_mask is not None:
+                state = self._prepare_inference(state)
+                encoding = self._encode_image_with_state(image, state)
+            else:
+                encoding = self.encode_image(image)
+            query = _make_dense_query_coord(image.shape[0], height, width, image.device)
+            decoded = self.decode_disparity(encoding, query, chunk_size=chunk_size)
         base_disparity = decoded[..., 0].reshape(image.shape[0], height, width).float()
         disparity_sequence = [base_disparity]
         raw_residuals: List[torch.Tensor] = []

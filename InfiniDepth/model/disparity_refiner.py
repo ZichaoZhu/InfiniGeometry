@@ -397,6 +397,9 @@ class DisparitySparseRefiner(nn.Module):
                 visual_channels=visual_channels,
                 blocks_per_level=blocks_per_level,
             )
+        elif self.backend == "official_flex":
+            from .official_disparity_adapter import OfficialDisparityUNet
+            self.unet = OfficialDisparityUNet(visual_dim=visual_dim, channels=channels)
         elif self.backend == "reference":
             self.unet = DenseReferenceDisparityRefiner(visual_dim=visual_dim)
         else:

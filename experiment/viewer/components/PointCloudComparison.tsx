@@ -39,6 +39,7 @@ const EXP3_ID = "exp3_infinidepth_disparity_ssr_hypersim_full";
 const EXP4_ID = "exp4_infinidepth_lidar_refiner_hypersim_full";
 const EXP6_ID = "exp6_1_moge3_official_reproduction";
 const EXP6_3_ID = "exp6_3_moge3_vs_infinidepth_exp3";
+const EXP6_4_ID = "exp6_4_official_ssr_disparity_adapter";
 
 const FALLBACK_STAGE_LABELS: Record<string, string> = {
   initial: "官方初始",
@@ -107,7 +108,7 @@ function AssetMetrics({ asset, scope }: { asset: PointCloudAsset; scope: MetricS
     if (metrics.protocol === "moge3") {
       return (
         <>
-          <div className="metrics-caption">{metrics.dataset} · {metrics.scopeLabel} · 官方单图评测</div>
+          <div className="metrics-caption">{metrics.dataset} · {metrics.scopeLabel} · MoGe-3 指标定义</div>
           <dl className="metrics-grid display-metrics-grid">
             <div><dt>Affine Depth Rel</dt><dd>{percent(metrics.affineDepthRel, 3)}</dd></div>
             <div><dt>Affine Point Rel</dt><dd>{percent(metrics.affinePointRel, 3)}</dd></div>
@@ -115,6 +116,7 @@ function AssetMetrics({ asset, scope }: { asset: PointCloudAsset; scope: MetricS
             {metrics.metricPointRel !== undefined && <div><dt>Metric Point Rel</dt><dd>{percent(metrics.metricPointRel, 3)}</dd></div>}
             {metrics.delta101 !== undefined && <div><dt>δ1.01</dt><dd>{percent(metrics.delta101)}</dd></div>}
             {metrics.boundaryF1 !== undefined && <div><dt>Boundary F1</dt><dd>{percent(metrics.boundaryF1, 2)}</dd></div>}
+            {metrics.invalidPredictionRate !== undefined && <div><dt>无效预测比例</dt><dd>{percent(metrics.invalidPredictionRate, 3)}</dd></div>}
           </dl>
         </>
       );
@@ -430,7 +432,7 @@ export function PointCloudComparison() {
         setScope(hasStructureCrop(loaded, selected) ? "crop" : "full");
         setCameraSnapshot(null);
         setGroundFit((value) => value + 1);
-        setLeft((pane) => ({ ...pane, stage: defaultStage(loaded, selected, "left"), step: defaultStep(loaded, 0), fitNonce: pane.fitNonce + 1 }));
+        setLeft((pane) => ({ ...pane, stage: defaultStage(loaded, selected, "left"), step: defaultStep(loaded, loaded.experiment === EXP6_4_ID ? 3 : 0), fitNonce: pane.fitNonce + 1 }));
         setRight((pane) => ({ ...pane, stage: defaultStage(loaded, selected, "right"), step: defaultStep(loaded, 3), fitNonce: pane.fitNonce + 1 }));
         if (loaded.experiment === EXP6_3_ID) {
           setExp6Moge3((pane) => ({ ...pane, stage: "moge3", step: defaultStep(loaded, 3), fitNonce: pane.fitNonce + 1 }));
@@ -486,6 +488,7 @@ export function PointCloudComparison() {
   const isExp4 = experiment.id === EXP4_ID;
   const isExp6 = experiment.id === EXP6_ID;
   const isExp6_3 = experiment.id === EXP6_3_ID;
+  const isExp6_4 = experiment.id === EXP6_4_ID;
   const comparisonManifest = comparisonSource === "rgb" ? rgbManifest : manifest;
   const comparisonExperiment = comparisonSource === "rgb" ? rgbExperiment : experiment;
   const comparisonSample = comparisonManifest && orderedSamples(comparisonManifest).find((item) => item.id === sample.id);
@@ -506,7 +509,7 @@ export function PointCloudComparison() {
   return (
     <main className="app-shell">
       <header className="hero">
-        <div><span className="eyebrow">{isExp6 ? "MOGE-3 / OFFICIAL CHECKPOINT REPRODUCTION" : isExp6_3 ? "MOGE-3 × INFINIDEPTH / EXP6-3" : "INFINIDEPTH / INTERACTIVE GEOMETRY LAB"}</span><h1>{isExp6 ? <>MoGe-3<br />官方权重点云对比</> : isExp6_3 ? <>Exp6-3<br />四路点云对照</> : <>Disparity Refiner<br />多实验点云对比器</>}</h1><p>{isExp6 ? "在十个官方评测数据集的固定样本上，对照 GT 与 K 次稀疏三维精修输出。" : isExp6_3 ? "在 Exp3 固定 Val/Test 样本上，对照 GT、MoGe-3 和两个 InfiniDepth Exp3 checkpoint。" : "在统一相机与渲染设置下，对照参考点云、训练阶段和 K 次精修输出；具体数据与指标口径以当前实验说明为准。"}</p></div>
+        <div><span className="eyebrow">{isExp6 ? "MOGE-3 / OFFICIAL CHECKPOINT REPRODUCTION" : isExp6_3 ? "MOGE-3 × INFINIDEPTH / EXP6-3" : isExp6_4 ? "INFINIDEPTH / EXP6-4 OFFICIAL SSR" : "INFINIDEPTH / INTERACTIVE GEOMETRY LAB"}</span><h1>{isExp6 ? <>MoGe-3<br />官方权重点云对比</> : isExp6_3 ? <>Exp6-3<br />四路点云对照</> : isExp6_4 ? <>Exp6-4<br />三路点云对照</> : <>Disparity Refiner<br />多实验点云对比器</>}</h1><p>{isExp6 ? "在十个官方评测数据集的固定样本上，对照 GT 与 K 次稀疏三维精修输出。" : isExp6_3 ? "在 Exp3 固定 Val/Test 样本上，对照 GT、MoGe-3 和两个 InfiniDepth Exp3 checkpoint。" : isExp6_4 ? "在同一冻结 InfiniDepth Base 上，对照 GT、现有 spconv SSR 和移植的 official_flex SSR。" : "在统一相机与渲染设置下，对照参考点云、训练阶段和 K 次精修输出；具体数据与指标口径以当前实验说明为准。"}</p></div>
         <div className="hero-badge"><span>{experiment.shortLabel ?? experiment.label} · 当前样本</span><strong>{sample.label ?? `样本 ${(samples.indexOf(sample) + 1).toString().padStart(2, "0")}`}</strong><small>{sample.description}</small></div>
       </header>
 
@@ -520,7 +523,10 @@ export function PointCloudComparison() {
 
       <div className="comparison-grid">
         <ScenePanel id="ground-truth" kicker="窗口 A · 真实点云" title={manifest.groundTruthTitle ?? "Hypersim Ground Truth"} detail={manifest.groundTruthDetail ?? "由真实深度与相机内参反投影，不经过 Base 或 Refiner"} asset={sample.groundTruth} sample={sample} manifest={manifest} fitNonce={groundFit} onFit={() => setGroundFit((value) => value + 1)} interaction={groundInteraction} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} controls={<Segment label="鼠标左键" value={groundInteraction} values={["rotate", "pan"] as const} format={(value) => value === "rotate" ? "旋转" : "平移"} onChange={setGroundInteraction} testId="ground-truth-interaction" />} />
-        {isExp6_3 ? <>
+        {isExp6_4 ? <>
+          <FixedPredictionPanel id="spconv" windowLabel="B" stage="stage1_best" pane={left} setPane={setLeft} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
+          <FixedPredictionPanel id="official-flex" windowLabel="C" stage="joint_best" pane={right} setPane={setRight} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
+        </> : isExp6_3 ? <>
           <FixedPredictionPanel id="moge3" windowLabel="B" stage="moge3" pane={exp6Moge3} setPane={setExp6Moge3} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
           <FixedPredictionPanel id="exp3-stage1" windowLabel="C" stage="exp3_stage1" pane={exp6Stage1} setPane={setExp6Stage1} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
           <FixedPredictionPanel id="exp3-joint" windowLabel="D" stage="exp3_joint" pane={exp6Joint} setPane={setExp6Joint} sample={sample} manifest={manifest} experiment={experiment} syncEnabled={syncEnabled} cameraSnapshot={cameraSnapshot} onCameraChange={setCameraSnapshot} scope={scope} />
