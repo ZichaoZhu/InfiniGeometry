@@ -1,0 +1,62 @@
+{
+  "date": "2026-09-14",
+  "status": "completed",
+  "experiment": "exp6_4_official_ssr_disparity_adapter",
+  "analysis_revision": "analysis_20260914_r3",
+  "scope": "Paired analysis and eval/no_grad inference only; no training, checkpoint mutation, production export, or test-based method selection.",
+  "remote_host": "ZJU3DV-S115",
+  "remote_project_root": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/source_v8",
+  "remote_experiment_relative": "experiment/exp6_4_official_ssr_disparity_adapter",
+  "remote_python": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/venv/bin/python",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "3",
+    "OMP_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "FLEX_GEMM_AUTOTUNE_MODE": "always",
+    "FLEX_GEMM_AUTOTUNE_CACHE_PATH": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/source_v8/experiment/exp6_4_official_ssr_disparity_adapter/analysis_20260914_r3/flex_gemm_autotune_cache.json"
+  },
+  "original_inputs_per_arm": [
+    "runs/{arm}/evaluation/last/per_image.jsonl",
+    "runs/{arm}/evaluation/last/provenance.json",
+    "runs/{arm}/evaluation/last/summary.json",
+    "runs/{arm}/metrics/history.jsonl"
+  ],
+  "checkpoint_relative": "runs/{arm}/checkpoints/last.pt",
+  "checkpoint_step": 20000,
+  "arms_execution_order": ["spconv", "official_flex"],
+  "samples_per_arm": 100,
+  "local_nonempty_images": 99,
+  "selection_frozen_before_inference": true,
+  "selected_images": 12,
+  "figures": 15,
+  "inference_argv_template": [
+    "{remote_python}",
+    "experiment/exp6_4_official_ssr_disparity_adapter/analysis_20260914_r3/analyze_results.py",
+    "infer",
+    "--project-root", ".",
+    "--experiment", "experiment/exp6_4_official_ssr_disparity_adapter",
+    "--output", "experiment/exp6_4_official_ssr_disparity_adapter/analysis_20260914_r3",
+    "--arm", "{arm}"
+  ],
+  "smoke": "Same command with --limit 2; existing completed sample rows skipped in full continuation after provenance match.",
+  "code_snapshots": {
+    "inference": "analyze_results.py",
+    "rendering": "render_analysis.py",
+    "final_summary_and_audit": "audit_analysis.py",
+    "repeated_forward_probe": "inputs/probe_reproducibility.py"
+  },
+  "alpha": 1.0,
+  "alpha_half_intervention": "skipped: amplitude dominance not supported by the diagnostic evidence",
+  "preserved_earlier_remote_revisions": ["analysis_20260914_r1", "analysis_20260914_r2"],
+  "numeric_tolerances": {"k0_native_mae": 0.000001, "refined_native_mae": 0.0001},
+  "formal_metrics_policy": "All main comparisons retain the original terminal evaluation numbers. New pixel statistics and maps are diagnostic only.",
+  "runtime_policy": "Per-image elapsed_seconds includes forward, device transfers and pixel statistics, excluding model/data loading and selected-array serialization; allocator peak is not whole-device or other-user memory.",
+  "dependencies": "No new dependencies: standard library for summary/audit; existing server NumPy, PyTorch and Matplotlib for inference/plots.",
+  "deliberate_limits": [
+    "No second seed, extended training, Joint stage, or representation change.",
+    "No custom boundary-band metric; existing formal Boundary F1 retained.",
+    "Only selected 12 samples retain dense diagnostic arrays per arm.",
+    "Proposed iteration-supervision change is a future hypothesis, not implemented or trained."
+  ]
+}

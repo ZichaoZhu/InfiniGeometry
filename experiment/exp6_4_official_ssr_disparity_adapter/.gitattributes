@@ -1,0 +1,2 @@
+# Preserve archived CSV bytes and their provenance hashes.
+analysis_*/per_*.csv -text whitespace=cr-at-eol

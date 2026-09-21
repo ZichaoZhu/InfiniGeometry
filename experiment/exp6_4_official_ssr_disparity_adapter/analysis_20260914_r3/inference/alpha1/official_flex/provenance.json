@@ -1,0 +1,24 @@
+{
+  "checkpoint_sha256": "2fb15400935ec70aec30bc6c10939d1565362537157b0fb3b451906c145d2ed3",
+  "config_sha256": "1225a632ba73b3f5c1e344c9a4c8d0b6cbe7fc45bd03c197b85e38171e589e8b",
+  "code_sha256": "3e8180ccde20470c4ca363288f83204956ac3074a915f5de461660f9df3c28fd",
+  "alpha": 1.0,
+  "arm": "official_flex",
+  "mask_sha256": "41da5ed4a431afe13fdb66d84f78191e86b684fbd83c9ccea82c2e9f4de11449",
+  "protocol_sha256": "1940967e0d1896f71be61eb4da3877f46d07dd695f3642e3980670f55b74c2cc",
+  "selection_sha256": "6f4c4478c62222306c216a29d2920aa7e4d08aee891f57ed451e2b6aabdb9c1b",
+  "model_sources": {
+    "InfiniDepth/model/model.py": "af2b4c731e2f2c2cd29d16fe870504839f554975d1416a22cbf0cafba376bc4f",
+    "InfiniDepth/model/disparity_refiner.py": "a39d83d976619d0a5030b9d9e6101d427ff1ae7b7307e4bd4a07b15c69ac4856",
+    "InfiniDepth/model/official_disparity_adapter.py": "2a6c73d9d92359db1b0588085e757def68f6f8dc673533852508eb44e18270b8"
+  },
+  "frozen_base_sha256": "273cdc3ebc097cd92766a9af59e4aea3a9c34fd71a3eaf830d7c01a14ebfb678",
+  "stage_step": 20000,
+  "mae_recheck_tolerance": {
+    "k0": 1e-06,
+    "refined": 0.0001
+  },
+  "initial_flex_cache_sha256": "477aaeabacfdbac329a2ce71ac3d8f91c12906cca5fb9f26308eac57a0bd9e22",
+  "cuda_visible_devices": "3",
+  "torch": "2.8.0+cu128"
+}

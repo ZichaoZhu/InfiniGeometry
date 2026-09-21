@@ -1,0 +1,41 @@
+{
+  "experiment": "exp6_4_official_ssr_disparity_adapter",
+  "status_at_record": "smoke_spconv_running",
+  "host_alias": "ZJU3DV-S115",
+  "hostname": "ZJU3DV-4090",
+  "owner": "zhuzichao",
+  "automation_pid": 786484,
+  "physical_gpu": 3,
+  "deployment_root": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911",
+  "source_root": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/source_v8",
+  "source_archive_sha256": "7e43d86b5dd0f292cdf5ce247d0130f72a0bf5cf50cebd861e3a6686bb9c696d",
+  "verification": {
+    "cpu": "82 passed, 10 deselected",
+    "cuda": "10 passed, 82 deselected",
+    "checkpoint_pause_resume": "passed at spconv smoke step 5",
+    "optimizer_steps_observed_after_resume": true,
+    "non_finite_values_observed": false,
+    "provenance_non_git_snapshot": "Git fields recorded as unavailable"
+  },
+  "automation": {
+    "poll_seconds": 300,
+    "fixed_gpu_index": 3,
+    "allow_shared_gpu": true,
+    "minimum_free_memory_mib_at_launch": 22528,
+    "maximum_utilization_percent_at_launch": 10,
+    "external_compute_pids_are_never_signalled": true,
+    "smoke_steps_per_arm": 56,
+    "formal_steps_per_arm": 20000,
+    "arm_order": [
+      "spconv",
+      "official_flex"
+    ]
+  },
+  "notes": [
+    "GPU 3 already contained three external compute processes; they were not stopped, signalled, or modified.",
+    "The controller uses only the Exp6-4 source_v8 and run directories.",
+    "source_v7 is preserved as the failed non-Git provenance snapshot; no result was overwritten.",
+    "No Git commit or viewer deployment was performed."
+  ],
+  "local_git_base": "e9afd2e809edc8af2ddfae1f4043c6550db6ff92"
+}

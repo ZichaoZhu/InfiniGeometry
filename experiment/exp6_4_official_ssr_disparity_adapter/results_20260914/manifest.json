@@ -1,0 +1,13 @@
+{
+  "experiment": "exp6_4_official_ssr_disparity_adapter",
+  "source_host": "ZJU3DV-S115",
+  "source_root": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/source_v8/experiment/exp6_4_official_ssr_disparity_adapter",
+  "synced_on": "2026-09-14",
+  "files": {
+    "paired_report.json": "cbb29811c93f198817c68adb2cfdae3a47a81dcf25db8b5de67b94cedbb34c94",
+    "spconv/stage1_report.json": "8d7b498b20f479594f5fda690b65277e7bf3f5b45457ee9972ae520f3dc28e50",
+    "spconv/geometry_summary.json": "21462102dd93a9d4b373fa7090c3adbb9b68b9bc30ed7cb0da6aaa9f6684556f",
+    "official_flex/stage1_report.json": "d234e92086210019b29a5f67b51bc1e2baa4bd9b94a28d36b73c18c48628bf2a",
+    "official_flex/geometry_summary.json": "fbd6e3db11b3ea00b339839361b5d8e8dfcdb2e603883da00ef3dfedf0036ce1"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "experiment": "exp6_4_official_ssr_disparity_adapter",
+  "status_at_handoff": "waiting_for_idle_gpu",
+  "host_alias": "ZJU3DV-S115",
+  "hostname": "ZJU3DV-4090",
+  "owner": "zhuzichao",
+  "automation_pid": 4188108,
+  "deployment_root": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911",
+  "source_root": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/source_v3",
+  "source_archive_sha256": "b138749d1438644165ed383ff46e826845a690241c1a6524ca1a37d6b59f841f",
+  "environment": {
+    "python": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/venv/bin/python",
+    "isolation": "venv with read-only system site packages; FlexGEMM installed only in new venv",
+    "torch": "2.8.0+cu128",
+    "spconv": "2.3.8",
+    "triton": "3.4.0",
+    "flex_gemm": "1.0.0",
+    "flex_gemm_source_commit": "b2fadb29d41846c7981ade6801ffc689fae119cf"
+  },
+  "verification": {
+    "cpu_passed": 79,
+    "cuda_deselected_pending_idle_gpu": 10,
+    "cpu_elapsed_seconds": 4.75,
+    "python_compileall": "passed with PYTHONPYCACHEPREFIX under /private/tmp",
+    "bash_syntax": "passed",
+    "git_diff_check": "passed",
+    "archive_hash_matches_server": true,
+    "automation_identity_user_command_cwd": "verified",
+    "cuda_smoke": "not_started",
+    "formal_training": "not_started"
+  },
+  "automation": {
+    "poll_seconds": 300,
+    "required_idle_checks": 3,
+    "exclusive_single_gpu": true,
+    "minimum_free_memory_mib": 22528,
+    "maximum_utilization_percent": 10,
+    "smoke_steps_per_arm": 56,
+    "smoke_pause_and_resume_step": 5,
+    "formal_steps_per_arm": 20000,
+    "arm_order": ["spconv", "official_flex"],
+    "model_polling_or_token_usage": false
+  },
+  "status_relative_path": "experiment/exp6_4_official_ssr_disparity_adapter/automation/status.json",
+  "alert_relative_path": "experiment/exp6_4_official_ssr_disparity_adapter/automation/alert.json",
+  "notes": [
+    "All four GPUs had compute processes at handoff; no GPU training was started.",
+    "Previous source_v1/source_v2 are implementation/test snapshots, not experiment results.",
+    "No historical checkpoints or other users' processes/files were deleted or overwritten.",
+    "No Git commits or viewer deployment were performed."
+  ]
+}

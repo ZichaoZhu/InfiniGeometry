@@ -1,0 +1,57 @@
+{
+  "candidate_improvement": true,
+  "claim_boundary": "Single-seed exploratory comparison; consult paired CI and common K0. No automatic default replacement.",
+  "format": "exp6-4-paired-analysis-v1",
+  "metrics": {
+    "affine_depth_rel": {
+      "mean_b_minus_a": -0.002697671353816986,
+      "scene_bootstrap_ci95": [
+        -0.0045077601240565545,
+        -0.0011165627158012522
+      ],
+      "valid_images": 100
+    },
+    "affine_point_rel": {
+      "mean_b_minus_a": -0.003403434157371521,
+      "scene_bootstrap_ci95": [
+        -0.005538230389541399,
+        -0.0015168113899954529
+      ],
+      "valid_images": 100
+    },
+    "local_depth_rel": {
+      "mean_b_minus_a": -0.0004664061666884204,
+      "scene_bootstrap_ci95": [
+        -0.0014310744985096522,
+        0.0006279129623516822
+      ],
+      "valid_images": 99
+    },
+    "local_point_delta_0.01": {
+      "mean_b_minus_a": 0.013928910049444587,
+      "scene_bootstrap_ci95": [
+        0.003888182155329286,
+        0.02396636382436799
+      ],
+      "valid_images": 99
+    },
+    "local_point_rel": {
+      "mean_b_minus_a": -0.0007481673833924297,
+      "scene_bootstrap_ci95": [
+        -0.0012360893411075082,
+        -0.00036413976205217573
+      ],
+      "valid_images": 99
+    },
+    "native_disparity_mae": {
+      "mean_b_minus_a": -0.00366950698196888,
+      "scene_bootstrap_ci95": [
+        -0.007788757144988171,
+        -0.00011849919589417083
+      ],
+      "valid_images": 100
+    }
+  },
+  "sample_count": 100,
+  "sampling_sequence_verified": true
+}

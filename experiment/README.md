@@ -11,6 +11,11 @@
 
 状态只允许 `planned`、`running`、`completed`、`failed`。Exp2 已在 Exp1 的五个独立运行全部结束且通过登记门槛后完成；结果仅表示固定百图训练域的拟合能力，不作泛化性声明。
 
+## Exp6-4 代码交接
+
+- [冻结 Base 的官方 SSR 网络主体 disparity 适配对照](exp6_4_official_ssr_disparity_adapter/README.md)：训练与分析已完成；不是完整官方 MoGe3 方法复现。
+- [源码、方法边界与后续工程待办](../docs/exp6_4_disparity_adapter_handoff.md)：本轮整理主线，明确历史限幅、单卡限制及官方机制尚未移植的部分。
+
 ## 资产规则
 
 - Git 只保存代码、中文文档、配置、紧凑 JSON/JSONL 指标、manifest 和最终两张汇总图。

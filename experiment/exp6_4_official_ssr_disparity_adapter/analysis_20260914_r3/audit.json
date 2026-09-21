@@ -1,0 +1,207 @@
+{
+  "status": "passed",
+  "paired_samples": 100,
+  "local_nonempty": 99,
+  "audit_code_sha256": "41dd09916c364c96ac1b8cb573c3474f7108121c47caea400ce894b048e12f7d",
+  "frozen_base_sha256": "273cdc3ebc097cd92766a9af59e4aea3a9c34fd71a3eaf830d7c01a14ebfb678",
+  "checks": [
+    "IDs and completion",
+    "inference code and selection hashes",
+    "checkpoint and config provenance",
+    "per-image and aggregate contribution sums",
+    "region pixel fractions",
+    "common frozen Base",
+    "finite logged training and inference statistics",
+    "bounded inference residuals"
+  ],
+  "details": {
+    "spconv": {
+      "groups": {
+        "improved": {
+          "images": 80,
+          "k1_wrong_direction": 0.3113797841384928,
+          "k3_wrong_direction": 0.40654857280152595,
+          "k3_harmful_crossing": 0.02655758092607631,
+          "disparity_span_mean": 0.5180936711374671
+        },
+        "degraded": {
+          "images": 20,
+          "k1_wrong_direction": 0.47152804720547326,
+          "k3_wrong_direction": 0.5355665122066007,
+          "k3_harmful_crossing": 0.012165357063633591,
+          "disparity_span_mean": 0.6576240846421569
+        }
+      },
+      "local_contribution_fraction": 0.09785772767480054,
+      "residual_monitor": {
+        "validation": {
+          "1": {
+            "raw_min": -0.14887359738349915,
+            "raw_max": 0.07874803990125656,
+            "bounded_max_abs": 0.09030919522047043,
+            "voxel_span_min": 201.0,
+            "voxel_span_max": 1097.0
+          },
+          "2": {
+            "raw_min": -0.1402277648448944,
+            "raw_max": 0.07426507025957108,
+            "bounded_max_abs": 0.0885842964053154,
+            "voxel_span_min": 199.0,
+            "voxel_span_max": 1090.0
+          },
+          "3": {
+            "raw_min": -0.15682490170001984,
+            "raw_max": 0.06761833280324936,
+            "bounded_max_abs": 0.09167467802762985,
+            "voxel_span_min": 188.0,
+            "voxel_span_max": 1088.0
+          },
+          "4": {
+            "raw_min": -0.1656215339899063,
+            "raw_max": 0.0945814922451973,
+            "bounded_max_abs": 0.09297056496143341,
+            "voxel_span_min": 177.0,
+            "voxel_span_max": 1083.0
+          },
+          "5": {
+            "raw_min": -0.14324982464313507,
+            "raw_max": 0.06929069012403488,
+            "bounded_max_abs": 0.08921774476766586,
+            "voxel_span_min": 173.0,
+            "voxel_span_max": 1078.0
+          }
+        },
+        "training_logged_samples": {
+          "1": {
+            "raw_min": -2.2542917728424072,
+            "raw_max": 0.3046547770500183,
+            "bounded_max_abs": 0.10000000149011612,
+            "voxel_span_min": 251.0,
+            "voxel_span_max": 1017.0
+          },
+          "2": {
+            "raw_min": -1.571366310119629,
+            "raw_max": 0.2641660273075104,
+            "bounded_max_abs": 0.10000000149011612,
+            "voxel_span_min": 235.0,
+            "voxel_span_max": 1021.0
+          },
+          "3": {
+            "raw_min": -0.5467071533203125,
+            "raw_max": 0.23886944353580475,
+            "bounded_max_abs": 0.09999643266201019,
+            "voxel_span_min": 231.0,
+            "voxel_span_max": 1023.0
+          }
+        }
+      },
+      "training_logged_samples": 40,
+      "max_recheck_difference_by_k": {
+        "0": 2.483553415699724e-08,
+        "1": 2.272628307764535e-08,
+        "3": 2.1999151413112927e-06,
+        "5": 1.5293224510770642e-05
+      },
+      "pearson_exploratory": {
+        "k3_gain_vs_disparity_span": -0.195112184685132,
+        "k3_gain_vs_k3_wrong_direction": -0.8324020845651157
+      }
+    },
+    "official_flex": {
+      "groups": {
+        "improved": {
+          "images": 71,
+          "k1_wrong_direction": 0.24941456965147887,
+          "k3_wrong_direction": 0.4588010290728137,
+          "k3_harmful_crossing": 0.02998093025148946,
+          "disparity_span_mean": 0.521892888760063
+        },
+        "degraded": {
+          "images": 29,
+          "k1_wrong_direction": 0.4888389303944403,
+          "k3_wrong_direction": 0.6393844113746119,
+          "k3_harmful_crossing": 0.01460188588766825,
+          "disparity_span_mean": 0.605020009719863
+        }
+      },
+      "local_contribution_fraction": 0.07875822608443807,
+      "residual_monitor": {
+        "validation": {
+          "1": {
+            "raw_min": -0.3831789195537567,
+            "raw_max": 0.8037303686141968,
+            "bounded_max_abs": 0.09999997913837433,
+            "voxel_span_min": 201.0,
+            "voxel_span_max": 1097.0
+          },
+          "2": {
+            "raw_min": -0.3598906397819519,
+            "raw_max": 0.7924372553825378,
+            "bounded_max_abs": 0.09999997913837433,
+            "voxel_span_min": 194.0,
+            "voxel_span_max": 1082.0
+          },
+          "3": {
+            "raw_min": -0.3054274320602417,
+            "raw_max": 0.8421268463134766,
+            "bounded_max_abs": 0.09999998658895493,
+            "voxel_span_min": 192.0,
+            "voxel_span_max": 1069.0
+          },
+          "4": {
+            "raw_min": -0.22009985148906708,
+            "raw_max": 0.666542649269104,
+            "bounded_max_abs": 0.09999968111515045,
+            "voxel_span_min": 198.0,
+            "voxel_span_max": 1056.0
+          },
+          "5": {
+            "raw_min": -0.1269049495458603,
+            "raw_max": 0.46045172214508057,
+            "bounded_max_abs": 0.09997998178005219,
+            "voxel_span_min": 197.0,
+            "voxel_span_max": 1045.0
+          }
+        },
+        "training_logged_samples": {
+          "1": {
+            "raw_min": -0.6499598622322083,
+            "raw_max": 0.5940677523612976,
+            "bounded_max_abs": 0.09999954700469971,
+            "voxel_span_min": 251.0,
+            "voxel_span_max": 1017.0
+          },
+          "2": {
+            "raw_min": -0.3783647418022156,
+            "raw_max": 0.4966246783733368,
+            "bounded_max_abs": 0.09999028593301773,
+            "voxel_span_min": 243.0,
+            "voxel_span_max": 1010.0
+          },
+          "3": {
+            "raw_min": -0.28958073258399963,
+            "raw_max": 0.3785991966724396,
+            "bounded_max_abs": 0.0998971164226532,
+            "voxel_span_min": 237.0,
+            "voxel_span_max": 1004.0
+          }
+        }
+      },
+      "training_logged_samples": 40,
+      "max_recheck_difference_by_k": {
+        "0": 2.483553415699724e-08,
+        "1": 9.343214735224592e-08,
+        "3": 1.1560987731733946e-05,
+        "5": 4.102858256042896e-05
+      },
+      "pearson_exploratory": {
+        "k3_gain_vs_disparity_span": -0.17618173632437653,
+        "k3_gain_vs_k3_wrong_direction": -0.6377177194699921
+      }
+    }
+  },
+  "optional_intervention": {
+    "status": "skipped",
+    "reason": "Wrong-direction updates dominate harmful crossing; amplitude-only hypothesis lacks primary support."
+  }
+}

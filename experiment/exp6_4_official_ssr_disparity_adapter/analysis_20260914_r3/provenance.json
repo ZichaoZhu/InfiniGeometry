@@ -1,0 +1,16 @@
+{
+  "code_sha256": "41dd09916c364c96ac1b8cb573c3474f7108121c47caea400ce894b048e12f7d",
+  "config_sha256": "252800a1b0f4845d44578dcd8a3f0ddd2a6cb8a7a14bd0199a9474eba18b8aa5",
+  "source_files": {
+    "inputs/flex_gemm_autotune_cache.json": "477aaeabacfdbac329a2ce71ac3d8f91c12906cca5fb9f26308eac57a0bd9e22",
+    "inputs/official_flex/history.jsonl": "4ba10b7663b9b41917461c1ecb28ab846682269df87f49a352ff7958481109c4",
+    "inputs/official_flex/per_image.jsonl": "374d8729143b235a7f3616ecc8d879bc028153c723cbef22e671e4cdb6b9cd25",
+    "inputs/official_flex/provenance.json": "0fecc55397ed2bcda33f22dc44537ff005a78abbc27e06ced4987431a8ce4d18",
+    "inputs/official_flex/summary.json": "fbd6e3db11b3ea00b339839361b5d8e8dfcdb2e603883da00ef3dfedf0036ce1",
+    "inputs/repeated_forward_probe.json": "ba902a3772d5c40fb1089e9ec887b2947f03c63a86264467b826b80f8f883f44",
+    "inputs/spconv/history.jsonl": "3927b7af2e6db8cdb1a5e6e856dce1355031cc7ceef165b371f090d6d01f0232",
+    "inputs/spconv/per_image.jsonl": "9fdbe906893f4ebd4818e7378a07dde6f85aaf1f176fc008669974531745f376",
+    "inputs/spconv/provenance.json": "0c33e247bcae7e8c4bb4822256d1e277478adfd4ebd02a54e783248a63e9275e",
+    "inputs/spconv/summary.json": "21462102dd93a9d4b373fa7090c3adbb9b68b9bc30ed7cb0da6aaa9f6684556f"
+  }
+}

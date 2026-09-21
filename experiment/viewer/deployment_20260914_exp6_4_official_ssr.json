@@ -1,0 +1,59 @@
+{
+  "format": "infinidepth-exp6-4-official-ssr-viewer-v1",
+  "published_on": "2026-09-14",
+  "experiment": "exp6_4_official_ssr_disparity_adapter",
+  "comparison": {
+    "windows": [
+      "Hypersim Ground Truth",
+      "现有 spconv SSR",
+      "official_flex SSR"
+    ],
+    "default_k": 3,
+    "available_k": [0, 1, 3, 5]
+  },
+  "selection": {
+    "algorithm": "train-fixed-exp1-exp2-val-test-python-random-sample",
+    "seed": 173,
+    "train": 5,
+    "val": 5,
+    "test": 5,
+    "matches_exp3": true,
+    "val_test_match_exp6_3": true,
+    "test_usage": "visualization_only"
+  },
+  "assets": {
+    "tag": "exp6_4_official_ssr_comparison",
+    "samples": 15,
+    "ply_files": 150,
+    "rgb_files": 15,
+    "size_mib_approx": 424,
+    "manifest": "public/data/exp6_4_official_ssr_comparison/manifest.json",
+    "manifest_sha256": "035a60605e9b5ca0dc059c112103911764b4cc8fbe51131c77584112630de198",
+    "integrity": "All 150 referenced PLY files matched manifest byte sizes and SHA-256 values."
+  },
+  "vercel": {
+    "deployment_id": "dpl_GxL54CkRT4CQJYF2hxKQsvNCpg3P",
+    "deployment_url": "https://infinidepth-disparity-refiner-viewer-qnrqb7zxn.vercel.app",
+    "production_url": "https://infinidepth-disparity-refiner-viewe.vercel.app/",
+    "status": "ready"
+  },
+  "verification": {
+    "local": [
+      "npm run typecheck: passed",
+      "npm test -- --run: 19 passed",
+      "npm run build:next: passed",
+      "Exp6-4 Playwright: passed"
+    ],
+    "production": [
+      "Three WebGL canvases rendered non-empty point clouds",
+      "spconv and official_flex K switching passed",
+      "train, val, and test sample switching passed",
+      "No viewer canvas error was shown"
+    ]
+  },
+  "notes": [
+    "The exporter produced all viewer assets and the manifest before optional training-curve plotting failed because the experiment artifacts directory was absent.",
+    "Optional plotting output is not used by the website and no generated point-cloud asset was overwritten during recovery.",
+    "Five GT clouds contain a small number of invalid Hypersim depth pixels; the viewer filters them before display. All prediction clouds contain finite coordinates."
+  ]
+}

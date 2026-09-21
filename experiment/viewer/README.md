@@ -4,6 +4,8 @@
 
 窗口 A 固定显示 Hypersim GT；窗口 B/C 可独立选择 `initial`、`stage1_best`、`joint_best` 与 `K={0,1,3,5}`。预测点云使用每张图片的 GT 2%/98% disparity 统计反归一化，界面不得将其标注为模型原生米制输出。
 
+Exp6-4 使用固定三窗口：GT、现有 spconv SSR、official_flex SSR。两种 SSR 只在各自窗口内切换 K=0/1/3/5，默认均为 K=3；train/val/test 各 5 张，并与 Exp3、Exp6-3 的对应选图保持一致。
+
 ## 数据边界
 
 `public/data/` 由服务器上的 `training.disparity_refiner.export_assets` 生成，包含实验目录、PLY、RGB 和查看器 manifest，全部由 `.gitignore` 排除。Git 只保存查看器源码、锁文件和测试。Exp2 通过受保护脚本登记后会自动成为第二个可切换实验，不需要改前端源码。

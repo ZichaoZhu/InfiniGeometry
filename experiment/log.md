@@ -914,3 +914,217 @@
 
 - 根因是新实验 ID 与旧 manifest 的短暂状态不一致，不是 Exp6-3 PLY 或 manifest 缺失。
 - v8 的 10 个样本、100 个 PLY 和 10 个 RGB 引用均已核对存在；PLY 的大小和 SHA-256 与 manifest 一致。
+
+## 2026-09-11 exp6-4 官方 SSR disparity 适配计划
+
+### 实验简述
+
+目的：在同一冻结的 RGB-only InfiniDepth Base 上，比较现有 SSR 与官方 Sparse3DUNet 的 disparity 适配版，判断网络主体差异是否影响局部收益与全局误差。
+
+方法：计划重新训练 A/B 两组 SSR，各 20,000 steps，沿用相同 disparity 表达、视觉条件、损失、数据和采样顺序。当前仅完成计划，尚未实施或运行，无新增实验结果。
+
+### 实验结果
+
+- [实施与验收计划](./exp6_4_official_ssr_disparity_adapter/PLAN.md)
+
+### 其他
+
+- 本轮只移植官方网络主体，不迁移官方预训练权重或 log-depth 表达；不同结构的比较不等于单独验证 LayerNorm 的作用。
+- Base 需同时冻结参数和训练态 buffers；评估结束后只恢复 SSR train。L0 保留为无梯度诊断项，损失仍按四项平均。
+
+## 2026-09-11 exp6-4 适配与自动流程部署
+
+### 实验简述
+
+目的：实施冻结同一 RGB Base 的现有 SSR 与官方网络主体对照，避免将 Base 微调收益混入 SSR 收益。
+
+方法：接入固定版本官方 Sparse3DUNet，新增 refiner-only 模式，复用现有恢复、GPU 查询、监控和 Exp6-3 指标口径；A/B smoke、恢复测试通过后自动顺序训练各 20,000 steps。
+
+结果：源码及 CPU 回归测试已完成，S115 专用目录中的后台流程已启动。当前四张卡均有 compute 进程，正在等待严格空闲单卡；CUDA 测试和正式训练未开始，无新增训练结论。
+
+### 实验结果
+
+- [实现、执行顺序与产物说明](./exp6_4_official_ssr_disparity_adapter/README.md)
+- [部署与验证记录](./exp6_4_official_ssr_disparity_adapter/deployment_20260911.json)
+- [预登记实验协议](./exp6_4_official_ssr_disparity_adapter/PLAN.md)
+
+### 其他
+
+- 不改 disparity 表达、损失尺度或迭代间梯度连接；不加载官方 MoGe SSR 权重。
+- Base 参数和 buffers 均冻结，保存前核对哈希；评估后恢复 SSR train，并核对固定样本 K0。
+- 每 500 steps 保存恢复点，与每 2,500 steps 的 full evaluation 解耦；checkpoint 记录 backend，旧 checkpoint 保持 spconv 默认路径。
+- 新增依赖在专用 venv，旧训练仓库和历史产物不覆盖。没有停止、修改他人的任务或文件，也没有执行 Git 提交。
+- 后台每 300 秒检查一次，不调用模型；数值或代码错误写告警并停止盲目重启，资源暂停则从有效 checkpoint 自动恢复。
+- 同日补齐最后一步协作暂停的恢复边界：恢复时重新执行终点 full evaluation，不沿用较早结果。仅停止了仍在等待空闲 GPU 的本次控制器，随后以新快照恢复后台等待；[最终部署与验证记录](./exp6_4_official_ssr_disparity_adapter/deployment_20260911_v4.json)。
+
+## 2026-09-12 exp6-4 GPU 共享规则调整
+
+### 实验简述
+
+目的：遵循实验室允许多用户共享同一 GPU 的规则，在 GPU 3 显存充足、利用率较低时启动 Exp6-4。
+
+方法：自动流程固定使用物理 GPU 3，允许其上存在其他用户 compute PID；启动门槛改为剩余显存至少 22 GiB、利用率不超过 10%。不向外部 PID 发送信号，也不因外部 PID 存在而暂停。
+
+结果：规则修改完成，待新快照通过 CPU 回归后立即在 GPU 3 执行 CUDA 验证与 smoke；通过后进入正式 A/B 训练。
+
+### 实验结果
+
+- [执行说明](./exp6_4_official_ssr_disparity_adapter/README.md)
+- [GPU 3 共享启动与验证记录](./exp6_4_official_ssr_disparity_adapter/deployment_20260912_shared_gpu3.json)
+
+### 其他
+
+- 旧控制器在 `waiting_for_idle_gpu` 状态下核验身份后停止；当时没有 Exp6-4 CUDA 子进程或训练进程，不影响其他任务。
+- 共享造成的显存不足只处理 Exp6-4 自身任务，不停止或修改其他用户进程。
+- 首次 CUDA 门禁在 GPU 3 运行，现有 spconv 路径及其余测试通过；官方 FlexGEMM 宽通道反向 kernel 请求 133,120 B shared memory，超过 RTX 4090 的 101,376 B 限制。将该后端改为等价的 `implicit_gemm` kernel 后复测，不改变网络结构或稀疏卷积数学定义。
+- 复测表明单纯切换 algorithm 仍选中相同的大 tile。根因修正为 adaptive 模式在冷启动的前 99 次直接使用 A100 首选配置。恢复官方 algorithm 选择，在 Exp6-4 子进程内启用 `always` autotune，由 FlexGEMM 自身过滤 OOR tile；使用实验独立 cache，不修改共享环境。
+- 完整 CUDA 门禁通过 10/10 后，首次 spconv smoke 在第一个 optimizer step 前生成 provenance 时发现部署使用的不含 `.git` 的不可变源码快照。非 Git 快照现明确记录 Git 字段为 `unavailable`；保留失败快照和日志，以新快照重新执行门禁和 smoke。
+- `source_v8` 在 GPU 3 通过 CPU 82/82、CUDA 10/10 门禁；spconv smoke 已在 step 5 保存并恢复 checkpoint，恢复后继续产生 optimizer step，证明训练与恢复链路均已实际运行。
+
+## 2026-09-14 exp6-4 官方 SSR 对照完成
+
+### 实验简述
+
+目的：在同一冻结 InfiniDepth Base、相同数据和采样顺序下，比较现有 spconv SSR 与移植的官方 Sparse3DUNet 主体。
+
+方法：两组分别训练 20,000 steps，在固定 Hypersim validation 100 上评估，并按 Exp6-3 几何指标进行配对分析。
+
+结果：两组均正常完成。official_flex 的 K3 full disparity MAE 为 0.054461，优于 spconv 的 0.058131；配对报告将其标记为候选改进方案。
+
+### 实验结果
+
+- [最终配对分析](./exp6_4_official_ssr_disparity_adapter/results_20260914/paired_report.json)
+- [spconv 训练报告](./exp6_4_official_ssr_disparity_adapter/results_20260914/spconv/stage1_report.json)
+- [spconv 几何指标](./exp6_4_official_ssr_disparity_adapter/results_20260914/spconv/geometry_summary.json)
+- [official_flex 训练报告](./exp6_4_official_ssr_disparity_adapter/results_20260914/official_flex/stage1_report.json)
+- [official_flex 几何指标](./exp6_4_official_ssr_disparity_adapter/results_20260914/official_flex/geometry_summary.json)
+- [同步文件清单与哈希](./exp6_4_official_ssr_disparity_adapter/results_20260914/manifest.json)
+
+### 其他
+
+- 两组 K0 一致，冻结 Base 哈希一致，20,000-step 全局采样序列逐步一致。
+- spconv 在 80/100 张图上改善，official_flex 在 71/100 张图上改善；后者平均误差更低，但不代表每张图都更好。
+- disparity、affine point 和 local point 配对指标支持 official_flex；local depth 的置信区间跨过 0，暂不能确认稳定提升。
+- 当前仅有单随机种子结果，不自动替换默认实现。
+
+## 2026-09-14 exp6-4 三路点云可视化
+
+### 实验简述
+
+目的：在相同图片和观察口径下，定性比较 GT、现有 spconv SSR 与 official_flex SSR，避免选图差异干扰判断。
+
+方法：复用 Exp3 的 seed 173 固定选图，train、val、test 各 5 张；其中 val/test 与 Exp6-3 完全一致。两种 SSR 使用各自 step 20,000 checkpoint，默认展示 K=3，并保留 K=0/1/3/5 切换。
+
+结果：15 张 RGB、150 个 PLY 和 manifest 已发布到原生产查看器。线上三窗口渲染、K 切换及 train/val/test 切换均通过浏览器验收。
+
+### 实验结果
+
+- [在线点云查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+- [部署与验收记录](./viewer/deployment_20260914_exp6_4_official_ssr.json)
+- [实验结果与可视化说明](./exp6_4_official_ssr_disparity_adapter/README.md)
+
+### 其他
+
+- test 仅用于可视化，不参与训练、checkpoint 选择或定量结论。
+- 导出资产清单中的 150 个 PLY 均完成字节数和 SHA-256 校验。
+- 5 张 GT 含少量 Hypersim 无效深度像素，查看器在构建显示点云时过滤；150 个预测点云均为有限坐标。
+
+## 2026-09-14 exp6-4 结果诊断计划
+
+### 实验简述
+
+目的：解释两种 SSR 的逐图波动，区分共同失效、迭代退化和区域收益，为下一项受控实验提供依据。
+
+方法：先复用 Val100 逐图指标和训练曲线做 CPU 分析，再用现有两组终点 checkpoint 补充像素级推理，检查 Local 区域、深度分组及 residual 方向；仅在证据支持时做固定幅度的推理干预。
+
+结果：已完成计划及本地配置、接口和样本交集核验。尚未实现分析入口或执行远程推理；本轮不补第二 seed、不启动新训练。
+
+### 实验结果
+
+- [结果诊断计划](./exp6_4_official_ssr_disparity_adapter/ANALYSIS_PLAN.md)
+
+### 其他
+
+- 网站 VAL 5 张与正式 Val100 的样本交集为 0；两者属于官方 validation 的不同选图，不能混为同一批样本。
+- 网站固定 ROI 指标与正式 Local 分割及对齐口径不同；主诊断复用 Val100 和既有 Local masks，test 不参与方法选择。
+
+## 2026-09-14 exp6-4 结果诊断完成
+
+### 实验简述
+
+目的：解释两种 SSR 的逐图波动，区分共同失效、迭代退化与区域收益。
+
+方法：复算原 Val100 配对指标，读取训练曲线，并用两组固定终点 checkpoint 各补充一次 Val100 像素级推理；按预定规则输出代表图。
+
+结果：official_flex 平均更好，但不是每图都更好；后续迭代存在退化。当前证据更支持优先检验更新方向与迭代监督，尚不足以将 disparity 表达或残差上限确定为根因。本轮仅分析，不新增训练。
+
+### 实验结果
+
+- [诊断报告](./exp6_4_official_ssr_disparity_adapter/analysis_20260914_r3/REPORT.md)
+- [本地诊断图册](./exp6_4_official_ssr_disparity_adapter/analysis_20260914_r3/gallery.html)
+- [逐图指标](./exp6_4_official_ssr_disparity_adapter/analysis_20260914_r3/per_image.csv)
+- [像素与区域汇总](./exp6_4_official_ssr_disparity_adapter/analysis_20260914_r3/pixel_summary.json)
+- [执行审计](./exp6_4_official_ssr_disparity_adapter/analysis_20260914_r3/audit.json)
+
+### 其他
+
+- 正式 Global/Local 几何指标与原生 disparity 区域诊断分开报告；空 Local 的区域 MAE 不记零，full-MAE 贡献按全部图像平均。
+- sparse 迭代前向存在小幅非逐位一致，重复实验与容差调整记录在独立 r1/r2/r3；不以重算数值覆盖原正式评估。
+- 没有满足过量更新主导的条件，按计划跳过残差减半干预；下一项建议为迭代非退化监督的受控实验，尚未开始。
+- 未改动原 checkpoint、训练结果、网站选图和资产，不操作其他用户任务；复用现有接口和依赖，未添加持续模型监控。
+
+## 2026-09-15 exp6-4 后续路线与历史 MoGe SSR 核查
+
+### 实验简述
+
+目的：明确旧 MoGe-2 + SSR 的实现和训练资产，避免把已有小规模训练误记为没有模型，并为后续公平对照确定边界。
+
+方法：核查旧 MoGe 仓库、官方 MoGe-3 与 InfiniDepth 两种 SSR 源码，读取旧实验报告，并只读检查 S115 的 Exp30 checkpoint。
+
+结果：旧实现有 100 张与 320 张 Hypersim 子集训练记录；Exp30 阶段一最佳和联合终点文件仍在，阶段一文件哈希与原报告一致。尚未找到全量 Hypersim 训练的旧 MoGe-2 + SSR 模型。优先规划官方模型 OOD 审计与同条件 MoGe 训练对照，暂不启动新的 InfiniDepth 损失实验。
+
+### 实验结果
+
+- [历史实现、模型资产与两项实验计划](../../../docs/current/2026-09-15_MoGe_SSR历史核查与两项实验计划.md)
+
+### 其他
+
+- InfiniDepth spconv 沿用旧 SSR 主体，但从 log-depth 改为 disparity；official_flex 移植官方 U-Net 主体，不等于完整官方 MoGe-3 流水线或官方已训练 SSR 权重。
+- 官方 checkpoint 的十数据集评测已存在；应先核查 OOD 来源与复用条件，Hypersim 本身不是官方 MoGe-3 的 OOD。
+- 两套 MoGe 的训练对照需统一 Base 初始化、数据、预算与指标；完整实现的差别不只在 U-Net，不能将整体结果单独归因于网络主体。
+- 本轮仅新增本地核查文档并追加日志；远程只读，没有启动训练、部署或改动 checkpoint。
+
+## 2026-09-21 exp6-4 方法口径与代码交接整理
+
+### 实验简述
+
+为交接后续 scaling up，将整理主线收缩到“InfiniDepth＋官方 SSR 网络主体的 disparity 适配版”。核对源码与历史记录，整理官方模块、接口适配、训练和导出入口，明确已完成实验与未验证变体。此次仅更新文档和索引，不修改算法或新增实验结果。
+
+### 实验结果
+
+- [代码交接、方法边界与工程待办](../docs/exp6_4_disparity_adapter_handoff.md)
+- [Exp6-4 详细结果与原实验入口](./exp6_4_official_ssr_disparity_adapter/README.md)
+- [Exp6-5 R1 损失修复记录](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/REVISION_R1.md)
+
+### 其他
+
+Exp6-4 只移植官方 Sparse3DUNet 主体，保留 normalized disparity、有界加法更新、disparity 监督和跨轮梯度；Base 全程冻结，未做 Joint。限幅是历史额外约束，不是官方必需项，也未证明去掉后等价或更好。Exp6-5 修正几何损失后无界 logZ 分支完成训练，不能据此认定 Exp6-4 去限幅已验证。
+
+目前没有以 InfiniDepth 为基座、仅作必要接口适配并尽量保留官方完整 SSR 机制的实验。文档保留该结论边界，不把拟议实验当作现有结果。按 ponytail 沿用现有目录与训练器，仅整理说明；官方单组入口、可迁移路径和新环境验收仍列为待办。原实验计划、配置、源码、checkpoint、结果与网站不变；未连接服务器、部署、重训或提交 Git。
+
+## 2026-09-21 exp6-4 本地代码与结果归档
+
+### 实验简述
+
+为后续交接，将已完成 Exp6-4 按代码、结果拆分归档。代码提交为 `dd252db`；结果与方法边界、入口和验证说明单独提交。保留历史 disparity 适配和限幅行为，不改算法、不补做实验，不混入 Exp6-1、Exp6-5 的其他改动。
+
+### 实验结果
+
+- [方法边界与代码交接](../docs/exp6_4_disparity_adapter_handoff.md)
+- [详细结果](./exp6_4_official_ssr_disparity_adapter/README.md)
+- [Git 与外部资产边界](./exp6_4_official_ssr_disparity_adapter/ARCHIVE.md)
+- [本次验证与未重跑项目](./exp6_4_official_ssr_disparity_adapter/COMMIT_CHECKS.md)
+
+### 其他
+
+采用独立暂存快照验证 Exp6-4：查看器类型检查、19 项单元测试、生产构建和三窗口浏览器测试通过，调度器 7 项测试与分析脚本标准库自测通过。本机依赖不足，未重跑完整 PyTorch/CUDA 训练测试；历史验收单独标注。原指标与报告不重写，数组、案例图、权重和点云资产不删除；仅提交紧凑报告与两张汇总图。提交使用用户 Git 身份，不推送，不连接或更改服务器。

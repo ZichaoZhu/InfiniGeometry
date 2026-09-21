@@ -1,0 +1,73 @@
+{
+  "aggregate": {
+    "k0": {
+      "affine_depth_rel": 0.08073456641286611,
+      "affine_point_rel": 0.08600856956094503,
+      "boundary_f1_radius1": 0.36293067549427716,
+      "delta_1.01": 0.12300071237143129,
+      "invalid_prediction_rate": 0.0,
+      "local_depth_delta_0.01": 0.4185277081774728,
+      "local_depth_rel": 0.03429283872564073,
+      "local_point_delta_0.01": 0.44907179578642736,
+      "local_point_rel": 0.02974107938490898,
+      "native_disparity_mae": 0.06331414710730314
+    },
+    "k1": {
+      "affine_depth_rel": 0.07570079803466796,
+      "affine_point_rel": 0.08121145321056247,
+      "boundary_f1_radius1": 0.3649215631434393,
+      "delta_1.01": 0.14817298542242496,
+      "invalid_prediction_rate": 0.0,
+      "local_depth_delta_0.01": 0.45809408743964214,
+      "local_depth_rel": 0.032631071504732205,
+      "local_point_delta_0.01": 0.49814730966780585,
+      "local_point_rel": 0.027868823042593017,
+      "native_disparity_mae": 0.06059844030067325
+    },
+    "k3": {
+      "affine_depth_rel": 0.07113642173819244,
+      "affine_point_rel": 0.0776402286440134,
+      "boundary_f1_radius1": 0.36684888907314606,
+      "delta_1.01": 0.2130766079155728,
+      "invalid_prediction_rate": 0.0,
+      "local_depth_delta_0.01": 0.49603649782961273,
+      "local_depth_rel": 0.03179943481476922,
+      "local_point_delta_0.01": 0.5383166667507663,
+      "local_point_rel": 0.02678838033499621,
+      "native_disparity_mae": 0.05813081690110266
+    },
+    "k5": {
+      "affine_depth_rel": 0.07568502075038851,
+      "affine_point_rel": 0.08270297366194428,
+      "boundary_f1_radius1": 0.3668279930736689,
+      "delta_1.01": 0.19554590069223196,
+      "invalid_prediction_rate": 0.0,
+      "local_depth_delta_0.01": 0.46882923650606295,
+      "local_depth_rel": 0.033815763987561816,
+      "local_point_delta_0.01": 0.5042352828388792,
+      "local_point_rel": 0.028262264250508654,
+      "native_disparity_mae": 0.05956360830925405
+    }
+  },
+  "checkpoint_sha256": "45ed98f7e20dc5640c19a1f75d56c11b02f87efa0bfde302e1b9cfd768625ee4",
+  "k3_better_than_k0_count": {
+    "affine_depth_rel": 82,
+    "affine_point_rel": 80,
+    "local_depth_rel": 85,
+    "local_point_rel": 87,
+    "native_disparity_mae": 80
+  },
+  "k3_relative_change": {
+    "affine_depth_rel": 0.11888519504260417,
+    "affine_point_rel": 0.09729659450971202,
+    "boundary_f1_radius1": 0.010796038592033218,
+    "delta_1.01": 0.7323201126846723,
+    "local_depth_delta_0.01": 0.18519392656142383,
+    "local_point_delta_0.01": 0.19873185490986078
+  },
+  "method": "spconv",
+  "peak_cuda_memory_bytes": 4571340288,
+  "refiner_parameters": 50739073,
+  "sample_count": 100,
+  "status": "completed"
+}
