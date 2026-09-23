@@ -20,11 +20,11 @@ Exp1–Exp5、Exp6-2 继续使用原归档。本轮未实现多卡、去限幅�
 
 - [Exp6-4 单组运行](../experiment/exp6_4_official_ssr_disparity_adapter/RUNNING.md)：配置准备默认不启动任务，说明短测、正式启动、恢复和评估命令。
 - [Exp6-4 方法边界](./exp6_4_disparity_adapter_handoff.md)：官方网络主体与本项目 disparity 适配的差别。
-- [Exp6-5 R1 交接](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/HANDOFF.md)：旧失败、pilot、正式 R1 的区分和外部源码依赖。
-- [Exp6-1 归档](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/ARCHIVE.md)与[Exp6-5 归档](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/ARCHIVE.md)：哪些文件随 Git、哪些需补齐。
+- [Exp6-5 R1 交接](https://github.com/ZichaoZhu/MoGe/blob/ad9e4f0230c2380fdd4323cfeea8c27141ca8680/experiment/exp6_5_moge2_ssr_vs_official_moge3/HANDOFF.md)：旧失败、pilot、正式 R1 的区分和外部源码依赖。
+- [Exp6-1 归档](https://github.com/ZichaoZhu/MoGe/blob/ad9e4f0230c2380fdd4323cfeea8c27141ca8680/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/ARCHIVE.md)与[Exp6-5 归档](https://github.com/ZichaoZhu/MoGe/blob/ad9e4f0230c2380fdd4323cfeea8c27141ca8680/experiment/exp6_5_moge2_ssr_vs_official_moge3/ARCHIVE.md)：哪些文件随 Git、哪些需补齐。
 - [查看器说明](../experiment/viewer/README.md)与[本地验收](../experiment/viewer/acceptance_20260923.json)。
 
-跨仓库链接要求两个仓库仍同位于 `Project/` 下。仅克隆其中一个仓库不能替代另一侧代码、历史源码包、数据、权重或公开点云资产。
+跨仓库文档使用 GitHub 完整链接，固定到已推送的 MoGe 交付提交 `ad9e4f0`，不依赖本地相邻目录布局。仅克隆其中一个仓库不能替代另一侧代码、历史源码包、数据、权重或公开点云资产。
 
 ## 配套提交
 
@@ -55,7 +55,7 @@ MoGe 分支为 `experiment/exp6-moge3-reproduction`，InfiniDepth 分支为 `fea
 ## 后续授权验证结果与剩余边界
 
 1. [Exp6-4 CUDA 与恢复验收](../experiment/exp6_4_official_ssr_disparity_adapter/verification_20260923/README.md)：51 项 CPU、10 项 CUDA 测试通过；真实 3→6 步恢复及 RNG/采样通过。历史权重 K0 精确一致，但 K1/3/5 未通过 \(10^{-6}\) 对照；同版本重复运行也有差异，保留失败证据，不标为严格数值复现通过。
-2. [Exp6-5 正式源码核验](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/results/20260923_source_verification/README.md)：正式 A/B 清单均与历史 SHA 一致，各 141 文件通过，下载后再次通过；原始完整清单入库材料已补齐，源码包保留本地外部资产。
+2. [Exp6-5 正式源码核验](https://github.com/ZichaoZhu/MoGe/blob/ad9e4f0230c2380fdd4323cfeea8c27141ca8680/experiment/exp6_5_moge2_ssr_vs_official_moge3/results/20260923_source_verification/README.md)：正式 A/B 清单均与历史 SHA 一致，各 141 文件通过，下载后再次通过；原始完整清单入库材料已补齐，源码包保留本地外部资产。
 3. 实际 scaling up、多卡适配、跨机器旧训练恢复迁移及新发布仍是独立任务。本次复用原 S115 venv，并非全新机器/依赖环境验收；未修改正式训练目标和默认稀疏算子配置。新增验收材料随本次本地提交归档，不推送。
 
 ## 给扩训接收方的交付清单
@@ -68,7 +68,7 @@ MoGe 分支为 `experiment/exp6-moge3-reproduction`，InfiniDepth 分支为 `fea
 | Exp6-4 训练权重 | S115 历史 source_v8 下本实验 runs/official_flex/checkpoints，详见方法边界与验收 provenance | best 用于推理；完整恢复使用匹配配置的 last.pt |
 | Hypersim 数据及缓存 | 原配置的 data.source_root、data.local_cache；[固定 manifest](../experiment/data/hypersim_full_manifest.json) | 数据不复制入 Git，不改变 train/val/test 划分 |
 | 固定评估依赖 | [运行说明](../experiment/exp6_4_official_ssr_disparity_adapter/RUNNING.md)中的 Exp6-3 协议、Local masks 与官方 MoGe 路径 | 需单独提供，保留原哈希校验 |
-| Exp6-5 正式源码包（可选对照） | MoGe 仓库本实验 source_archive/formal_26e6540a.tar.gz，见[核验记录](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/results/20260923_source_verification/README.md) | 本地已取回且核验；外部资产单独交付 |
+| Exp6-5 正式源码包（可选对照） | MoGe 仓库本实验 source_archive/formal_26e6540a.tar.gz，见[核验记录](https://github.com/ZichaoZhu/MoGe/blob/ad9e4f0230c2380fdd4323cfeea8c27141ca8680/experiment/exp6_5_moge2_ssr_vs_official_moge3/results/20260923_source_verification/README.md) | 本地已取回且核验；外部资产单独交付 |
 
 上述是交付位置记录，不代表已验证学长账号的访问权限。实际共享、传输、远程推送和接收方环境验收仍需协调；本次本地收尾不替接收方开通权限或启动训练。
 
