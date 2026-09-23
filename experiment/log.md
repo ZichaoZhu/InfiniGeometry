@@ -1094,6 +1094,422 @@
 - 两套 MoGe 的训练对照需统一 Base 初始化、数据、预算与指标；完整实现的差别不只在 U-Net，不能将整体结果单独归因于网络主体。
 - 本轮仅新增本地核查文档并追加日志；远程只读，没有启动训练、部署或改动 checkpoint。
 
+## 2026-09-15 exp6-5 OOD 训练来源核查
+
+### 实验简述
+
+目的：为官方 MoGe-3 的 OOD 泛化实验确定数据资格。
+
+方法：交叉核对 MoGe-2/MoGe-3 论文与锁定训练配置，并追溯 DINOv2 的数据用途。
+
+结果：八个候选集未列入公开 MoGe 几何训练来源且有 zero-shot 论文依据，但 NYUv2、KITTI 曾作为 DINOv2 检索预训练数据的参考。建议六集保守主结果、八集标准参考分别报告；仅完成来源核查，评测范围尚待确认。
+
+### 实验结果
+
+- [Exp6-5 数据资格审计](../../MoGe-v3-reproduction/experiment/exp6_5_moge3_ood_generalization/README.md)
+
+### 其他
+
+- Hypersim 不能作为官方 MoGe-3 的跨数据集 OOD；公开训练列表核查不等于全链路逐图无重合证明。
+- NYUv2/KITTI 的上游检索参考用途不能误写成直接几何训练或已证实测试泄漏。
+- 本轮未启动评测、训练或部署，未修改服务器文件及历史产物。
+
+## 2026-09-15 exp6-1 补充 Exp3 RGB 点云
+
+### 实验简述
+
+目的：在现有 Exp6-1 五张图上直接比较官方 MoGe-3 与 InfiniGeometry Exp3 RGB，减少重复评测成本。
+
+方法：新增双 checkpoint 导出入口，复用原选图、GT、MoGe-3 点云和指标；查看器复用四窗口组件，各自切换 K0/K1/K3/K5。
+
+结果：本地代码完成，CPU 几何检查 3 项、前端单元测试 19 项、类型检查和浏览器验收 2 项通过。浏览器的新四窗口使用测试清单验证交互，不代表真实 Exp3 资产已生成；服务器推理及 Vercel 发布尚待授权。
+
+### 实验结果
+
+- [实现、几何口径与发布边界](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/EXP3_RGB_COMPARISON.md)
+
+### 其他
+
+- Exp3 网络仅接收 RGB；点云后处理使用 GT 径向逆深度 2%/98% 分位数及相机内参，不能标成原生米制预测。
+- 新旧资产目录分离，不覆盖既有点云或 checkpoint；本轮未修改线上实验清单、未训练、未提交 Git。
+- 本补充只含五张展示图，不替代完整 OOD 测评，也未审计 InfiniDepth Base 的全部训练来源。
+
+## 2026-09-15 exp6-1 RGB 对照发布
+
+### 实验简述
+
+目的：让现有 Exp6-1 五张图可直接查看 InfiniGeometry Exp3 RGB 的结果。
+
+方法：经授权，在 S115 GPU3 使用已固定的 Stage1 best、Joint best 推理；复用旧 GT、RGB、MoGe-3 和四窗口交互，新增 40 个预测点云。
+
+结果：已发布到原 Vercel 网站“Exp6-1 RGB 对照”入口；五图四窗口及 K0/K1/K3/K5 切换通过生产验收。Exp6-3、Exp6-4 回归正常。
+
+### 实验结果
+
+- [逐图指标、几何口径、溯源与发布验收](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/EXP3_RGB_COMPARISON.md)
+- [在线查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+
+### 其他
+
+- 新增资产与历史目录分离；65 个引用 PLY 校验通过，新预测无无效像素。无新增训练，无 checkpoint 修改，无其他用户任务操作。
+- 首次尝试因 spconv 导入找不到现有 ninja 而失败；只补充本人的现有依赖搜索路径，在独立 r2 目录重跑成功，旧失败日志保留，未安装依赖。
+- 点云使用 GT 分位数尺度还原，不是原生米制预测；本轮仍只作五图诊断，不新增完整 OOD 结论。未提交 Git。
+
+## 2026-09-15 exp6-1 窗口布局调整
+
+### 实验简述
+
+为便于并排比较，按用户要求将 B 改为 InfiniDepth + SSR，C/D 均为 MoGe-3。复用现有点云与组件，B 默认 Joint best K=3，可选 Stage1 best；C/D 默认 K=0/K=3，各自独立切换。已发布并通过线上五图、阶段、K 和响应式布局验收。
+
+### 实验结果
+
+- [布局说明、部署记录与截图](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/EXP3_RGB_COMPARISON.md#2026-09-15-bcd-窗口调整)
+
+### 其他
+
+仅修改查看器布局和文案，不重新推理、不修改指标或 checkpoint；旧部署与截图保留。Exp6-3 回归和 Exp6-4 独立验收通过，未操作实验室服务器，未提交 Git。
+
+## 2026-09-15 exp6-1 重新选图页面准备
+
+### 实验简述
+
+为让用户重新挑选展示图片，复用既有 ETH3D 选图页面，加入五数据集筛选、分页和跨页选择。已完成本地导出流程与交互测试；真实候选缩略图、服务器执行和发布等待授权。
+
+### 实验结果
+
+- [候选范围、代码与验证状态](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/IMAGE_SELECTION.md)
+
+### 其他
+
+仅准备 RGB 预览，不按模型指标筛图，不使用 GPU，不变更当前网站点云。测试 fixture 不是正式候选图，未上传、未发布、未提交 Git。
+
+## 2026-09-15 exp6-1 RGB 选图页发布
+
+### 实验简述
+
+为让用户重新挑选展示图，经授权在 S115 用低优先级单进程 CPU 为五个既定数据集生成 RGB 缩略图，复用旧选图交互并发布独立页面。2,924 张候选全部完成，文件校验、本地及生产浏览器验收通过。
+
+### 实验结果
+
+- [选图入口、候选范围与验收记录](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/IMAGE_SELECTION.md)
+
+### 其他
+
+未读取 GT、模型或预测结果，未使用 GPU，未安装依赖。预览等比例缩小、不裁剪；原实验入口、点云清单和指标未改变。待用户发回样本 ID 后再处理点云，未提交 Git。
+
+## 2026-09-15 exp6-1 用户选图登记
+
+### 实验简述
+
+按用户提供的顺序登记八张展示图，包含 NYUv2 五张、ETH3D 两张及 iBims-1 一张。已对照 RGB 图库核对 ID、索引行号与哈希；仅完成本地登记，新的点云导出和发布尚待确认。
+
+### 实验结果
+
+- [选图清单与后续范围](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/IMAGE_SELECTION.md#2026-09-15-用户选定八张图)
+
+### 其他
+
+保留原选图、点云和指标，未操作服务器、未发布、未提交 Git。拟复用现有 checkpoint 及 A/B/C/D 布局，不重新训练；人工选图仅用于定性诊断。
+
+## 2026-09-15 exp6-1 八张选图发布
+
+### 实验简述
+
+为展示用户重新选择的图片，复用原导出器并适配同一数据集多样本，在 S115 GPU2 用固定权重串行导出八图，更新原网站 Exp6-1 入口。全部点云完成，文件检查、本地和生产浏览器验收通过。
+
+### 实验结果
+
+- [选图、逐图指标、溯源与发布验收](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/IMAGE_SELECTION.md#2026-09-15-八图重新导出与发布)
+- [在线查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+
+### 其他
+
+保持 A=GT、B=InfiniDepth+SSR、C/D=MoGe-3，阶段和 K 可独立切换。没有重训或修改 checkpoint，旧五图资产和部署保留，其他实验入口不变，未操作其他用户任务。Exp3 仍使用 GT 分位数尺度还原，人工选图不替代完整泛化评测。未提交 Git。
+
+## 2026-09-15 exp6-1 二十张难例登记
+
+### 实验简述
+
+登记用户从五个数据集选定的 20 张困难场景图片，保持消息顺序。图库 ID 与来源核对通过，包含 18 张新选择和 2 张已展示样本；仅保存新清单，尚未重新导出。
+
+### 实验结果
+
+- [选图清单、复用范围与资源约束](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/IMAGE_SELECTION.md#2026-09-15-用户选定二十张难例)
+
+### 其他
+
+拟复用既定模型与四窗口布局，分批串行生成点云；开始前需处理 CPU 预加载与浏览器缓存风险。远程执行和发布待授权，旧资产及网站未改变，未训练、未提交 Git。手选难例仅供定性诊断，未启动 Exp6-5。
+
+## 2026-09-15 exp6-1 二十张难例发布
+
+### 实验简述
+
+经用户授权，复用官方 MoGe-3 和 Exp3 RGB 权重，将指定 20 张图分两批导出并发布。输入改为逐张读取，查看器切图时取消旧请求并释放几何；文件、四窗口、预览和连续浏览内存验收通过。
+
+### 实验结果
+
+- [二十图结果、资源与生产验收](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/HARD20_RESULTS.md)
+- [在线查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+
+### 其他
+
+保持 A=GT、B=InfiniDepth+SSR、C/D=MoGe-3。第二批因共享 GPU 资源检查被拦截两次，随后在满足余量的 GPU2 完成，未影响第一批。既有 checkpoint、旧点云和其他实验入口保留，未新增训练或依赖、未操作他人任务、未提交 Git。人工选图仅作定性诊断，Exp6-5 状态不变。
+
+## 2026-09-15 exp6-5 同条件训练对照计划
+
+### 实验简述
+
+用户确认 Exp6-1 本轮结束，下一步比较 MoGe-2+自实现 SSR 与官方 MoGe-3 实现。完成本地历史和源码核查，提出共同初始化、数据、几何监督及固定训练预算的两组对照，复用 Exp3 数据划分和 Exp6-1 难例；当前只有计划，没有新增训练结果。
+
+### 实验结果
+
+- [Exp6-5 详细计划](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/PLAN.md)
+
+### 其他
+
+本轮不训练 InfiniDepth，也不把其 official_flex disparity 适配器当作完整官方 MoGe-3。旧 Exp30 仅作历史参考，官方发布 MoGe-3 作为额外参考；主比较拟从同一 MoGe-2 权重重新训练。正式配置需先完成兼容性与资源验证，服务器执行另行授权；未改历史结果、未启动训练、未提交 Git。
+
+## 2026-09-15 exp6-5 实施与启动核验
+
+### 实验简述
+
+经授权开始 MoGe-2+自实现 SSR 与官方 MoGe-3 实现的同条件实验。复用 Exp3 数据划分与加载器，完成共同训练入口及状态恢复实现；本地和 S115 测试通过，两组真实 Base 权重及 CPU 初始 K0 一致。后台现处于 GPU 资源等待，尚未运行 CUDA 短测或正式训练。
+
+### 实验结果
+
+- [Exp6-5 实现、CPU 核验与后台状态](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/README.md)
+
+### 其他
+
+只读取既有索引与个人数据缓存，不重新扫描 NAS。两次环境准备错误已修复且原记录保留，未产生训练 checkpoint。等待由标准库脚本每 5 分钟执行，首次短测暂要求 44 GiB 空闲显存；不是实测需求或已开始训练。未修改 InfiniDepth 模型、历史结果、网站及他人任务，未提交 Git。
+
+## 2026-09-16 exp6-5 GPU0 短测与调度调整
+
+### 实验简述
+
+按用户要求在 S115 GPU0 尝试训练，完成自实现 Stage1 checkpoint 的单步恢复，采样一致，无 OOM 或非有限值。原短测保留，后台队列固定 GPU0 按余量继续其余阶段；当前不是正式训练结果。
+
+### 实验结果
+
+- [短测、显存、恢复与后台状态](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/GPU0_RUN.md)
+
+### 其他
+
+移除统一 44 GiB 保守门槛，按同组实测峰值与余量选卡；训练目标、batch、数据和源码快照不变。调度器另存新文件，旧 checkpoint 与日志保留。本地 13 项测试、服务器原 10 项及新增 3 项测试通过。未修改 InfiniDepth 模型、网站或他人任务，未提交 Git。
+
+## 2026-09-16 exp6-5 自动选卡授权与队列移交
+
+### 实验简述
+
+按用户后续授权，将 Exp6-5 固定 GPU0 等待改为 S115 四卡自动选择资源合适的一张。保留已有短测，后台每 5 分钟检查，依次完成剩余短测并在通过后启动正式 A/B；尚无正式效果结果。
+
+### 实验结果
+
+- [选卡策略、实时状态入口与移交证据](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/GPU0_RUN.md#同日后续授权自动选择-s115-gpu)
+
+### 其他
+
+仅修改调度启动参数，没有增加训练依赖或改变训练语义；确认旧队列没有训练子进程后移交，未中断训练。服务器 3 项调度测试再次通过。既有产物保留，未操作其他用户任务、InfiniDepth 模型或网站，未提交 Git。
+
+## 2026-09-16 exp6-5 官方 CUDA 短测修复与 GPU3 重启
+
+### 实验简述
+
+Exp6-5 自实现的两个阶段和恢复短测完成；官方因 FlexGEMM 冷启动内核资源超限停止。按用户授权固定 GPU3，复用 Exp6-4 的 `always` autotune 及 Exp6-1 的个人 Python 头文件路径，GPU 内核参考对比通过后启动官方完整短测；正式训练尚未开始。
+
+### 实验结果
+
+- [故障、GPU3 验证、恢复与启动记录](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/README.md#2026-09-16-gpu3-官方短测修复)
+
+### 其他
+
+训练配方与源码快照不变，运行时设置及独立重试目录明确记录；不同内核允许浮点舍入差异。已完成结果不重跑，两次官方失败记录保留。未修改 InfiniDepth 模型、共享环境或他人任务，未提交 Git。脚本没有自动唤醒 AI 的能力。
+
+## 2026-09-16 exp6-5 切换 GPU0 并启动正式 A 组
+
+### 实验简述
+
+用户指定使用 GPU0 后，将处于等待状态的队列安全移交，完成官方 Joint 的最后一次恢复验证。两组短测全部通过，正式 A 组已完成 Val100 基线评估并开始 Stage1 参数更新，B 组待 A 完成后启动。
+
+### 实验结果
+
+- [GPU0 移交、验证通过报告与正式入口](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/README.md#2026-09-16-切换-gpu0-并启动正式-a-组)
+
+### 其他
+
+不重跑已通过的短测，不把测试 step 20052 当作正式进度。正式训练仍从共同 MoGe-2 权重及零初始化 SSR 开始，未改训练配置或 InfiniDepth 模型。原 10 项服务器协议测试通过，未修改他人任务、删除历史结果或提交 Git。
+
+## 2026-09-16 exp6-5 GPU3 正式恢复
+
+### 实验简述
+
+正式 A 在 GPU0 遇到整卡显存耗尽。按用户要求使用 GPU3，从已有正式 checkpoint 恢复到新目录并继续参数更新；不从头训练，B 组仍等待 A 完成。
+
+### 实验结果
+
+- [显存故障、恢复点、采样核验与 GPU3 状态](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/README.md#2026-09-16-gpu0-显存故障与-gpu3-正式恢复)
+
+### 其他
+
+原训练器及实验配方不变，调度器增加正式恢复入口，保留旧产物和历史 best。恢复后采样序列核验一致，仅重算故障前未保存的更新。本地 16 项测试、服务器 6 项调度与 10 项协议测试通过。未修改 InfiniDepth 模型、网站或他人任务，未删除历史记录或提交 Git。
+
+## 2026-09-17 exp6-5 GPU2 恢复与显存限制调整
+
+### 实验简述
+
+Exp6-5 正式 A 在 GPU3 触及自身进程显存上限，非整卡显存耗尽。按用户授权切到 GPU2，根据当前余量重新计算分配上限，从正式 checkpoint 恢复并继续更新；不是从头训练，B 组尚未开始。
+
+### 实验结果
+
+- [故障、恢复验证与 GPU2 运行入口](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/README.md#2026-09-17-调整显存限制并在-gpu2-恢复)
+
+### 其他
+
+复用已有训练器和恢复入口，优化配方不变，仅调整资源参数。旧 checkpoint 和日志保留，恢复后的采样序列核验一致。本地 16 项、服务器 10 项测试通过。未修改 InfiniDepth 模型或网站，不控制他人任务，未提交 Git。
+
+## 2026-09-17 exp6-5 A/B 并行训练
+
+### 实验简述
+
+按用户确认，Exp6-5 两组改为各用一张 GPU 并行。A 在 GPU2 上不中断，B 在 GPU3 上从共同初始化开始，已完成初始验证并进入正式训练；不使用 A 的 checkpoint 初始化 B。
+
+### 实验结果
+
+- [调度移交、两组基线与并行运行状态](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/README.md#2026-09-17-ab-双卡独立并行)
+
+### 其他
+
+原训练配方和源码快照不变，每组仍为单卡 global batch 8。旧串行调度器已移交，A 的 PID 和训练序列连续；两组有独立暂停入口。基线、数据及采样一致性核验通过，本地 21 项、服务器 5 项调度与 10 项协议测试通过。未修改 InfiniDepth 模型、网站或他人任务，未提交 Git。
+
+## 2026-09-17 exp6-5 B 组失稳诊断
+
+### 实验简述
+
+Exp6-5 B 出现持续负向 logZ 残差漂移并触发 K3 检查失败。日志与数值探针确认公共对齐损失的尺度方向存在前向变化与反向梯度不一致，结合无界残差构成优先排查原因；尚未通过训练消融确认唯一根因。
+
+### 实验结果
+
+- [诊断报告、探针证据与修复建议](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/DIAGNOSIS_20260917.md)
+
+### 其他
+
+本轮只诊断，未重启 B 或中断 A；短探针不执行参数更新，未改训练配方、InfiniDepth 或网站。A 同样使用公共损失，不能仅凭 B 失败判断两种 SSR 优劣；若修复改变目标，后续 A/B 需共同登记新协议。旧记录和 checkpoint 保留，未提交 Git。
+
+## 2026-09-17 exp6-5 官方训练来源澄清
+
+### 实验简述
+
+核对 MoGe-3 上游发布提交后，确认官方训练已让 K1–K3 复用 K0 对齐尺度；Exp6-5 公共入口使用历史自实现损失，未沿用这项机制。B 的当前故障不能作为论文实现有问题的证据。
+
+### 实验结果
+
+- [源码来源核查与准确实验定义](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/DIAGNOSIS_20260917.md#补充与官方发布代码的来源核对)
+
+### 其他
+
+B 使用官方 SSR 模型主体，但不是完整官方训练配方。此次只读核查代码来源并追加记录，没有修改训练、InfiniDepth 或网站，未提交 Git。
+
+## 2026-09-18 exp6-5 R1 损失修复与独立验证
+
+### 实验简述
+
+按用户要求修复 Exp6-5 公共训练损失，改用官方算子及后续 K 复用 K0 尺度的规则。回归和共同初始化检查通过，S115 GPU3 已进入独立短测流程，之后自动执行有上限的真实采样验证；尚不宣称长期稳定或效果提升。
+
+### 实验结果
+
+- [修复内容、测试、配置与服务器入口](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/REVISION_R1.md)
+
+### 其他
+
+旧 A 持续运行，旧 B 产物保留，新 B 从共同初始权重开始验证。损失改变登记为 R1，旧 A 与新 B 不直接用于受控排名；GPU 允许共享，但保留显存余量并限制本进程分配。未改变 InfiniDepth 或网站，未干预其他用户任务，未提交 Git。
+
+交付前短测及恢复已通过，独立 B 已完成初始评估并开始实际训练；具体证据见修订报告，尚不判断最终效果。
+
+## 2026-09-18 exp6-5 R1 验证完成与旧 A 故障
+
+### 实验简述
+
+R1 B 正常完成验证，未复现旧 B 的数值失稳；Val100 上 K3 平均误差小幅改善，但不覆盖多数样本。旧协议 A 同期出现 Base/K0 几何异常并退出，原因尚未进一步定位。
+
+### 实验结果
+
+- [完整结果、稳定性核验与故障记录](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/REVISION_R1.md#2026-09-18-验证完成与旧-a-故障)
+
+### 其他
+
+两组目前均未在训练：B 按验证预算结束，A 异常退出。本次仅查询并本地归档，没有启动、恢复或改变远程任务，未修改 InfiniDepth 模型或网站。不能把这轮短验证等同于完整正式对比，后续 A/B 需使用同一新协议。未提交 Git。
+
+## 2026-09-18 exp6-5 旧 A 的 Base 尺度塌缩诊断
+
+### 实验简述
+
+无参数更新地检查旧 A 日志及多份 checkpoint，确认 Base/K0 原生点云持续缩小。真实预测的数值探针复现旧公共损失的尺度梯度问题，是当前有证据支持的主要原因；最终非法值类型和唯一因果尚未完全复现。
+
+### 实验结果
+
+- [A 故障诊断、尺度演化及梯度验证](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/DIAGNOSIS_A_20260918.md)
+
+### 其他
+
+这里是 MoGe-2 Base，不是 InfiniDepth 网络故障。Stage1 中 SSR 与 Base 梯度隔离，A 的残差限幅管不到 K0。旧9000并非健康恢复点；新 A 的长期稳定性仍需单独验证，不能根据 R1 B 短验证直接推定。本轮未修代码或恢复训练，仅新增本地诊断证据与日志，未修改 InfiniDepth 模型、网站或他人任务，未提交 Git。
+
+## 2026-09-18 exp6-5 A 修正与 R1 正式重训
+
+### 实验简述
+
+按用户授权让 A 使用 R1 公共损失，从共同 MoGe-2 初始权重重新训练，修正旧对齐梯度路径并观察 Base 原生尺度。回归、两阶段短测及恢复验证通过，S115 GPU2 已开始正式更新；尚不能宣称长期问题已解决。
+
+### 实验结果
+
+- [修正、验收、正式启动及结果入口](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/REVISION_R1.md#a-正式训练已开始)
+
+### 其他
+
+本轮只启动新 A，不恢复旧9000，不重启 B；旧权重、日志及 R1 B pilot 保留。数据、seed、模型、学习率、batch 和正式预算不变，新增 K0观测不改目标或梯度。未修改 InfiniDepth 模型、网站或其他用户任务，未提交 Git。
+
+## 2026-09-18 exp6-5 R1 B 在 GPU3 正式启动
+
+### 实验简述
+
+按用户要求在 S115 GPU3 启动正式 B，与 GPU2 的 A 独立并行。B 使用与 A 完全一致的冻结源码和 R1 配置，从共同初始化开始；测试、两阶段短测和恢复验收通过，正式训练已更新，早期数值正常。
+
+### 实验结果
+
+- [启动、验收、A 连续性与两组同口径核验](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/REVISION_R1.md#2026-09-18-b-在-gpu3-正式启动)
+
+### 其他
+
+保留旧 B pilot，不继承其进度。A 未暂停或重启，两组分别单卡 global batch 8，不是 DDP。未修改训练目标、InfiniDepth 模型、网站或他人任务，未提交 Git。
+
+## 2026-09-21 exp6-5 可视化准备
+
+### 实验简述
+
+Exp6-5两组R1训练均正常完成。按用户要求在现有查看器准备GT、原始MoGe2、自实现SSR和官方SSR四窗口；固定Hypersim15张与跨数据集20张，仅可视化、不新增评估。本地实现及测试完成，真实推理导出和部署待本次授权，当前线上入口未变。
+
+### 实验结果
+
+- [选图、checkpoint、显示对齐及验收状态](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/VISUALIZATION.md)
+
+### 其他
+
+复用既有查看器、样本预览与相机同步；默认各组最佳，可切最终30,000步和K值。按checkpoint的K0统一对齐所有K，不向网络输入GT，也不计算新指标。保留历史实验目录、权重和网站资产，未部署或提交Git。
+
+## 2026-09-21 exp6-5 可视化发布
+
+### 实验简述
+
+按用户授权在S115完成Exp6-5推理导出，发布Hypersim15张与跨数据集20张四窗口可视化。窗口依次为GT、原始MoGe2、自实现SSR和本次训练的官方SSR；真实点云、切换、预览和手机布局验收通过。仅新增可视化，不运行新评估。
+
+### 实验结果
+
+- [查看器](https://infinidepth-disparity-refiner-viewe.vercel.app/)
+- [选图、权重、显示对齐及验收证据](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/VISUALIZATION.md)
+
+### 其他
+
+复用原查看器与模型导出逻辑，C/D可切最佳、最终和K0/1/3/5，B仅显示共同初始化K0。D不是官方发布的MoGe3权重；各checkpoint所有K共用K0显示对齐，不能把微调后的K0收益算作SSR独立收益。旧实验manifest、默认入口、部署与训练checkpoint均保留，未修改InfiniDepth训练或他人任务。没有新增依赖或提交Git。
+
 ## 2026-09-21 exp6-4 方法口径与代码交接整理
 
 ### 实验简述
@@ -1144,3 +1560,52 @@ Exp6-4 只移植官方 Sparse3DUNet 主体，保留 normalized disparity、有�
 ### 其他
 
 标准库 7 项测试通过，覆盖科学配置不变、路径边界、不可变配置、评估哈希、无启动检查与主 rank 报告保护。真实模型/CUDA 和新环境恢复验证未执行；旧 last.pt 不能因迁移路径而跳过配置哈希检查。仅本地整理与提交，不推送、不部署、不访问服务器。
+
+## 2026-09-23 exp6-1 可视化增量归档
+
+### 实验简述
+
+归档二十张难例选图、InfiniDepth RGB 对照及相关导出/测试代码，不更换选图、权重或指标。轻量结果进入 Git，截图、点云、原日志和 trace 保留外部，原文件哈希不变。
+
+### 实验结果
+
+- [选图与可视化说明](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/README.md)
+- [归档边界与哈希清单](../../MoGe-v3-reproduction/experiment/exp6_1_moge3_official_reproduction/04_checkpoint_visualization/ARCHIVE.md)
+- 代码提交：`b0a89ae`。
+
+### 其他
+
+难例调度 2 项、图库标准库 3 项测试通过，Pillow 相关 1 项跳过；导出器测试缺少 cv2，模型对照测试缺少 torch，未完成本地重跑。查看器实际资产回归包括二十图、旧三窗口和真实图库，相关测试通过。不将 fixture、历史服务器验收或语法检查当作本轮模型推理验收。没有新推理、服务器写入、部署或推送。
+
+## 2026-09-23 exp6-5 R1 本地归档与交接
+
+### 实验简述
+
+将已经完成的 R1 A/B 训练和 35 图可视化按代码、结果归档。明确 config.r1.json 为最终协议，修正总索引的旧运行状态；旧失败运行、pilot 和 OOD 来源审计保留历史身份。不改变损失、模型、权重、数据或数值结果。
+
+### 实验结果
+
+- [代码、来源与待补齐依赖](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/HANDOFF.md)
+- [可视化及 checkpoint 映射](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/VISUALIZATION.md)
+- [归档清单](../../MoGe-v3-reproduction/experiment/exp6_5_moge2_ssr_vs_official_moge3/ARCHIVE.md)
+- 代码提交：`90644e9`。
+
+### 其他
+
+标准库源码核验 2 项、展示协议 3 项、并行调度 5 项、资源准入 7 项测试通过。最终正式源码清单的哈希已记录，但其完整清单和不可变源码包尚未同步到本地；不能拿 pilot 清单或今天的工作区替代。PyTorch/真实损失与 CUDA 未重跑。查看器全部 35 张真实点云的本地回归通过，新验收材料写入临时目录，原结果保持不变。无远程操作、部署、推送或新增指标。
+
+## 2026-09-23 exp6-3 导出入口归档与跨实验展示验收
+
+### 实验简述
+
+补齐 MoGe 仓库中已有的 Exp6-3 点云导出入口，并收尾共享查看器的多实验展示和资源释放代码。只归档与回归，不重新推理、改变指标或覆盖历史结果。
+
+### 实验结果
+
+- [跨仓库提交与交接索引](../docs/experiment_handoff_20260923.md)
+- [本次查看器验收](./viewer/acceptance_20260923.json)
+- MoGe 导出代码：`97a7b81`；InfiniDepth 查看器代码：`00fcd58`。
+
+### 其他
+
+类型检查、22 项单元测试、生产构建与 8 项浏览器回归通过；其中 1 项是图库 fixture、7 项使用真实资产。覆盖 Exp6-1 二十图、Exp6-5 三十五图和 Exp6-3/4，测试产物不再写回历史结果目录。本机缺少 PyTorch/CUDA 等依赖的项目明确标为未验收，尚未同步的 Exp6-5 最终源码包列为外部依赖。本轮所有新增提交均未推送，未改动服务器、其他人的文件或运行任务。

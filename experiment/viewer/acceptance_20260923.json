@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-23",
+  "scope": "local_archive_and_viewer_regression",
+  "code_commit": "00fcd58",
+  "server": "http://127.0.0.1:33264",
+  "server_stopped_after_tests": true,
+  "typecheck": "passed",
+  "vitest": {"files": 5, "passed": 22},
+  "build": {"command": "next build --webpack", "status": "passed"},
+  "playwright": {
+    "command": "PLAYWRIGHT_BASE_URL=http://127.0.0.1:33264 EXP65_REAL_ASSETS=1 playwright test tests/e2e/viewer.spec.ts tests/e2e/exp6-5.spec.ts tests/e2e/image-gallery.spec.ts --grep 'Exp6-[1345]' --workers=1 --reporter=line --output=/private/tmp/infinigeometry-handoff.SDx3It/browser",
+    "passed": 8,
+    "skipped": 0,
+    "fixture_tests": 1,
+    "real_asset_tests": 7,
+    "elapsed_reported": "2.4m",
+    "exp6_1_samples_rendered": 20,
+    "exp6_5_samples_rendered": 35,
+    "memory_measurement": "V8 used heap plus backing storage after explicit GC; not process RAM or GPU memory",
+    "exp6_1_used_bytes": [33472175, 32229640, 36206871],
+    "exp6_5_used_bytes": [25417286, 41923769, 36608487],
+    "allowed_growth_bytes": 67108864
+  },
+  "historical_artifacts_overwritten": false,
+  "new_model_inference": false,
+  "remote_server_access": false,
+  "deployment": false,
+  "git_push": false
+}

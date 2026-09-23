@@ -16,6 +16,8 @@
 - [冻结 Base 的官方 SSR 网络主体 disparity 适配对照](exp6_4_official_ssr_disparity_adapter/README.md)：训练与分析已完成；不是完整官方 MoGe3 方法复现。
 - [源码、方法边界与后续工程待办](../docs/exp6_4_disparity_adapter_handoff.md)：本轮整理主线，明确历史限幅、单卡限制及官方机制尚未移植的部分。
 
+2026-09-23 的单组运行入口、Exp6-5 R1 和可视化增量归档见[跨仓库交接索引](../docs/experiment_handoff_20260923.md)。本地测试与归档已完成；新环境 CUDA、完整正式源码包核验和远程同步另列待办，不以历史记录替代。
+
 ## 资产规则
 
 - Git 只保存代码、中文文档、配置、紧凑 JSON/JSONL 指标、manifest 和最终两张汇总图。
