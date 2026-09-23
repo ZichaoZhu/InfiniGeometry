@@ -5,3 +5,6 @@
 /analysis_20260914_r3/audit_analysis.py
 /analysis_20260914_r3/render_analysis.py
 /analysis_20260914_r3/inputs/probe_reproducibility.py
+# Small acceptance logs are evidence, not recurring training logs.
+!/verification_20260923/evidence/compare_probes.log
+!/verification_20260923/evidence/prepare.log
