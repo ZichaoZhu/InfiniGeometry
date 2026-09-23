@@ -1,0 +1,21 @@
+{
+  "elapsed_seconds": 42.54989067290444,
+  "records": [
+    {
+      "name": "canonical_deterministic_1",
+      "returncode": 0,
+      "seconds": 21.294659267994575
+    },
+    {
+      "name": "canonical_deterministic_2",
+      "returncode": 0,
+      "seconds": 21.14289826701861
+    }
+  ],
+  "source": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current",
+  "acceptance_sha": "25b97e2bd673906a4d9d6fe2862c84d7ce470f374246b851dd92ef1e0ae28096",
+  "config_sha": "6228d0d4d3922669e05608147deb83cb3d58164bea98d19bd7895831c4d61f84",
+  "checkpoint_sha": "fb94443a4b77923283f59008e31e65a0dc9c9557007e400711eab3c52f4aac3c",
+  "input_cache_sha": "fa502dcd539a694cdbf33597f4cc4d84d7a337e2b456694c18792e248bf75fac",
+  "cache_unchanged": true
+}

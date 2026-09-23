@@ -1,0 +1,451 @@
+{
+  "NVIDIA GeForce RTX 4090": {
+    "flex_gemm.kernels.triton.sample.index_weighted_sum.index_weighted_sum_bwd_input_kernel": {},
+    "flex_gemm.kernels.triton.sample.index_weighted_sum.index_weighted_sum_fwd_kernel": {},
+    "flex_gemm.kernels.triton.spconv.sparse_conv_implicit_gemm.sparse_conv_bwd_weight_implicit_gemm_kernel": {
+      "(5, 32, 32, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 64, 64, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(7, 64, 64, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(8, 32, 32, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(8, 64, 64, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      }
+    },
+    "flex_gemm.kernels.triton.spconv.sparse_conv_implicit_gemm.sparse_conv_implicit_gemm_kernel": {
+      "(5, 5, 32, 32, 27, True, 'f32', 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 5, 32, 32, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 5, 64, 64, 27, True, 'f32', 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 5, 64, 64, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(7, 7, 64, 64, 27, True, 'f32', 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(7, 7, 64, 64, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(8, 8, 32, 32, 27, True, 'f32', 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(8, 8, 32, 32, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 128,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 4,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(8, 8, 64, 64, 27, True, 'f32', 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(8, 8, 64, 64, 27, True, 'f32', 'f32', 'i32', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      }
+    },
+    "flex_gemm.kernels.triton.spconv.sparse_conv_implicit_gemm_splitk.sparse_conv_bwd_weight_implicit_gemm_splitk": {},
+    "flex_gemm.kernels.triton.spconv.sparse_conv_implicit_gemm_splitk.sparse_conv_bwd_weight_implicit_gemm_splitk_kernel": {},
+    "flex_gemm.kernels.triton.spconv.sparse_conv_implicit_gemm_splitk.sparse_conv_fwd_implicit_gemm_splitk": {},
+    "flex_gemm.kernels.triton.spconv.sparse_conv_implicit_gemm_splitk.sparse_conv_implicit_gemm_splitk_kernel": {},
+    "flex_gemm.kernels.triton.spconv.sparse_conv_masked_implicit_gemm.sparse_conv_bwd_weight_masked_implicit_gemm_kernel": {
+      "(4, 4, 256, 256, 27, True, 'f32', 'f32', 'u32', 'u32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(4, 4, 512, 512, 27, True, 'f32', 'f32', 'u32', 'u32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 5, 128, 128, 27, True, 'f32', 'f32', 'u32', 'u32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 5, 512, 512, 27, True, 'f32', 'f32', 'u32', 'u32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(6, 6, 256, 256, 27, True, 'f32', 'f32', 'u32', 'u32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(7, 7, 128, 128, 27, True, 'f32', 'f32', 'u32', 'u32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      }
+    },
+    "flex_gemm.kernels.triton.spconv.sparse_conv_masked_implicit_gemm.sparse_conv_masked_implicit_gemm_kernel": {
+      "(4, 4, 256, 256, 27, True, 'f32', 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(4, 4, 256, 256, 27, True, 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(4, 4, 512, 512, 27, True, 'f32', 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(4, 4, 512, 512, 27, True, 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 5, 128, 128, 27, True, 'f32', 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 5, 128, 128, 27, True, 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 5, 512, 512, 27, True, 'f32', 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(5, 5, 512, 512, 27, True, 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(6, 6, 256, 256, 27, True, 'f32', 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(6, 6, 256, 256, 27, True, 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(7, 7, 128, 128, 27, True, 'f32', 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      },
+      "(7, 7, 128, 128, 27, True, 'f32', 'f32', 'i32', 'i64', 'f32')": {
+        "ir_override": null,
+        "kwargs": {
+          "B1": 64,
+          "B2": 64,
+          "BK": 32
+        },
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 2,
+        "num_warps": 4,
+        "pre_hook": null
+      }
+    },
+    "flex_gemm.kernels.triton.spconv.sparse_conv_masked_implicit_gemm_splitk.sparse_conv_bwd_weight_masked_implicit_gemm_splitk": {},
+    "flex_gemm.kernels.triton.spconv.sparse_conv_masked_implicit_gemm_splitk.sparse_conv_bwd_weight_masked_implicit_gemm_splitk_kernel": {},
+    "flex_gemm.kernels.triton.spconv.sparse_conv_masked_implicit_gemm_splitk.sparse_conv_fwd_masked_implicit_gemm_splitk": {},
+    "flex_gemm.kernels.triton.spconv.sparse_conv_masked_implicit_gemm_splitk.sparse_conv_fwd_masked_implicit_gemm_splitk_kernel": {}
+  }
+}

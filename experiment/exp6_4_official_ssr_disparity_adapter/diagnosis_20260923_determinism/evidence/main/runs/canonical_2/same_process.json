@@ -1,0 +1,335 @@
+{
+  "predictions": {
+    "0": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 196608
+    },
+    "1": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 196608
+    },
+    "3": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 196608
+    },
+    "5": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 196608
+    }
+  },
+  "trace": {
+    "input_d_1": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 196608,
+      "different_voxel_bins": 0
+    },
+    "visual": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 786432
+    },
+    "down_stages.0.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 6291456
+      }
+    },
+    "downsample_blocks.0.pool": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 2210880
+      }
+    },
+    "downsample_blocks.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 4421760
+      }
+    },
+    "down_stages.1.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 4421760
+      }
+    },
+    "downsample_blocks.1.pool": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 1298304
+      }
+    },
+    "downsample_blocks.1": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 2596608
+      }
+    },
+    "down_stages.2.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 2596608
+      }
+    },
+    "downsample_blocks.2.pool": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 723840
+      }
+    },
+    "downsample_blocks.2": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 1447680
+      }
+    },
+    "down_stages.3.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 1447680
+      }
+    },
+    "downsample_blocks.3.pool": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 397056
+      }
+    },
+    "downsample_blocks.3": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 794112
+      }
+    },
+    "down_stages.4.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 794112
+      }
+    },
+    "bottleneck_stage.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 794112
+      }
+    },
+    "up_stages.0.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 1447680
+      }
+    },
+    "up_stages.1.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 2596608
+      }
+    },
+    "up_stages.2.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 4421760
+      }
+    },
+    "up_stages.3.0": {
+      "same_coordinate_set": true,
+      "same_row_order": true,
+      "features": {
+        "exact": true,
+        "close_1e6": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "p99_abs": 0.0,
+        "different": 0,
+        "elements": 6291456
+      }
+    },
+    "input_d_2": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 196608,
+      "different_voxel_bins": 0
+    },
+    "input_d_3": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 196608,
+      "different_voxel_bins": 0
+    },
+    "input_d_4": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 196608,
+      "different_voxel_bins": 0
+    },
+    "input_d_5": {
+      "exact": true,
+      "close_1e6": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "p99_abs": 0.0,
+      "different": 0,
+      "elements": 196608,
+      "different_voxel_bins": 0
+    }
+  }
+}

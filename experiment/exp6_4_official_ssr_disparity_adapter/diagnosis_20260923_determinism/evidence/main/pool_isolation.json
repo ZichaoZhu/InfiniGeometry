@@ -1,0 +1,82 @@
+{
+  "cuda_visible_devices": "1",
+  "cases": {
+    "default": [
+      {
+        "same_coordinate_set": true,
+        "same_coordinate_order": false,
+        "same_neighbor_sets": true,
+        "changed_neighbor_order_rows": 18317,
+        "pooled_features": {
+          "exact": false,
+          "close_1e6": true,
+          "max_abs": 2.384185791015625e-07,
+          "mean_abs": 2.1460104804305047e-09,
+          "p99_abs": 5.960464477539063e-08,
+          "different": 143899,
+          "elements": 2210880
+        }
+      },
+      {
+        "same_coordinate_set": true,
+        "same_coordinate_order": false,
+        "same_neighbor_sets": true,
+        "changed_neighbor_order_rows": 17982,
+        "pooled_features": {
+          "exact": false,
+          "close_1e6": true,
+          "max_abs": 2.384185791015625e-07,
+          "mean_abs": 2.0757775498481124e-09,
+          "p99_abs": 5.960464477539063e-08,
+          "different": 141088,
+          "elements": 2210880
+        }
+      }
+    ],
+    "canonical": [
+      {
+        "same_coordinate_set": true,
+        "same_coordinate_order": true,
+        "same_neighbor_sets": true,
+        "changed_neighbor_order_rows": 0,
+        "pooled_features": {
+          "exact": true,
+          "close_1e6": true,
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "different": 0,
+          "elements": 2210880
+        }
+      },
+      {
+        "same_coordinate_set": true,
+        "same_coordinate_order": true,
+        "same_neighbor_sets": true,
+        "changed_neighbor_order_rows": 0,
+        "pooled_features": {
+          "exact": true,
+          "close_1e6": true,
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "different": 0,
+          "elements": 2210880
+        }
+      }
+    ]
+  },
+  "default_vs_canonical": {
+    "same_coordinate_set": true,
+    "same_neighbor_sets": true,
+    "pooled_features": {
+      "exact": false,
+      "close_1e6": true,
+      "max_abs": 2.384185791015625e-07,
+      "mean_abs": 2.883318472868268e-09,
+      "p99_abs": 5.960464477539063e-08,
+      "different": 194723,
+      "elements": 2210880
+    }
+  }
+}

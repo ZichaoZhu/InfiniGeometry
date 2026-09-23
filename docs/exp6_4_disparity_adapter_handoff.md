@@ -1,6 +1,6 @@
 # Exp6-4：官方 SSR 网络主体的 disparity 适配版代码交接
 
-2026-09-23 收尾：官方单组配置准备与显式机器路径已实现，见[运行交接](../experiment/exp6_4_official_ssr_disparity_adapter/RUNNING.md)。S115 现有环境的 CUDA、冻结和短步恢复验证通过；历史权重严格数值对照未通过，见[验收报告](../experiment/exp6_4_official_ssr_disparity_adapter/verification_20260923/README.md)。按现状提交交接，不继续诊断，不修改训练方法或历史产物。
+2026-09-23 收尾：官方单组配置准备与显式机器路径已实现，见[运行交接](../experiment/exp6_4_official_ssr_disparity_adapter/RUNNING.md)。S115 现有环境的 CUDA、冻结和短步恢复验证通过；历史权重默认严格数值对照未通过，见[验收报告](../experiment/exp6_4_official_ssr_disparity_adapter/verification_20260923/README.md)。后续一小时内授权的[独立诊断](../experiment/exp6_4_official_ssr_disparity_adapter/diagnosis_20260923_determinism/README.md)定位了本例的池化顺序问题，组合控制在单图、单步上通过；未修改默认训练方法或历史产物。
 
 初次整理日期为 2026-09-21，当前入口与验收状态以本次更新为准。没有重跑正式实验、重评 Val100 或部署网站；全新依赖环境与多卡扩训未验收。
 
@@ -158,7 +158,7 @@ Git 仅保存紧凑报告、指标和两张汇总图。原报告或图册引用�
 方法口径、单组入口、路径配置与结果索引已整理，验收按代码和结果分组归档。2026-09-21 的提交检查见 [COMMIT_CHECKS.md](../experiment/exp6_4_official_ssr_disparity_adapter/COMMIT_CHECKS.md)，新增真实 CUDA/恢复证据见[2026-09-23 验收](../experiment/exp6_4_official_ssr_disparity_adapter/verification_20260923/README.md)，不混用两次检查的时点。
 
 1. 已完成 51 项相关 CPU、10 项 CUDA 测试，冻结及真实 checkpoint 的 RNG/采样/optimizer 恢复通过。
-2. K0 精确一致，历史权重 K1/3/5 严格对照未通过；同版本复测也有差异，根因尚未逐项隔离。保留限制，不继续诊断或更换默认算子。
+2. 默认 K0 精确一致，K1/3/5 严格对照未通过。后续诊断定位本例首次差异在稀疏池化的邻居枚举/求和顺序；临时固定池化坐标加 PyTorch 确定性设置后，预测、梯度和一次更新跨进程精确一致。仅验证一张图，未隔离全部反向算子、做多图或长训练验证；默认实现未更换，原限制不能删除。
 3. 尚未验收全新机器安装环境、多卡 refiner-only 或新导出部署。接收方需确认外部资产权限，并先运行目标环境短测，不能将本轮交接称为多卡即开即用。
 
 多 GPU、解冻 Base、去限幅、官方 log-depth 机制或几何损失移植属于独立适配或实验 revision，不混入无行为变化的代码整理。是否推进由后续实验目标决定，本轮不自动启动。

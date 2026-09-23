@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "source": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current",
+  "sample_id": "ai_003_010_cam_00_frame.0000",
+  "checkpoint": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/source_v8/experiment/exp6_4_official_ssr_disparity_adapter/runs/official_flex/checkpoints/stage1_best.pt",
+  "checkpoint_sha256": "fb94443a4b77923283f59008e31e65a0dc9c9557007e400711eab3c52f4aac3c",
+  "loss": 0.09081150591373444,
+  "bounded_residual_abs_max": 0.09238229691982269,
+  "base_frozen": true,
+  "gradient_tensors": 86,
+  "peak_memory_bytes": 3830150656,
+  "profile": "canonical",
+  "elapsed_seconds": 19.842138200998306,
+  "torch_deterministic": false,
+  "flex_cuda_extension": false,
+  "flex_allow_tf32": true,
+  "autotune_mode": "always",
+  "cache_input_sha256": "fa502dcd539a694cdbf33597f4cc4d84d7a337e2b456694c18792e248bf75fac",
+  "cache_input_unchanged": true,
+  "cuda_visible_devices": "1"
+}

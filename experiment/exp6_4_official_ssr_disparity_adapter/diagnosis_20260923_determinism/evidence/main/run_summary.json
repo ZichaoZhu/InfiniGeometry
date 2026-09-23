@@ -1,0 +1,41 @@
+{
+  "elapsed_seconds": 132.62918846099637,
+  "records": [
+    {
+      "name": "baseline_1",
+      "returncode": 0,
+      "seconds": 22.645838788012043
+    },
+    {
+      "name": "baseline_2",
+      "returncode": 0,
+      "seconds": 21.993658250081353
+    },
+    {
+      "name": "deterministic_1",
+      "returncode": 0,
+      "seconds": 22.24472924391739
+    },
+    {
+      "name": "deterministic_2",
+      "returncode": 0,
+      "seconds": 22.24610707105603
+    },
+    {
+      "name": "canonical_1",
+      "returncode": 0,
+      "seconds": 22.345030357013457
+    },
+    {
+      "name": "canonical_2",
+      "returncode": 0,
+      "seconds": 20.794161178986542
+    }
+  ],
+  "source": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current",
+  "acceptance_sha": "25b97e2bd673906a4d9d6fe2862c84d7ce470f374246b851dd92ef1e0ae28096",
+  "config_sha": "6228d0d4d3922669e05608147deb83cb3d58164bea98d19bd7895831c4d61f84",
+  "checkpoint_sha": "fb94443a4b77923283f59008e31e65a0dc9c9557007e400711eab3c52f4aac3c",
+  "input_cache_sha": "fa502dcd539a694cdbf33597f4cc4d84d7a337e2b456694c18792e248bf75fac",
+  "cache_unchanged": true
+}

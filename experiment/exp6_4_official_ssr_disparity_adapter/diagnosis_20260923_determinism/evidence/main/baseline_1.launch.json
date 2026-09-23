@@ -1,0 +1,28 @@
+{
+  "pid": 3896060,
+  "command": [
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/venv/bin/python",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/ssr_determinism_20260923_2052/diagnose_sparse.py",
+    "worker",
+    "--source",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current",
+    "--acceptance",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/ssr_determinism_20260923_2052/verify_handoff_cuda.py",
+    "--config",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current/experiment/exp6_4_official_ssr_disparity_adapter/local/acceptance6.json",
+    "--checkpoint",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/source_v8/experiment/exp6_4_official_ssr_disparity_adapter/runs/official_flex/checkpoints/stage1_best.pt",
+    "--output",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/ssr_determinism_20260923_2052/runs/baseline_1",
+    "--profile",
+    "baseline",
+    "--cache",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/ssr_determinism_20260923_2052/fixed_autotune.json",
+    "--cache-sha",
+    "fa502dcd539a694cdbf33597f4cc4d84d7a337e2b456694c18792e248bf75fac"
+  ],
+  "cwd": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current",
+  "gpu_before": "29618, 0",
+  "start_time": 1790167983.9657772,
+  "profile": "baseline"
+}
