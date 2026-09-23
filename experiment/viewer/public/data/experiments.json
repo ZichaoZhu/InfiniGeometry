@@ -99,16 +99,20 @@
     },
     {
       "id": "exp6_1_moge3_official_reproduction",
-      "label": "Exp6-1 MoGe-3 官方复现",
-      "manifestUrl": "/data/exp6_1_moge3_official_reproduction_r4/manifest.json",
-      "shortLabel": "Exp6-1 MoGe-3",
+      "label": "Exp6-1 MoGe-3 × InfiniGeometry RGB",
+      "manifestUrl": "/data/exp6_1_hard20_20260915_r1/manifest.json",
+      "shortLabel": "Exp6-1 RGB 对照",
       "stageDetails": {
-        "official_checkpoint": "官方 Ruicheng/moge-3-vitl · revision a96e58ba"
+        "official_checkpoint": "官方 Ruicheng/moge-3-vitl · revision a96e58ba；固定权重的二十张难例输出",
+        "exp3_stage1": "Hypersim 训练的 Exp3 RGB Stage1 best；GT 分位数尺度还原，非原生米制",
+        "exp3_joint": "Hypersim 训练的 Exp3 RGB Joint best；GT 分位数尺度还原，非原生米制"
       },
       "stageLabels": {
-        "official_checkpoint": "官方 ViT-L"
+        "official_checkpoint": "MoGe-3 · 官方 ViT-L",
+        "exp3_stage1": "Exp3 Stage1",
+        "exp3_joint": "Exp3 Joint"
       },
-      "summary": "使用官方 checkpoint，在五个评测数据集各固定一张图，对照 GT 与 K=0/1/3/5 输出。"
+      "summary": "A：GT；B：InfiniDepth + SSR；C、D：MoGe-3。B 可选 Stage1 / Joint，各窗口独立切换 K。"
     },
     {
       "id": "exp6_3_moge3_vs_infinidepth_exp3",
@@ -141,6 +145,48 @@
         "stage1_best": "现有 spconv SSR"
       },
       "summary": "同一冻结 InfiniDepth Base 上，对照现有 spconv SSR 与移植的 official_flex SSR。"
+    },
+    {
+      "id": "exp6_5_hypersim",
+      "label": "Exp6-5 Hypersim",
+      "shortLabel": "Exp6-5 Hypersim",
+      "manifestUrl": "/data/exp6_5_hypersim_20260921_r1/manifest.json",
+      "summary": "沿用 Exp6-4 的 train/val/test 各 5 张：GT、MoGe2 基座、自实现 SSR、官方 SSR，仅可视化。",
+      "stageLabels": {
+        "initial": "MoGe2 原始基座",
+        "self_best": "自实现 SSR · 最佳 7,500",
+        "self_final": "自实现 SSR · 最终 30,000",
+        "official_best": "官方 SSR · 最佳 25,000",
+        "official_final": "官方 SSR · 最终 30,000"
+      },
+      "stageDetails": {
+        "initial": "两组共同的 MoGe2 初始化权重，未经过本次 Hypersim 微调；仅 K=0。",
+        "self_best": "Exp6-5 R1 自实现 SSR，Val100 选出的 Stage1 最佳，总 step 7,500。",
+        "self_final": "Exp6-5 R1 自实现 SSR，Joint 结束，总 step 30,000。",
+        "official_best": "Exp6-5 R1 官方 SSR，Val100 选出的 Joint 最佳，总 step 25,000；不是官方发布的 MoGe3 权重。",
+        "official_final": "Exp6-5 R1 官方 SSR，Joint 结束，总 step 30,000；不是官方发布的 MoGe3 权重。"
+      }
+    },
+    {
+      "id": "exp6_5_ood",
+      "label": "Exp6-5 跨数据集",
+      "shortLabel": "Exp6-5 跨数据集",
+      "manifestUrl": "/data/exp6_5_ood_20260921_r1/manifest.json",
+      "summary": "沿用 Exp6-1 用户选定的 20 张难例：GT、MoGe2 基座、自实现 SSR、官方 SSR，仅可视化。",
+      "stageLabels": {
+        "initial": "MoGe2 原始基座",
+        "self_best": "自实现 SSR · 最佳 7,500",
+        "self_final": "自实现 SSR · 最终 30,000",
+        "official_best": "官方 SSR · 最佳 25,000",
+        "official_final": "官方 SSR · 最终 30,000"
+      },
+      "stageDetails": {
+        "initial": "两组共同的 MoGe2 初始化权重，未经过本次 Hypersim 微调；仅 K=0。",
+        "self_best": "Hypersim 微调后跨数据集推理；Val100 选择的 Stage1 最佳，总 step 7,500。",
+        "self_final": "Hypersim 微调后跨数据集推理；Joint 最终，总 step 30,000。",
+        "official_best": "Hypersim 微调后跨数据集推理；Val100 选择的 Joint 最佳，总 step 25,000；非官方 MoGe3 发布权重。",
+        "official_final": "Hypersim 微调后跨数据集推理；Joint 最终，总 step 30,000；非官方 MoGe3 发布权重。"
+      }
     }
   ],
   "version": 1

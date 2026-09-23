@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 async function canvasColorCount(page: import("@playwright/test").Page, testId: string) {
@@ -54,7 +54,7 @@ test("switches experiments and renders the three point-cloud windows", async ({ 
   await expect(page.getByTestId("sample-5")).toContainText("玻璃楼梯细拉杆");
   await expect(page.locator(".canvas-error")).toHaveCount(0);
 
-  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  const screenshotDirectory = test.info().outputPath("acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
   await page.screenshot({ path: path.join(screenshotDirectory, "desktop.png"), fullPage: true });
 });
@@ -78,7 +78,7 @@ test("shows five configured samples for each Exp3 dataset split", async ({ page 
       { timeout: 30_000 },
     ).toBeGreaterThan(2);
   }
-  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  const screenshotDirectory = test.info().outputPath("acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
   await page.screenshot({ path: path.join(screenshotDirectory, "exp3-train-desktop.png"), fullPage: true });
 
@@ -115,7 +115,7 @@ test("shows the Exp4 LiDAR best checkpoint across all three dataset splits", asy
     await page.getByTestId(panel).scrollIntoViewIfNeeded();
     await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
   }
-  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  const screenshotDirectory = test.info().outputPath("acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
   await page.screenshot({ path: path.join(screenshotDirectory, "exp4-rgb-lidar-desktop.png"), fullPage: true });
   await page.getByTestId("reference-version").getByRole("button", { name: "LiDAR" }).click();
@@ -155,7 +155,7 @@ test("shows ten Waymo FRONT and SIDE visualization samples", async ({ page }) =>
     );
   }
   await expect(page.locator(".canvas-error")).toHaveCount(0);
-  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  const screenshotDirectory = test.info().outputPath("acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
   await page.screenshot({ path: path.join(screenshotDirectory, "exp5-waymo-desktop.png"), fullPage: true });
   await page.getByTestId("sample-6").click();
@@ -206,43 +206,121 @@ test("shows ten selected ETH3D point-cloud samples", async ({ page }) => {
   await expect(page.locator(".canvas-error")).toHaveCount(0);
 });
 
-test("shows five fixed Exp6-1 official MoGe-3 samples", async ({ page }) => {
+test("shows twenty selected Exp6-1 samples with bounded point-cloud memory", async ({ page }) => {
+  test.setTimeout(240_000);
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   const exp6 = page.getByTestId("experiment-exp6_1_moge3_official_reproduction");
   await exp6.click();
   await expect(exp6).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByRole("heading", { name: /MoGe-3/ })).toBeVisible();
-  await expect(page.locator(".sample-switcher button")).toHaveCount(5, { timeout: 30_000 });
-  await expect(page.getByTestId("sample-1")).toContainText("NYUv2");
-  await expect(page.getByTestId("sample-3")).toContainText("DSC_6487");
-  await expect(page.getByTestId("sample-4")).toContainText("office_02");
-  await expect(page.getByTestId("sample-5")).toContainText("Sintel");
-  await expect(page.getByTestId("viewer-left")).toContainText("官方 ViT-L · K=0");
-  await expect(page.getByTestId("viewer-right")).toContainText("官方 ViT-L · K=3");
+  await expect(page.getByRole("heading", { name: /MoGe-3/, level: 1 })).toBeVisible();
+  await expect(page.locator(".sample-switcher button")).toHaveCount(20, { timeout: 30_000 });
+  const selectedIds = ["NYUv2/00086", "NYUv2/00283", "NYUv2/00516", "NYUv2/00550", "NYUv2/00606", "NYUv2/00800", "NYUv2/01076", "KITTI/2011_09_30_drive_0018/image_02/0000000214", "ETH3D/courtyard/DSC_0293", "ETH3D/electro/DSC_9280", "ETH3D/kicker/DSC_6504", "ETH3D/pipes/DSC_0643", "ETH3D/playground/DSC_0568", "iBims-1/factory_02", "iBims-1/office_02", "iBims-1/storageroom_05", "Sintel/alley_2/frame_0009", "Sintel/bamboo_2/frame_0015", "Sintel/market_2/frame_0019", "Sintel/market_6/frame_0035"];
+  for (const [index, id] of selectedIds.entries()) {
+    await expect(page.getByTestId(`sample-${index + 1}`)).toContainText(id);
+  }
+  const panels = ["viewer-ground-truth", "viewer-left", "viewer-moge3-left", "viewer-moge3-right"];
+  await expect(page.locator(".viewer-pane")).toHaveCount(4);
+  await expect(page.locator(".comparison-grid")).toHaveCSS("grid-template-columns", /^\S+ \S+$/);
+  await expect(page.getByTestId("viewer-left")).toContainText("窗口 B");
+  await expect(page.getByTestId("viewer-left")).toContainText("InfiniDepth + SSR · RGB · Exp3 Joint · K=3");
+  await expect(page.getByTestId("viewer-left")).toContainText("非原生米制");
+  await expect(page.getByTestId("left-stage").getByRole("button")).toHaveCount(2);
+  await expect(page.getByTestId("viewer-moge3-left")).toContainText("窗口 C");
+  await expect(page.getByTestId("viewer-moge3-left")).toContainText("MoGe-3 · 官方 ViT-L · K=0");
+  await expect(page.getByTestId("viewer-moge3-right")).toContainText("窗口 D");
+  await expect(page.getByTestId("viewer-moge3-right")).toContainText("MoGe-3 · 官方 ViT-L · K=3");
+  for (const [stage, label] of [["exp3_stage1", "Exp3 Stage1"], ["exp3_joint", "Exp3 Joint"]]) {
+    await page.getByTestId("left-stage").getByRole("button", { name: label }).click();
+    for (const k of [0, 1, 5, 3]) {
+      await page.getByTestId("left-k").getByRole("button", { name: `K=${k}` }).click();
+      await expect(page.getByTestId("viewer-left").locator("canvas")).toHaveAttribute(
+        "data-scene-source", new RegExp(`${stage}_k${k}\\.ply:raw:full$`),
+        { timeout: 30_000 },
+      );
+    }
+  }
   await expect(page.getByText("Affine Depth Rel").first()).toBeVisible();
-  await page.getByTestId("right-k").getByRole("button", { name: "K=5" }).click();
-  await expect(page.getByTestId("viewer-right")).toContainText("官方 ViT-L · K=5");
-  for (const sample of [1, 2, 3, 4, 5]) {
-    await page.getByTestId(`sample-${sample}`).click();
-    for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+  await page.getByTestId("moge3-left-k").getByRole("button", { name: "K=1" }).click();
+  await expect(page.getByTestId("viewer-moge3-right")).toContainText("K=3");
+  await page.getByTestId("moge3-right-k").getByRole("button", { name: "K=5" }).click();
+  await expect(page.getByTestId("viewer-moge3-left")).toContainText("K=1");
+  await expect(page.getByTestId("viewer-moge3-right")).toContainText("K=5");
+  await expect(page.getByTestId("viewer-left")).toContainText("Exp3 Joint · K=3");
+  await page.getByTestId("moge3-left-k").getByRole("button", { name: "K=0" }).click();
+  await page.getByTestId("moge3-right-k").getByRole("button", { name: "K=3" }).click();
+  const session = await page.context().newCDPSession(page);
+  const memory: { sample: number; usedBytes: number }[] = [];
+  for (const sample of Array.from({ length: 20 }, (_, i) => i + 1)) {
+    const batch = Math.ceil(sample / 10);
+    const localOrder = String((sample - 1) % 10 + 1).padStart(2, "0");
+    const button = page.getByTestId(`sample-${sample}`);
+    await button.click();
+    await button.hover();
+    await expect(button.locator(".sample-hover-preview")).toBeVisible();
+    await expect.poll(() => button.locator(".sample-hover-preview img").evaluate((img) => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    for (const panel of panels) {
       await page.getByTestId(panel).scrollIntoViewIfNeeded();
       await expect(page.getByTestId(panel).locator("canvas")).toHaveAttribute(
         "data-scene-source",
-        /exp6_1_moge3_official_reproduction_r3/,
+        new RegExp(panel === "viewer-left"
+          ? `exp6_1_hard20_20260915_b${batch}_exp3_rgb/${localOrder}/exp3_joint_k3\\.ply:raw:full$`
+          : `exp6_1_hard20_20260915_b${batch}_moge3/${localOrder}_[^/]+/`),
         { timeout: 30_000 },
       );
       await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
     }
+    await expect(page.getByTestId("viewer-left")).toContainText("Exp3 Joint · K=3");
+    await expect(page.getByTestId("viewer-moge3-left")).toContainText("K=0");
+    await expect(page.getByTestId("viewer-moge3-right")).toContainText("K=3");
+    if ([1, 10, 20].includes(sample)) {
+      await session.send("HeapProfiler.collectGarbage");
+      const heap = await session.send("Runtime.getHeapUsage");
+      memory.push({ sample, usedBytes: heap.usedSize + (heap.backingStorageSize ?? 0) });
+    }
   }
+  expect(memory[2].usedBytes - memory[0].usedBytes).toBeLessThan(64 * 1024 * 1024);
   await expect(page.locator(".canvas-error")).toHaveCount(0);
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
   await page.mouse.move(1, 1);
   await expect(page.locator(".sample-hover-preview").last()).toBeHidden();
-  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  const screenshotDirectory = test.info().outputPath("acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
+  await writeFile(path.join(screenshotDirectory, "exp6-1-hard20-memory.json"), JSON.stringify(memory, null, 2));
   await page.screenshot({ path: path.join(screenshotDirectory, "exp6-1-desktop.png"), fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator(".comparison-grid")).toHaveCSS("grid-template-columns", /^\S+$/);
   await page.screenshot({ path: path.join(screenshotDirectory, "exp6-1-mobile.png"), fullPage: true });
+  await page.getByTestId("experiment-exp6_3_moge3_vs_infinidepth_exp3").click();
+  await expect(page.getByTestId("viewer-exp3-joint")).toContainText("Exp3 Joint · K=3");
+  await exp6.click();
+  await expect(page.getByTestId("viewer-left")).toContainText("InfiniDepth + SSR · RGB · Exp3 Joint · K=3");
+  await expect(page.getByTestId("viewer-moge3-left")).toContainText("K=0");
+  await expect(page.getByTestId("viewer-moge3-right")).toContainText("K=3");
+  expect(errors).toEqual([]);
+});
+
+test("Exp6-1 legacy official-only manifest still renders three windows", async ({ page }) => {
+  // Use the retained real legacy fixture; route.fetch would add a second network client.
+  const manifest = JSON.parse(await readFile(path.join(process.cwd(),
+    "public/data/exp6_1_selected_moge3_20260915_r1/manifest.json"), "utf8"));
+  await page.route("**/data/exp6_1*/manifest.json", async (route) => {
+    await route.fulfill({ json: manifest });
+  });
+  await page.goto("/");
+  const exp6 = page.getByTestId("experiment-exp6_1_moge3_official_reproduction");
+  await exp6.click();
+  await expect(page.locator("canvas")).toHaveCount(3);
+  await expect(page.getByTestId("viewer-left")).toContainText("官方 ViT-L · K=0");
+  await expect(page.getByTestId("viewer-right")).toContainText("官方 ViT-L · K=3");
+  for (const panel of ["viewer-ground-truth", "viewer-left", "viewer-right"]) {
+    await page.getByTestId(panel).scrollIntoViewIfNeeded();
+    await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
+  }
+  await page.getByTestId("sample-5").hover();
+  await expect(page.getByTestId("sample-5").locator(".sample-hover-preview")).toBeVisible();
+  await expect(page.locator(".canvas-error")).toHaveCount(0);
 });
 
 test("shows Exp6-3 GT, MoGe-3, Stage1, and Joint on fixed Val/Test samples", async ({ page }) => {
@@ -276,7 +354,7 @@ test("shows Exp6-3 GT, MoGe-3, Stage1, and Joint on fixed Val/Test samples", asy
     await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
   }
   await expect(page.locator(".canvas-error")).toHaveCount(0);
-  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  const screenshotDirectory = test.info().outputPath("acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
   await page.screenshot({ path: path.join(screenshotDirectory, "exp6-3-four-pane-desktop.png"), fullPage: true });
 
@@ -303,7 +381,7 @@ test("shows Exp6-4 GT, spconv, and official flex in fixed windows", async ({ pag
     await page.getByTestId(panel).scrollIntoViewIfNeeded();
     await expect.poll(() => canvasColorCount(page, panel), { timeout: 30_000 }).toBeGreaterThan(2);
   }
-  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  const screenshotDirectory = test.info().outputPath("acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
   await page.screenshot({ path: path.join(screenshotDirectory, "exp6-4-three-pane-desktop.png"), fullPage: true });
   await page.getByTestId("spconv-k").getByRole("button", { name: "K=1" }).click();
@@ -327,7 +405,7 @@ test("lists and selects the Waymo side-camera previews", async ({ page }) => {
   await expect(page.locator(".card:not(.hidden)")).toHaveCount(38);
   await page.getByRole("combobox").nth(0).selectOption("SIDE_RIGHT");
   await expect(page.locator(".card:not(.hidden)")).toHaveCount(19);
-  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  const screenshotDirectory = test.info().outputPath("acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
   await page.screenshot({ path: path.join(screenshotDirectory, "waymo-gallery-night.png"), fullPage: true });
 });
@@ -364,7 +442,7 @@ test("keeps controls and canvases separated on a mobile viewport", async ({ page
   expect(second).not.toBeNull();
   expect(second!.y).toBeGreaterThan(first!.y + first!.height - 1);
   await expect(page.locator(".canvas-error")).toHaveCount(0);
-  const screenshotDirectory = path.join(process.cwd(), "test-results", "viewer-acceptance");
+  const screenshotDirectory = test.info().outputPath("acceptance");
   await mkdir(screenshotDirectory, { recursive: true });
   await page.screenshot({ path: path.join(screenshotDirectory, "mobile.png"), fullPage: true });
 });

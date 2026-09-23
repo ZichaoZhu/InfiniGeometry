@@ -53,6 +53,7 @@ export type PointCloudAsset = {
   bytes: number;
   sha256: string;
   checkpointSha256: string;
+  coordinateLabel?: string;
   alignment: {
     scale: number;
     zShift: number;

@@ -1,7 +1,7 @@
 "use client";
 
 import { Html, OrbitControls } from "@react-three/drei";
-import { Canvas, useLoader, useThree } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import {
   Component,
   Suspense,
@@ -16,7 +16,6 @@ import {
   type ReactNode,
 } from "react";
 import * as THREE from "three";
-import { PLYLoader } from "three/addons/loaders/PLYLoader.js";
 
 import {
   finiteRasterIndices,
@@ -28,6 +27,7 @@ import {
 } from "@/lib/geometry";
 import { shouldApplyCameraFit } from "@/lib/camera";
 import { dataUrl } from "@/lib/dataUrl";
+import { loadPointCloud } from "@/lib/loadPointCloud";
 import type {
   CoordinateMode,
   PointCloudAsset,
@@ -129,18 +129,38 @@ function geometryBounds(geometry: THREE.BufferGeometry): Bounds {
   };
 }
 
-function PointMap({
+type PointMapProps = Pick<
+  CloudSceneProps,
+  "asset" | "manifest" | "sample" | "coordinateMode" | "rasterScope"
+> & { onBounds: (bounds: Bounds) => void };
+
+function PointMap(props: PointMapProps) {
+  const url = dataUrl(props.asset.url);
+  const [loaded, setLoaded] = useState<{
+    url: string;
+    source?: THREE.BufferGeometry;
+    error?: Error;
+  } | null>(null);
+  useEffect(() => loadPointCloud(
+    url,
+    (source) => setLoaded({ url, source }),
+    (error) => setLoaded({ url, error }),
+  ), [url]);
+  if (loaded?.url !== url) return <LoadingCloud />;
+  if (loaded.error) throw loaded.error;
+  if (!loaded.source) return <LoadingCloud />;
+  return <LoadedPointMap {...props} source={loaded.source} />;
+}
+
+function LoadedPointMap({
   asset,
   manifest,
   sample,
   coordinateMode,
   rasterScope,
   onBounds,
-}: Pick<
-  CloudSceneProps,
-  "asset" | "manifest" | "sample" | "coordinateMode" | "rasterScope"
-> & { onBounds: (bounds: Bounds) => void }) {
-  const source = useLoader(PLYLoader, dataUrl(asset.url));
+  source,
+}: PointMapProps & { source: THREE.BufferGeometry }) {
   const geometry = useMemo(() => {
     const sourcePosition = source.getAttribute("position");
     const sourceColor = source.getAttribute("color");
