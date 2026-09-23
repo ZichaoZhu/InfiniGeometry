@@ -1,0 +1,96 @@
+{
+  "completed_at_unix": 1790143311.1901753,
+  "experiment_id": "exp6_4_official_ssr_disparity_adapter_official_flex_smoke_handoff_acceptance6",
+  "format": "infinidepth-disparity-refiner-report-v1",
+  "frozen_base_sha256": "273cdc3ebc097cd92766a9af59e4aea3a9c34fd71a3eaf830d7c01a14ebfb678",
+  "parameter_checksums": [
+    [
+      -126395.11179539021,
+      2784520.144923371
+    ]
+  ],
+  "parameters_consistent": true,
+  "peak_cuda_memory_bytes": 6004759040,
+  "run_id": "main",
+  "stages": [
+    {
+      "best_evaluation": {
+        "aggregate": {
+          "k0": {
+            "full_mae": 0.07047639787197113
+          },
+          "k1": {
+            "full_mae": 0.06993258744478226
+          },
+          "k3": {
+            "full_mae": 0.06885461509227753
+          },
+          "k5": {
+            "full_mae": 0.06778986752033234
+          }
+        },
+        "k3_better_than_k0_count": 1,
+        "per_image": {
+          "ai_003_010_cam_00_frame.0000": {
+            "k0": {
+              "full_mae": 0.07047639787197113
+            },
+            "k1": {
+              "full_mae": 0.06993258744478226
+            },
+            "k3": {
+              "full_mae": 0.06885461509227753
+            },
+            "k5": {
+              "full_mae": 0.06778986752033234
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "best_score": 0.06885461509227753,
+      "best_step": 6,
+      "completed_steps": 6,
+      "elapsed_seconds": 37.84893298149109,
+      "final_evaluation": {
+        "aggregate": {
+          "k0": {
+            "full_mae": 0.07047639787197113
+          },
+          "k1": {
+            "full_mae": 0.06993258744478226
+          },
+          "k3": {
+            "full_mae": 0.06885461509227753
+          },
+          "k5": {
+            "full_mae": 0.06778986752033234
+          }
+        },
+        "k3_better_than_k0_count": 1,
+        "per_image": {
+          "ai_003_010_cam_00_frame.0000": {
+            "k0": {
+              "full_mae": 0.07047639787197113
+            },
+            "k1": {
+              "full_mae": 0.06993258744478226
+            },
+            "k3": {
+              "full_mae": 0.06885461509227753
+            },
+            "k5": {
+              "full_mae": 0.06778986752033234
+            }
+          }
+        },
+        "sample_count": 1
+      },
+      "resume_sample_sequence_verified": true,
+      "stage": "stage1"
+    }
+  ],
+  "status": "completed",
+  "total_steps": 6,
+  "world_size": 1
+}

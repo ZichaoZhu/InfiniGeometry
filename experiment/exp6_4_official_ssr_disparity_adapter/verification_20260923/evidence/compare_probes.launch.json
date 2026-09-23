@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/venv/bin/python",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/verify_handoff_cuda.py",
+    "compare-probes",
+    "--source",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current",
+    "--output",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/compare_probes",
+    "--inputs",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/probe_before/probe.pt",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/probe_current/probe.pt"
+  ],
+  "pid": 2765014,
+  "cwd": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current",
+  "time": 1790142798.1137178
+}

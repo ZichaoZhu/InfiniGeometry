@@ -1,0 +1,76 @@
+{
+  "best_evaluation": {
+    "aggregate": {
+      "k0": {
+        "full_mae": 0.07047639787197113
+      },
+      "k1": {
+        "full_mae": 0.06993258744478226
+      },
+      "k3": {
+        "full_mae": 0.06885461509227753
+      },
+      "k5": {
+        "full_mae": 0.06778986752033234
+      }
+    },
+    "k3_better_than_k0_count": 1,
+    "per_image": {
+      "ai_003_010_cam_00_frame.0000": {
+        "k0": {
+          "full_mae": 0.07047639787197113
+        },
+        "k1": {
+          "full_mae": 0.06993258744478226
+        },
+        "k3": {
+          "full_mae": 0.06885461509227753
+        },
+        "k5": {
+          "full_mae": 0.06778986752033234
+        }
+      }
+    },
+    "sample_count": 1
+  },
+  "best_score": 0.06885461509227753,
+  "best_step": 6,
+  "completed_steps": 6,
+  "elapsed_seconds": 78.00393605232239,
+  "final_evaluation": {
+    "aggregate": {
+      "k0": {
+        "full_mae": 0.07047639787197113
+      },
+      "k1": {
+        "full_mae": 0.06993258744478226
+      },
+      "k3": {
+        "full_mae": 0.06885461509227753
+      },
+      "k5": {
+        "full_mae": 0.06778986752033234
+      }
+    },
+    "k3_better_than_k0_count": 1,
+    "per_image": {
+      "ai_003_010_cam_00_frame.0000": {
+        "k0": {
+          "full_mae": 0.07047639787197113
+        },
+        "k1": {
+          "full_mae": 0.06993258744478226
+        },
+        "k3": {
+          "full_mae": 0.06885461509227753
+        },
+        "k5": {
+          "full_mae": 0.06778986752033234
+        }
+      }
+    },
+    "sample_count": 1
+  },
+  "resume_sample_sequence_verified": false,
+  "stage": "stage1"
+}

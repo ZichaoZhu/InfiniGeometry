@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "checkpoint": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/pause_step3.pt",
+  "stage_step": 3,
+  "model_exact": true,
+  "optimizer_exact": true,
+  "rng_exact": true,
+  "sampler_exact": true,
+  "frozen_base_verified": true,
+  "next_global_sample_indices": [
+    3,
+    2,
+    1,
+    5,
+    6,
+    7,
+    4,
+    0
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "status": "functional_pass_strict_numerical_check_failed",
+  "date": "2026-09-23",
+  "server_root": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348",
+  "gpu_index": 2,
+  "gpu_uuid": "GPU-22ab12a0-af14-fa8c-44a7-a869af82e244",
+  "source_before": "ef378cb75a6e523de0003d6a8dd7f296afa8b2b8",
+  "source_current": "30a2f89613ad3189b6e63969cbe73407e8b0c2a2",
+  "model_and_data_core_files_equal": 223,
+  "packages": {
+    "torch": "2.8.0+cu128",
+    "torchvision": "0.23.0+cu128",
+    "numpy": "1.26.4",
+    "pytest": "9.1.1",
+    "flex-gemm": "1.0.0",
+    "spconv-cu126": "2.3.8",
+    "cumm-cu126": "0.7.11"
+  },
+  "cuda_version": "12.8",
+  "tests": {
+    "cpu_passed": 51,
+    "cpu_subtests_passed": 9,
+    "cuda_passed": 10,
+    "skipped": 0
+  },
+  "probe_comparisons": {
+    "before_vs_current": {
+      "per_k": {
+        "0": {
+          "max_abs": 0,
+          "mean_abs": 0,
+          "p99_abs": 0
+        },
+        "1": {
+          "max_abs": 0.000004112720489501953,
+          "mean_abs": 3.002110133820679e-7,
+          "p99_abs": 0.0000012516975402832031
+        },
+        "3": {
+          "max_abs": 0.0009522736072540283,
+          "mean_abs": 0.000004279710537957726,
+          "p99_abs": 0.00008214917033910751
+        },
+        "5": {
+          "max_abs": 0.007591083645820618,
+          "mean_abs": 0.000024971166567411274,
+          "p99_abs": 0.00040627922862768173
+        }
+      },
+      "loss_abs": 2.2351741790771484e-7,
+      "gradient_max_abs": 0.00002855062484741211
+    },
+    "current_repeat": {
+      "per_k": {
+        "0": {
+          "max_abs": 0,
+          "mean_abs": 0,
+          "p99_abs": 0
+        },
+        "1": {
+          "max_abs": 0.000004172325134277344,
+          "mean_abs": 2.973527557514899e-7,
+          "p99_abs": 0.0000012516975402832031
+        },
+        "3": {
+          "max_abs": 0.0015456080436706543,
+          "mean_abs": 0.000010237643436994404,
+          "p99_abs": 0.00021543912589550018
+        },
+        "5": {
+          "max_abs": 0.0022002458572387695,
+          "mean_abs": 0.00003000568540301174,
+          "p99_abs": 0.00047656334936618805
+        }
+      },
+      "loss_abs": 2.2351741790771484e-7,
+      "gradient_max_abs": 0.00003230571746826172
+    }
+  },
+  "strict_tolerance": 0.000001,
+  "training_steps": 6,
+  "pause_step": 3,
+  "config_sha256": "6228d0d4d3922669e05608147deb83cb3d58164bea98d19bd7895831c4d61f84",
+  "checkpoint_roundtrip": {
+    "status": "passed",
+    "checkpoint": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/pause_step3.pt",
+    "stage_step": 3,
+    "model_exact": true,
+    "optimizer_exact": true,
+    "rng_exact": true,
+    "sampler_exact": true,
+    "frozen_base_verified": true,
+    "next_global_sample_indices": [
+      3,
+      2,
+      1,
+      5,
+      6,
+      7,
+      4,
+      0
+    ]
+  },
+  "continuous_vs_resumed": {
+    "status": "passed",
+    "tolerance": 0.000001,
+    "max_absolute_differences": {
+      "model": 7.450580596923828e-9,
+      "optimizer": 7.450580596923828e-9,
+      "config_sha256": 0,
+      "stage_step": 0,
+      "total_step": 0,
+      "frozen_base_sha256": 0,
+      "rng": 0,
+      "rank_rng": 0,
+      "best_step": 0,
+      "best_score": 0,
+      "best_evaluation": 0,
+      "expected_next_global_indices": 0,
+      "restored_rng": 0
+    },
+    "stage_step": 6,
+    "next_sample_sequence_verified": true
+  },
+  "gpu_after": "8602 MiB, 39907 MiB, 0 %",
+  "notes": [
+    "Original training/runtime settings retained; no deterministic-kernel substitution or tolerance relaxation.",
+    "Both probes finite, Base frozen, gradients finite. Default sparse runtime is not strict cross-process deterministic; same-code repeat reproduces discrepancy.",
+    "Temporary smoke driver assumed a best checkpoint at the pause step, but trainer intentionally skips evaluation when pausing; driver stopped after valid last.pt save, then same-config CLI resume completed.",
+    "New source deployment on existing S115 environment; not a fresh dependency installation or another GPU architecture."
+  ],
+  "source_archives": {
+    "before_sha256": "24d2e67a5c23cdd21ce42b57e3aa84a75561f5f7d44670b3105988d3836cacf5",
+    "current_sha256": "e5754340e2f44c14d114b4611eb26daee85737b59aa0210e954ce520c6d6d0a7"
+  }
+}

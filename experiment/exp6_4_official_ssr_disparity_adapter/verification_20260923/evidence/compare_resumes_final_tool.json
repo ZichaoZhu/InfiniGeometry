@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "tolerance": 1e-06,
+  "max_absolute_differences": {
+    "model": 7.450580596923828e-09,
+    "optimizer": 7.450580596923828e-09,
+    "config_sha256": 0.0,
+    "stage_step": 0.0,
+    "total_step": 0.0,
+    "frozen_base_sha256": 0.0,
+    "rng": 0.0,
+    "rank_rng": 0.0,
+    "best_step": 0.0,
+    "best_score": 0.0,
+    "best_evaluation": 0.0,
+    "expected_next_global_indices": 0.0,
+    "restored_rng": 0.0
+  },
+  "stage_step": 6,
+  "next_sample_sequence_verified": true
+}

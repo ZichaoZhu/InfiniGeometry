@@ -1,0 +1,10 @@
+{
+  "mode": "prepared",
+  "backend": "official_flex",
+  "assets_checked": true,
+  "gpu_validation": "not_run",
+  "config": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current/experiment/exp6_4_official_ssr_disparity_adapter/local/official_smoke56.json",
+  "train": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/venv/bin/python -m training.disparity_refiner.train --config /mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current/experiment/exp6_4_official_ssr_disparity_adapter/local/official_smoke56.json --output /mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/unused_smoke56 --run-id main --device cuda:0",
+  "resume": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/venv/bin/python -m training.disparity_refiner.train --config /mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current/experiment/exp6_4_official_ssr_disparity_adapter/local/official_smoke56.json --output /mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/unused_smoke56 --run-id main --device cuda:0 --resume /mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/unused_smoke56/checkpoints/last.pt",
+  "note": "Set CUDA_VISIBLE_DEVICES explicitly; this command did not start any process."
+}

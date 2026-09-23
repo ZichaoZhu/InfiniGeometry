@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/venv/bin/python",
+    "-m",
+    "training.disparity_refiner.train",
+    "--config",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current/experiment/exp6_4_official_ssr_disparity_adapter/local/acceptance6.json",
+    "--run-id",
+    "main",
+    "--device",
+    "cuda:0",
+    "--output",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/resumed"
+  ],
+  "pid": 2779605,
+  "cwd": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current",
+  "time": 1790143162.0286255
+}

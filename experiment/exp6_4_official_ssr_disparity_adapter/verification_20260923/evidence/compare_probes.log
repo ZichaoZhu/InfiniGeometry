@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/verify_handoff_cuda.py", line 142, in <module>
+    main()
+  File "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/verify_handoff_cuda.py", line 136, in main
+    result = {"probe": probe, "compare-probes": compare_probes, "compare-resumes": compare_resumes}[args.mode](args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/verify_handoff_cuda.py", line 97, in compare_probes
+    max_absolute_difference=compare_tree(left, right, tolerance=1e-6))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/verify_handoff_cuda.py", line 23, in compare_tree
+    maximum = max((compare_tree(left[k], right[k], tolerance=tolerance, prefix=f"{prefix}.{k}")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/verify_handoff_cuda.py", line 23, in <genexpr>
+    maximum = max((compare_tree(left[k], right[k], tolerance=tolerance, prefix=f"{prefix}.{k}")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/verify_handoff_cuda.py", line 23, in compare_tree
+    maximum = max((compare_tree(left[k], right[k], tolerance=tolerance, prefix=f"{prefix}.{k}")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/verify_handoff_cuda.py", line 23, in <genexpr>
+    maximum = max((compare_tree(left[k], right[k], tolerance=tolerance, prefix=f"{prefix}.{k}")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/verify_handoff_cuda.py", line 15, in compare_tree
+    torch.testing.assert_close(left, right, atol=tolerance, rtol=tolerance, msg=prefix)
+  File "/mnt/data/home/zhuzichao/envs/infinidepth_disparity_ssr/lib/python3.12/site-packages/torch/testing/_comparison.py", line 1587, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: root.predictions.1

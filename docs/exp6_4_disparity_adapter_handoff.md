@@ -1,8 +1,8 @@
 # Exp6-4：官方 SSR 网络主体的 disparity 适配版代码交接
 
-2026-09-23 更新：官方单组配置准备与显式机器路径已实现，见[运行交接](../experiment/exp6_4_official_ssr_disparity_adapter/RUNNING.md)。原 A/B 入口和科学配置不变；下文 2026-09-21 的待办以该新增记录为准。模型数值一致性和新环境 CUDA 验收仍未执行，多卡仍不在本轮范围。
+2026-09-23 收尾：官方单组配置准备与显式机器路径已实现，见[运行交接](../experiment/exp6_4_official_ssr_disparity_adapter/RUNNING.md)。S115 现有环境的 CUDA、冻结和短步恢复验证通过；历史权重严格数值对照未通过，见[验收报告](../experiment/exp6_4_official_ssr_disparity_adapter/verification_20260923/README.md)。按现状提交交接，不继续诊断，不修改训练方法或历史产物。
 
-整理日期：2026-09-21。范围：核对本地源码与既有实验记录，整理代码入口、方法边界和后续工程待办。本轮不修改训练算法、配置、checkpoint 或网站，不重新运行训练和评估，也未核验服务器当前状态。
+初次整理日期为 2026-09-21，当前入口与验收状态以本次更新为准。没有重跑正式实验、重评 Val100 或部署网站；全新依赖环境与多卡扩训未验收。
 
 ## 1. 交付对象与结论边界
 
@@ -103,6 +103,7 @@ L=\frac14\sum_{k=0}^{3}L_k.
 | [data.py](../training/disparity_refiner/data.py)、[losses.py](../training/disparity_refiner/losses.py) | manifest、懒加载缓存、GT 归一化及 disparity 监督 |
 | [train.py](../training/disparity_refiner/train.py)、[frozen_base.py](../training/disparity_refiner/frozen_base.py) | 单卡 refiner-only、参数组、Base 哈希保护、评估与恢复 |
 | [automate.py](../experiment/exp6_4_official_ssr_disparity_adapter/automate.py) | 生成两组锁定配置，运行 smoke、训练和评估；不是 official-only 启动器 |
+| [prepare_official.py](../experiment/exp6_4_official_ssr_disparity_adapter/prepare_official.py)、[runtime_paths.py](../training/disparity_refiner/runtime_paths.py) | 准备单组配置和机器路径，校验输出边界；不自动启动训练 |
 | [evaluate_pair.py](../experiment/exp6_4_official_ssr_disparity_adapter/evaluate_pair.py) | 固定 Exp6-3 协议的 Global/Local 评估与配对分析，不用于训练 loss |
 | [export_assets.py](../training/disparity_refiner/export_assets.py)、[viewer.json](../experiment/exp6_4_official_ssr_disparity_adapter/viewer.json) | 已有 checkpoint 的加载和查看器导出、选图与模型映射 |
 | [test_official_adapter.py](../tests/disparity_refiner/test_official_adapter.py) | 坐标、冻结、恢复、配置保护及 CUDA 残差/像素顺序测试 |
@@ -130,21 +131,21 @@ L=\frac14\sum_{k=0}^{3}L_k.
 
 ## 5. 运行、资产与环境边界
 
-当前入口仍为实验目录中的 `run.sh`，会执行完整 A/B 流程，不是只运行官方组。共享训练器已经有 `--config`、`--output`、`--resume` 接口；本轮未新增可迁移的单组启动器，也没有重新启动这些命令。
+单组入口为 `prepare_official.py`，生成显式路径配置并打印共享训练器的 `--config`、`--output`、`--resume` 命令。原 `run.sh` 保留完整 A/B 自动流程，不是只运行官方组；按 [RUNNING.md](../experiment/exp6_4_official_ssr_disparity_adapter/RUNNING.md) 选择入口，不直接启动历史目录。
 
-- 历史服务器源码为 `ZJU3DV-S115` 上的 `/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/source_v8`，依据[结果同步清单](../experiment/exp6_4_official_ssr_disparity_adapter/results_20260914/manifest.json)。这是历史位置，不表示本轮已检查其存在或健康状态；旧 PID 不用于当前进程控制。
+- 历史服务器源码为 `ZJU3DV-S115` 上的 `/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/source_v8`，依据[结果同步清单](../experiment/exp6_4_official_ssr_disparity_adapter/results_20260914/manifest.json)。2026-09-23 已只读加载其中 official_flex 的 stage1_best.pt 验收；不代表扫描过所有历史资产，旧 PID 不用于当前进程控制。
 - 环境记录见[初期环境清单](../experiment/exp6_4_official_ssr_disparity_adapter/deployment_20260911_v4.json)与[后续 CUDA/共享 GPU 验收](../experiment/exp6_4_official_ssr_disparity_adapter/deployment_20260912_shared_gpu3.json)。保留固定 FlexGEMM 版本、进程级 `FLEX_GEMM_AUTOTUNE_MODE=always` 和实验独立缓存；不把旧环境记录当成新机器安装验收。
-- `evaluate_pair.py` 仍硬编码 Exp6-3 协议、Local masks 与官方 MoGe 依赖路径，并校验哈希。迁移时需显式整理这些依赖，不关闭校验、不重写指标。
+- `evaluate_pair.py` 支持显式配置 Exp6-3 协议、Local masks 与官方 MoGe 依赖位置，缺省保留历史路径。固定协议/清单哈希校验不变；迁移时补齐依赖，不关闭校验、不重写指标。
 - checkpoint 格式为 `infinidepth-disparity-refiner-v1`，保存原模型 state dict；`last.pt` 另含 optimizer、RNG、采样与阶段状态。权重加载和完整恢复不是同一操作。
 - 恢复会检查配置哈希、backend、训练模式和 world size。修改路径或配置后不能通过跳过检查冒充原训练的无缝恢复。
 - 当前 `refiner_only` 显式拒绝 `world_size != 1`。共享训练器存在 DDP 不代表 Exp6-4 已验证支持多卡。
-- 本地工作区有未提交修改；源码来源以原部署快照和哈希为准，不能只用当前 Git HEAD 代表已训练版本。本轮只归档 Exp6-4，其他实验改动保留，不重写历史或推送。
+- 训练权重的源码来源仍以对应部署快照和哈希为准，当前整理提交不能冒充当时的训练版本。本次仅补交本地验收与交接材料，不改写历史或推送。
 
 查看器复用历史字段：`stage1_best` 指 spconv，`joint_best` 指 official_flex；二者实际均加载各组的 `stage1_best.pt`。这是展示映射，不代表 Exp6-4 做过 Joint。保留旧 schema 和资产，在说明中解释映射，不将其改名后破坏历史加载。
 
 Hypersim 可视化为 train/val/test 各 5 张；其中 val/test 与 Exp6-3 的选图一致。查看器的 val 5 张不等于用于选模的 Val100，不能互相替代。
 
-## 6. 结果入口与尚未执行的整理任务
+## 6. 结果入口与剩余边界
 
 Git 仅保存紧凑报告、指标和两张汇总图。原报告或图册引用的外部图片、数组、缓存及跨仓库材料见 [ARCHIVE.md](../experiment/exp6_4_official_ssr_disparity_adapter/ARCHIVE.md)，不是全部随仓库分发的资产。
 
@@ -154,11 +155,10 @@ Git 仅保存紧凑报告、指标和两张汇总图。原报告或图册引用�
 - [查看器发布与验收记录](../experiment/viewer/deployment_20260914_exp6_4_official_ssr.json)
 - [实验总日志](../experiment/log.md)
 
-本轮完成的是方法口径、代码入口、运行限制和结果索引整理，并按代码、结果分组作本地归档提交。提交验证范围见 [COMMIT_CHECKS.md](../experiment/exp6_4_official_ssr_disparity_adapter/COMMIT_CHECKS.md)。原实验计划、历史报告、源码快照及权重不重写。以下工程改造与验证尚未执行，不应标记为已完成：
+方法口径、单组入口、路径配置与结果索引已整理，验收按代码和结果分组归档。2026-09-21 的提交检查见 [COMMIT_CHECKS.md](../experiment/exp6_4_official_ssr_disparity_adapter/COMMIT_CHECKS.md)，新增真实 CUDA/恢复证据见[2026-09-23 验收](../experiment/exp6_4_official_ssr_disparity_adapter/verification_20260923/README.md)，不混用两次检查的时点。
 
-1. 基于共享训练器提供显式 official-only 入口；不自动启动 spconv、配对分析或部署。
-2. 将个人服务器路径与科学配置分开，显式配置评估依赖；新运行保存解析后的配置和源码身份，保留旧配置与恢复规则。
-3. 在受控环境验证整理前后同输入、同 checkpoint 的 K0/1/3/5 输出、损失和梯度一致性，以及冻结、采样、RNG、optimizer 恢复、旧 spconv/exporter 兼容性。
-4. 新环境的 CUDA 短测、导出和服务器部署，按实际授权和验证结果执行；不冒充本轮已有验收。
+1. 已完成 51 项相关 CPU、10 项 CUDA 测试，冻结及真实 checkpoint 的 RNG/采样/optimizer 恢复通过。
+2. K0 精确一致，历史权重 K1/3/5 严格对照未通过；同版本复测也有差异，根因尚未逐项隔离。保留限制，不继续诊断或更换默认算子。
+3. 尚未验收全新机器安装环境、多卡 refiner-only 或新导出部署。接收方需确认外部资产权限，并先运行目标环境短测，不能将本轮交接称为多卡即开即用。
 
 多 GPU、解冻 Base、去限幅、官方 log-depth 机制或几何损失移植属于独立适配或实验 revision，不混入无行为变化的代码整理。是否推进由后续实验目标决定，本轮不自动启动。

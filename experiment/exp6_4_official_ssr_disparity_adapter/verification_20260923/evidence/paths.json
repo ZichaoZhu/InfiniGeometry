@@ -1,0 +1,6 @@
+{
+  "safe_root": "/mnt/data/home/zhuzichao",
+  "data_root": "/nas1/datasets/hypersim/raw",
+  "cache_root": "/mnt/data/home/zhuzichao/cache/infinidepth_disparity_ssr/hypersim_exp3",
+  "checkpoint": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/checkpoints/depth/infinidepth.ckpt"
+}

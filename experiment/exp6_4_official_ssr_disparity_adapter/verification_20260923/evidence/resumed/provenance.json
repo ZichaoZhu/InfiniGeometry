@@ -1,0 +1,91 @@
+{
+  "base_checkpoint": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/checkpoints/depth/infinidepth.ckpt",
+  "base_checkpoint_sha256": "6f123506b266f61b9261878548946cfb8822e6233aaf53527dfc4b3dab1e7f9c",
+  "code_commit": "unavailable",
+  "code_dirty": true,
+  "command": [
+    "python",
+    "-m",
+    "training.disparity_refiner.train",
+    "--config",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current/experiment/exp6_4_official_ssr_disparity_adapter/local/acceptance6.json",
+    "--run-id",
+    "main",
+    "--device",
+    "cuda:0",
+    "--output",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/resumed",
+    "--resume",
+    "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/resumed/checkpoints/last.pt"
+  ],
+  "config_path": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current/experiment/exp6_4_official_ssr_disparity_adapter/local/acceptance6.json",
+  "config_sha256": "6228d0d4d3922669e05608147deb83cb3d58164bea98d19bd7895831c4d61f84",
+  "cuda_version": "12.8",
+  "device": "NVIDIA GeForce RTX 4090",
+  "distributed": {
+    "backend": null,
+    "cuda_visible_devices": "2",
+    "global_batch_size": 8,
+    "gpu_mapping": [
+      {
+        "name": "NVIDIA GeForce RTX 4090",
+        "physical_index": "2",
+        "uuid": "GPU-22ab12a0-af14-fa8c-44a7-a869af82e244"
+      }
+    ],
+    "gradient_accumulation": 8,
+    "microbatch_size_per_rank": 1,
+    "nccl_version": [
+      2,
+      27,
+      3
+    ],
+    "world_size": 1
+  },
+  "evaluation_sample_ids": [
+    "ai_003_010_cam_00_frame.0000"
+  ],
+  "experiment_id": "exp6_4_official_ssr_disparity_adapter_official_flex_smoke_handoff_acceptance6",
+  "format": "infinidepth-disparity-refiner-provenance-v1",
+  "frozen_base_sha256": "273cdc3ebc097cd92766a9af59e4aea3a9c34fd71a3eaf830d7c01a14ebfb678",
+  "hostname": "ZJU3DV-4090",
+  "launcher_command": null,
+  "manifest_sha256": "d213f287b744c7c79044c860b683a719645a73dd0175277a0be88c2912de8e9b",
+  "origin_url": "unavailable",
+  "refiner_config": {
+    "backend": "official_flex",
+    "max_disparity_span": null,
+    "voxel_resolution": 200.0
+  },
+  "refiner_only": true,
+  "run_id": "main",
+  "sample_ids": [
+    "ai_001_001_cam_00_frame.0000",
+    "ai_001_001_cam_00_frame.0014",
+    "ai_001_001_cam_00_frame.0028",
+    "ai_001_001_cam_00_frame.0043",
+    "ai_001_001_cam_00_frame.0056",
+    "ai_001_001_cam_00_frame.0071",
+    "ai_001_001_cam_00_frame.0085",
+    "ai_001_001_cam_00_frame.0099"
+  ],
+  "seed": 173,
+  "source_root": "/nas1/datasets/hypersim/raw",
+  "source_sha256": {
+    "InfiniDepth/model/disparity_refiner.py": "a39d83d976619d0a5030b9d9e6101d427ff1ae7b7307e4bd4a07b15c69ac4856",
+    "InfiniDepth/model/model.py": "af2b4c731e2f2c2cd29d16fe870504839f554975d1416a22cbf0cafba376bc4f",
+    "InfiniDepth/model/official_disparity_adapter.py": "2a6c73d9d92359db1b0588085e757def68f6f8dc673533852508eb44e18270b8",
+    "InfiniDepth/model/official_moge_ssr/__init__.py": "9fad141cd1d5c2f683c08444aedd69f62d2cb1f19def9395d2e47e92d9e5395d",
+    "InfiniDepth/model/official_moge_ssr/flex_sparse_blocks.py": "0d93340f05008a3221376144103f79df8a1b83af2c862c38552c0a28f6320979",
+    "InfiniDepth/model/official_moge_ssr/sparse_unet.py": "f4b12a9b40b3b27abff5a6459c0a6efe238978cceb3366d52767f415f34de485",
+    "InfiniDepth/model/official_moge_ssr/utils.py": "efa9338c20543d3b0a736c5d42b846bdcaf3bc5912ffbc594fda71431daf22dd",
+    "experiment/schedule_exp3.py": "fc3f0231c101dc1b4d274c563da1977d8f2a89dd118659d7686f29c6cf0897e0",
+    "training/disparity_refiner/data.py": "d90e328a7fde603648daa8cafe2fe69a818f68ed6b3f1f016d4ee12cc017518e",
+    "training/disparity_refiner/frozen_base.py": "3e18d0cca312dd1f80ba4257b80482839d74d7378ca7f2aed0f912a22c716a5f",
+    "training/disparity_refiner/losses.py": "05bf1c0b4acbed19c963425e22ef5eab480cc61ee9e75ec530a00c945c33cecf",
+    "training/disparity_refiner/train.py": "cb84aaf828ff9578586f45c4dcf8116b6f4a0915fd43588e066138c2b4679344"
+  },
+  "started_at_unix": 1790143279.3815496,
+  "torch_version": "2.8.0+cu128",
+  "upstream_url": "unavailable"
+}

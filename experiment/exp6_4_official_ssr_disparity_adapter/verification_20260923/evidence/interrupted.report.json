@@ -1,0 +1,8 @@
+{
+  "format": "infinidepth-disparity-refiner-report-v1",
+  "paused_at_unix": 1790143190.228184,
+  "stage": "stage1",
+  "stage_step": 3,
+  "status": "paused",
+  "total_step": 3
+}

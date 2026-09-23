@@ -1,0 +1,129 @@
+{
+  "automation": {
+    "allow_shared_gpu": true,
+    "gpu_index": 3,
+    "maximum_utilization_percent": 10,
+    "minimum_free_memory_mib": 22528,
+    "poll_seconds": 300,
+    "required_idle_checks": 1,
+    "smoke_pause_step": 5,
+    "smoke_steps": 56,
+    "smoke_warmup_steps": 6
+  },
+  "claim_boundary": "使用官方 Hypersim train 中 59,542 张具有有效 depth 的图像训练，排除 1 张无有效 depth 的官方样本；仅在固定 100 张官方 validation 图上选择 checkpoint，test 保留，不宣称跨数据集泛化。",
+  "data": {
+    "excluded_sample_ids": [
+      "ai_012_007_cam_01_frame.0000"
+    ],
+    "expected_train_count": 8,
+    "lazy_loading": true,
+    "local_cache": "/mnt/data/home/zhuzichao/cache/infinidepth_disparity_ssr/hypersim_exp3",
+    "manifest": "experiment/data/hypersim_full_manifest.json",
+    "manifest_sha256": "d213f287b744c7c79044c860b683a719645a73dd0175277a0be88c2912de8e9b",
+    "readonly_source_root": "/nas1/datasets/hypersim/raw",
+    "source_root": "/nas1/datasets/hypersim/raw"
+  },
+  "evaluation": {
+    "full_sample_ids": [
+      "ai_003_010_cam_00_frame.0000"
+    ],
+    "gate_improvement_fraction": 0.01,
+    "gate_minimum_successes": 1,
+    "minimum_improved_images": 80,
+    "refinement_steps": [
+      0,
+      1,
+      3,
+      5
+    ],
+    "sample_ids": [
+      "ai_003_010_cam_00_frame.0000"
+    ],
+    "selection_metric": "k3_mean_hypersim_val100_full_disparity_mae",
+    "split": "val",
+    "viewer_sample_ids": [
+      "ai_003_010_cam_00_frame.0000",
+      "ai_016_001_cam_01_frame.0062",
+      "ai_038_009_cam_00_frame.0069",
+      "ai_050_002_cam_01_frame.0056",
+      "ai_055_009_cam_01_frame.0099"
+    ]
+  },
+  "experiment_id": "exp6_4_official_ssr_disparity_adapter_official_flex_smoke",
+  "model": {
+    "checkpoint": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/InfiniDepth/checkpoints/depth/infinidepth.ckpt",
+    "dino_dtype": "bfloat16",
+    "geometry_dtype": "float32",
+    "height": 384,
+    "max_disparity_span": null,
+    "query_chunk_size": 10000,
+    "refiner_backend": "official_flex",
+    "training_refinement_steps": 3,
+    "voxel_resolution": 200,
+    "width": 512
+  },
+  "research_question": "冻结同一官方 RGB Base，对照现有 SSR 与官方 Sparse3DUNet disparity 适配版",
+  "runs": [
+    {
+      "directory": "runs/main",
+      "id": "main",
+      "sample_ids": [
+        "ai_001_001_cam_00_frame.0000",
+        "ai_001_001_cam_00_frame.0014",
+        "ai_001_001_cam_00_frame.0028",
+        "ai_001_001_cam_00_frame.0043",
+        "ai_001_001_cam_00_frame.0056",
+        "ai_001_001_cam_00_frame.0071",
+        "ai_001_001_cam_00_frame.0085",
+        "ai_001_001_cam_00_frame.0099"
+      ],
+      "seed_offset": 0
+    }
+  ],
+  "seed": 173,
+  "server": {
+    "cache": "/mnt/data/home/zhuzichao/cache/infinidepth_disparity_ssr/hypersim_exp3",
+    "environment": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/exp6_4_20260911/venv",
+    "project_root": "/mnt/data/home/zhuzichao/2026_TPAMI_InfiniGeometry/handoff_verify_20260923_1348/current",
+    "safe_root": "/mnt/data/home/zhuzichao",
+    "temporary": "/mnt/data/home/zhuzichao/tmp"
+  },
+  "status": "implementation",
+  "structure_selections": [],
+  "training": {
+    "global_batch_size": 8,
+    "gradient_clip_norm": 1,
+    "gradient_scales": 4,
+    "gradient_weight": 0.5,
+    "microbatch_size": 1,
+    "optimizer": "AdamW",
+    "record_step_progress": true,
+    "refiner_only": true,
+    "sampling": "shuffled_cycle",
+    "stages": {
+      "stage1": {
+        "checkpoint_every": 5,
+        "dino_freeze_steps": 20000,
+        "dino_warmup_end": 20000,
+        "eval_every": 5,
+        "full_eval_every": 56,
+        "learning_rates": {
+          "dino": 0,
+          "head": 0,
+          "ssr": 1e-05
+        },
+        "max_steps": 56,
+        "min_steps": 56,
+        "plateau_patience_evals": 0,
+        "plateau_relative_improvement": 0
+      }
+    },
+    "supervised_iterations": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "weight_decay": 0.01
+  }
+}
