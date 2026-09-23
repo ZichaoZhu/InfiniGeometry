@@ -31,9 +31,11 @@ from training.disparity_refiner.data import (
 )
 from training.disparity_refiner.losses import disparity_metrics, supervised_iteration_loss
 from training.disparity_refiner.frozen_base import base_sha256, preserve_training_mode, set_training_mode, verify_frozen_base
+from training.disparity_refiner.runtime_paths import source_root as configured_source_root, protected_output
 
 
 EVALUATION_STEPS = (0, 1, 3, 5)
+_REPORT_OUTPUT: Optional[Path] = None
 
 
 @dataclass(frozen=True)
@@ -413,9 +415,7 @@ def _load_samples(
         if split == "train" and sample_ids is None
         else sample_ids
     )
-    source_root = Path(str(data["source_root"]))
-    if source_root.resolve() != Path("/nas1/datasets/hypersim/raw"):
-        raise PermissionError("Hypersim source root must remain /nas1/datasets/hypersim/raw")
+    source_root = configured_source_root(config)
     entries = select_manifest_entries(
         manifest,
         source_root=source_root,
@@ -1339,6 +1339,8 @@ def _refresh_final_evaluation(model, samples, device, model_config, state):
 
 
 def main() -> None:
+    global _REPORT_OUTPUT
+    _REPORT_OUTPUT = None
     args = parse_args()
     config_path = args.config.resolve()
     config = json.loads(config_path.read_text(encoding="utf-8"))
@@ -1349,7 +1351,13 @@ def main() -> None:
     output = ensure_within(args.output, safe_root, name="experiment output")
     if output.exists() and output.is_symlink():
         raise PermissionError("Experiment output may not be a symlink")
+    if "readonly_source_root" in config["data"]:
+        output = protected_output(config, args.output)
+        if args.resume is None and output.exists() and any(output.iterdir()):
+            raise FileExistsError("New portable runs require an empty output directory")
     run = _selected_run(config, args.run_id)
+    if args.resume is None:
+        _REPORT_OUTPUT = output
     config_sha256 = _sha256(config_path)
     seed = int(config["seed"]) + int(run.get("seed_offset", 0))
     distributed = _init_distributed(args.device)
@@ -1428,6 +1436,7 @@ def main() -> None:
             generator.seed(seed + total_step + 1)  # type: ignore[attr-defined]
         verify_frozen_base(model)
 
+    _REPORT_OUTPUT = output
     if distributed.is_main:
         provenance = _provenance(
             project_root,
@@ -1566,47 +1575,28 @@ def main() -> None:
     _atomic_json(output / "metrics" / "report.json", final_report)
 
 
+def _write_terminal_report(record: Mapping[str, object]) -> None:
+    # Only a main()-validated path may receive an error/pause report.
+    if int(os.environ.get("RANK", "0")) == 0 and _REPORT_OUTPUT is not None:
+        _atomic_json(_REPORT_OUTPUT / "metrics" / "report.json", record)
+
+
 if __name__ == "__main__":
     distributed_context: Optional[DistributedContext] = None
     try:
         main()
     except TrainingPaused as exc:
-        rank = int(os.environ.get("RANK", "0"))
-        if rank == 0 and "--output" in os.sys.argv:
-            output_index = os.sys.argv.index("--output") + 1
-            if output_index < len(os.sys.argv):
-                candidate = Path(os.sys.argv[output_index]).expanduser().resolve()
-                safe_root = Path("/mnt/data/home/zhuzichao")
-                if candidate != safe_root and safe_root in candidate.parents:
-                    _atomic_json(
-                        candidate / "metrics" / "report.json",
-                        {
-                            "format": "infinidepth-disparity-refiner-report-v1",
-                            "status": "paused",
-                            "stage": exc.stage,
-                            "stage_step": exc.stage_step,
-                            "total_step": exc.total_step,
-                            "paused_at_unix": time.time(),
-                        },
-                    )
+        _write_terminal_report({
+            "format": "infinidepth-disparity-refiner-report-v1", "status": "paused",
+            "stage": exc.stage, "stage_step": exc.stage_step, "total_step": exc.total_step,
+            "paused_at_unix": time.time(),
+        })
     except Exception as exc:
-        if int(os.environ.get("RANK", "0")) == 0 and "--output" in os.sys.argv:
-            output_index = os.sys.argv.index("--output") + 1
-            if output_index < len(os.sys.argv):
-                candidate = Path(os.sys.argv[output_index]).expanduser().resolve()
-                safe_root = Path("/mnt/data/home/zhuzichao")
-                if candidate != safe_root and safe_root in candidate.parents:
-                    _atomic_json(
-                        candidate / "metrics" / "report.json",
-                        {
-                            "format": "infinidepth-disparity-refiner-report-v1",
-                            "status": "failed",
-                            "failure_type": type(exc).__name__,
-                            "failure_message": str(exc),
-                            "traceback": traceback.format_exc(),
-                            "failed_at_unix": time.time(),
-                        },
-                    )
+        _write_terminal_report({
+            "format": "infinidepth-disparity-refiner-report-v1", "status": "failed",
+            "failure_type": type(exc).__name__, "failure_message": str(exc),
+            "traceback": traceback.format_exc(), "failed_at_unix": time.time(),
+        })
         raise
     finally:
         if dist.is_available() and dist.is_initialized():

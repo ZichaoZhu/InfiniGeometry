@@ -1,0 +1,8 @@
+{
+  "safe_root": "/mnt/data/home/YOUR_USER/exp64_work",
+  "data_root": "/datasets/hypersim/raw",
+  "cache_root": "/mnt/data/home/YOUR_USER/exp64_work/cache/hypersim",
+  "checkpoint": "/mnt/data/home/YOUR_USER/exp64_work/weights/infinidepth.ckpt",
+  "protocol_root": "/mnt/data/home/YOUR_USER/exp63_protocol",
+  "official_moge_root": "/mnt/data/home/YOUR_USER/moge_official_74fbce0"
+}

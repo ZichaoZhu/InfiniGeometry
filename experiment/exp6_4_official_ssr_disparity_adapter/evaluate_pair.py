@@ -11,17 +11,12 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
+from training.disparity_refiner.runtime_paths import evaluation_paths, protected_output
 
 
-def load_protocol():
-    directory = Path("/mnt/data/home/zhuzichao/projects/InfiniGeometry/experiments/exp6-3_moge3_vs_infinidepth_exp3")
-    source = directory / "code/run_common_eval.py"
-    if hashlib.sha256(source.read_bytes()).hexdigest() != "1940967e0d1896f71be61eb4da3877f46d07dd695f3642e3980670f55b74c2cc":
-        raise RuntimeError("Exp6-3 evaluation protocol changed")
-    masks = directory / "local_detail/masks/hypersim_val100/moge3_v2_sam2_1_small_v1"
-    if hashlib.sha256((masks / "manifest.json").read_bytes()).hexdigest() != "41da5ed4a431afe13fdb66d84f78191e86b684fbd83c9ccea82c2e9f4de11449":
-        raise RuntimeError("Fixed Local masks changed")
-    sys.path.append("/mnt/data/home/zhuzichao/projects/MoGe/deployments/official_v3_74fbce0_20260902")
+def load_protocol(config=None):
+    source, masks, moge = evaluation_paths(config)
+    sys.path.append(str(moge))
     spec = importlib.util.spec_from_file_location("exp6_3_protocol", source)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -82,8 +77,12 @@ def main():
     from training.disparity_refiner.export_assets import load_refiner_checkpoint
     from experiment.schedule_exp3 import atomic_json
 
-    protocol, masks = load_protocol()
     config = json.loads(args.config.read_text())
+    if "readonly_source_root" in config["data"]:
+        args.output = protected_output(config, args.output)
+        if args.output.exists() and any(args.output.iterdir()):
+            raise FileExistsError("Evaluation requires a new/empty output directory")
+    protocol, masks = load_protocol(config)
     samples = _load_samples(config, config["runs"][0], ROOT, split="val", sample_ids=config["evaluation"]["full_sample_ids"])
     samples = [samples[i] for i in range(min(len(samples), args.limit or len(samples)))]
     assets = protocol.load_local_assets(masks, samples)

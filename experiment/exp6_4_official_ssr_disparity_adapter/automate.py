@@ -21,6 +21,7 @@ sys.path.insert(0, str(ROOT))
 from experiment.monitor_exp2 import check_once, process_identity_error, all_finite, process_is_alive
 from experiment.schedule_exp3 import (atomic_json, append_jsonl, query_gpus,
                                       external_compute_pids, build_train_command)
+from training.disparity_refiner.runtime_paths import apply_machine_paths
 
 
 def read_json(path):
@@ -51,7 +52,9 @@ def gpu_ready(gpu, options):
     )
 
 
-def prepare_config(experiment, backend, *, smoke=False):
+def prepare_config(experiment, backend, *, smoke=False, paths=None, destination=None, write=True):
+    if backend not in ("spconv", "official_flex"):
+        raise ValueError(f"Unknown Exp6-4 backend: {backend}")
     config = copy.deepcopy(read_json(experiment / "config.json"))
     config["model"]["refiner_backend"] = backend
     config["server"]["project_root"] = str(ROOT)
@@ -67,9 +70,12 @@ def prepare_config(experiment, backend, *, smoke=False):
         stage = config["training"]["stages"]["stage1"]
         steps = int(config["automation"]["smoke_steps"])
         stage.update(min_steps=steps, max_steps=steps, eval_every=5, full_eval_every=steps, checkpoint_every=5)
-    destination = experiment / ("smoke" if smoke else "arms") / backend / "config.json"
-    immutable_json(destination, config)
-    return destination
+    if paths is not None:
+        apply_machine_paths(config, paths)
+    destination = destination or experiment / ("smoke" if smoke else "arms") / backend / "config.json"
+    if write:
+        immutable_json(destination, config)
+    return destination if write else config
 
 
 class SequenceRunner:
